@@ -17,25 +17,34 @@
       :model="form"
       :rules="rules"
     >
-      <a-form-model-item ref="code" label="批次号" prop="code">
-        <a-input
-          placeholder="请输入批次号"
-          v-model="form.code"
-          @blur="
-            () => {
-              $refs.code.onFieldBlur()
-            }
-          "
-        />
-      </a-form-model-item>
 
-      <a-form-model-item label="入库仓库" prop="type">
-        <a-select v-model="form.type" placeholder="请选择入库仓库">
+      <a-form-model-item label="出库仓库" prop="warehouse">
+        <a-select v-model="form.type" placeholder="请选择出库仓库">
           <a-select-option value="shanghai">
-            入库仓库一
+            出库仓库一
           </a-select-option>
           <a-select-option value="beijing">
-            入库仓库二
+            出库仓库二
+          </a-select-option>
+        </a-select>
+      </a-form-model-item>
+      <a-form-model-item label="出库类型" prop="type">
+        <a-select v-model="form.type" placeholder="请选择出库类型">
+          <a-select-option value="shanghai">
+            出库类型一
+          </a-select-option>
+          <a-select-option value="beijing">
+            出库类型二
+          </a-select-option>
+        </a-select>
+      </a-form-model-item>
+      <a-form-model-item label="出库对象" prop="target">
+        <a-select v-model="form.type" placeholder="请选择出库对象">
+          <a-select-option value="shanghai">
+            出库对象一
+          </a-select-option>
+          <a-select-option value="beijing">
+            出库对象二
           </a-select-option>
         </a-select>
       </a-form-model-item>
@@ -84,7 +93,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
 
 export default {
-  name: 'stockInModal',
+  name: 'StockOutModal',
   mixins: [JeecgListMixin, mixinDevice],
   data() {
     return {
@@ -95,12 +104,14 @@ export default {
       labelCol: { span: 2 },
       wrapperCol: { span: 6 },
       form: {
-        code: '',
-        type: undefined
+        warehouse: undefined,
+        type: undefined,
+        target: undefined
       },
       rules: {
-        code: [{ required: true, message: '请输入批次号', trigger: 'blur' }],
-        type: [{ required: true, message: '请选择入库仓库', trigger: 'change' }]
+        warehouse: [{ required: true, message: '请选择出库仓库', trigger: 'blur' }],
+        type: [{ required: true, message: '请选择出库类型', trigger: 'change' }],
+        target: [{ required: true, message: '请选择出库对象', trigger: 'change' }]
       },
       // 表头
       columns: [
@@ -142,11 +153,6 @@ export default {
   methods: {
     show() {
       this.visible = true
-    },
-    close() {},
-    submitCallback() {
-      this.$emit('ok')
-      this.visible = false
     },
     handleCancel() {
       console.log(`取消`)

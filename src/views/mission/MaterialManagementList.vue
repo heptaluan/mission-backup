@@ -66,6 +66,10 @@
 
     <!-- 入库表单 -->
     <StockInModal ref="stockInModal" />
+
+    <!-- 出库表单 -->
+    <StockOutModal ref="stockOutModal" />
+
   </a-card>
 </template>
 
@@ -75,6 +79,7 @@ import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import MaterialManagementModal from './modules/MaterialManagementModal'
 import StockInModal from './materialManagement/stockInModal'
+import StockOutModal from './materialManagement/StockOutModal'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 
 export default {
@@ -82,7 +87,8 @@ export default {
   mixins: [JeecgListMixin, mixinDevice],
   components: {
     MaterialManagementModal,
-    StockInModal
+    StockInModal,
+    StockOutModal
   },
   data() {
     return {
@@ -163,7 +169,9 @@ export default {
     handleStockIn() {
       this.$refs.stockInModal.show()
     },
-    handleStockOut() {},
+    handleStockOut() {
+      this.$refs.stockOutModal.show()
+    },
   }
 }
 </script>
