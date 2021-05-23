@@ -5,7 +5,6 @@
 </template>
 
 <script>
-// 引入 wangEditor
 import wangEditor from 'wangeditor'
 
 export default {
@@ -23,10 +22,7 @@ export default {
     this.editor = editor
   },
   methods: {
-    getEditorData() {
-      let data = this.editor.txt.html()
-      console.log(data)
-    }
+    getEditorData() {}
   },
   beforeDestroy() {
     this.editor.destroy()
