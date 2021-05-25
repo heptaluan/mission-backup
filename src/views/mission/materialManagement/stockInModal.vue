@@ -84,7 +84,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
 
 export default {
-  name: 'stockInModal',
+  name: 'StockInModal',
   mixins: [JeecgListMixin, mixinDevice],
   data() {
     return {

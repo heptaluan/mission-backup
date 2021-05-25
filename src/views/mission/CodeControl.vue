@@ -1,11 +1,5 @@
 <template>
   <a-card :bordered="false">
-    <!-- 操作按钮区域 -->
-    <div class="table-operator">
-      <a-button @click="handleStockIn" type="primary" icon="plus">耗材入库</a-button>
-      <a-button @click="handleStockOut" type="primary" icon="download">耗材出库</a-button>
-    </div>
-
     <!-- table区域-begin -->
     <a-table
       ref="table"
@@ -42,34 +36,12 @@
       </template>
 
       <span slot="action" slot-scope="text, record">
-        <a @click="handleEdit(record)">编辑</a>
-
-        <a-divider type="vertical" />
-        <a-dropdown>
-          <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
-          <a-menu slot="overlay">
-            <a-menu-item>
-              <a @click="handleDetail(record)">详情</a>
-            </a-menu-item>
-            <a-menu-item>
-              <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                <a>删除</a>
-              </a-popconfirm>
-            </a-menu-item>
-          </a-menu>
-        </a-dropdown>
+        <div class="btn-group">
+          <a @click="preview(record)">查看</a>
+          <a @click="downloadCode(record)">下载编号</a>
+        </div>
       </span>
     </a-table>
-
-    <!-- 编辑表单 -->
-    <material-management-modal ref="modalForm" @ok="modalFormOk"></material-management-modal>
-
-    <!-- 入库表单 -->
-    <StockInModal ref="stockInModal" />
-
-    <!-- 出库表单 -->
-    <StockOutModal ref="stockOutModal" />
-
   </a-card>
 </template>
 
@@ -77,22 +49,13 @@
 import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import MaterialManagementModal from './modules/MaterialManagementModal'
-import StockInModal from './materialManagement/StockInModal'
-import StockOutModal from './materialManagement/StockOutModal'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 
 export default {
-  name: 'MaterialManagementList',
+  name: 'CodeControl',
   mixins: [JeecgListMixin, mixinDevice],
-  components: {
-    MaterialManagementModal,
-    StockInModal,
-    StockOutModal
-  },
   data() {
     return {
-      description: '耗材管理管理页面',
       title: '',
       width: 1280,
       disableSubmit: false,
@@ -111,34 +74,24 @@ export default {
           }
         },
         {
-          title: '耗材名称',
+          title: '出库单编号',
           align: 'center',
-          dataIndex: 'materialName'
+          dataIndex: 'code'
         },
         {
-          title: '耗材编码',
+          title: '出库时间',
           align: 'center',
-          dataIndex: 'materialCode'
+          dataIndex: 'time'
         },
         {
-          title: '耗材类型',
+          title: '对象',
           align: 'center',
-          dataIndex: 'materialType'
+          dataIndex: 'target'
         },
         {
-          title: '耗材入库总计',
+          title: '数量',
           align: 'center',
-          dataIndex: 'materialStockInTotal'
-        },
-        {
-          title: '耗材出库总计',
-          align: 'center',
-          dataIndex: 'materialStockOutTotal'
-        },
-        {
-          title: '剩余库存量',
-          align: 'center',
-          dataIndex: 'materialSurplus'
+          dataIndex: 'num'
         },
         {
           title: '操作',
@@ -155,9 +108,7 @@ export default {
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
         importExcelUrl: 'mission/materialManagement/importExcel'
-      },
-      dictOptions: {},
-      superFieldList: []
+      }
     }
   },
   computed: {
@@ -166,15 +117,15 @@ export default {
     }
   },
   methods: {
-    handleStockIn() {
-      this.$refs.stockInModal.show()
-    },
-    handleStockOut() {
-      this.$refs.stockOutModal.show()
-    },
+    preview() {},
+    downloadCode() {}
   }
 }
 </script>
 <style scoped>
 @import '~@assets/less/common.less';
+.btn-group {
+  display: flex;
+  justify-content: space-evenly;
+}
 </style>

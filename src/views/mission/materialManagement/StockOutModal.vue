@@ -49,6 +49,10 @@
         </a-select>
       </a-form-model-item>
 
+      <a-form-model-item label="备注" prop="desc">
+        <a-input placeholder="请输入备注" :rows="4" allowClear v-model="form.desc" type="textarea" />
+      </a-form-model-item>
+
       <!-- table区域-begin -->
       <a-table
         ref="table"
@@ -84,6 +88,7 @@
           </a-button>
         </template>
       </a-table>
+      
     </a-form-model>
   </j-modal>
 </template>
@@ -102,16 +107,18 @@ export default {
       visible: false,
       disableSubmit: false,
       labelCol: { span: 2 },
-      wrapperCol: { span: 6 },
+      wrapperCol: { span: 10 },
       form: {
         warehouse: undefined,
         type: undefined,
-        target: undefined
+        target: undefined,
+        desc: ''
       },
       rules: {
         warehouse: [{ required: true, message: '请选择出库仓库', trigger: 'blur' }],
         type: [{ required: true, message: '请选择出库类型', trigger: 'change' }],
-        target: [{ required: true, message: '请选择出库对象', trigger: 'change' }]
+        target: [{ required: true, message: '请选择出库对象', trigger: 'change' }],
+        desc: [{ required: true, message: '请输入备注', trigger: 'blur' }]
       },
       // 表头
       columns: [

@@ -1,39 +1,13 @@
 <template>
   <a-card :bordered="false">
-    <!-- 查询区域 -->
-    <div class="table-page-search-wrapper">
-      <a-form layout="inline" @keyup.enter.native="searchQuery">
-        <a-row :gutter="24">
-        </a-row>
-      </a-form>
-    </div>
-    <!-- 查询区域-END -->
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button @click="loadData" type="primary" icon="query">查询</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('医院信息管理')">导出</a-button>
-      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
-      <!-- 高级查询区域 -->
-<!--      <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>-->
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
-      </a-dropdown>
+      <a-button @click="handleAdd" type="primary" icon="plus">发起样本入库</a-button>
     </div>
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div>
-
       <a-table
         ref="table"
         size="middle"
@@ -90,7 +64,7 @@
       </a-table>
     </div>
 
-    <hospital-info-modal ref="modalForm" @ok="modalFormOk"></hospital-info-modal>
+    <SampleStockInModal ref="modalForm" @ok="modalFormOk" />
   </a-card>
 </template>
 
@@ -99,18 +73,18 @@
   import '@/assets/less/TableExpand.less'
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-  import HospitalInfoModal from './modules/HospitalInfoModal'
-  import api from 'src/api/mission/hospital'
+  import SampleStockInModal from '../modules/sample/SampleStockInModal'
+  import api from 'src/api/mission/sample'
 
   export default {
-    name: 'HospitalInfoList',
+    name: 'Sample',
     mixins:[JeecgListMixin, mixinDevice],
     components: {
-      HospitalInfoModal
+      SampleStockInModal
     },
     data () {
       return {
-        description: '医院信息管理管理页面',
+        description: '样本编号管理页面',
         // 表头
         columns: [
           {
@@ -124,69 +98,69 @@
             }
           },
           {
-            title: '全称',
+            title: '序号',
             align: 'center',
-            dataIndex: 'hoName'
+            dataIndex: 'index'
           },
           {
-            title: '简称',
-            align: 'center',
-            dataIndex: 'hoShortName'
-          },
-          {
-            title: '省',
-            align: 'center',
-            dataIndex: 'hoProvince'
-          },
-          {
-            title: '市',
-            align: 'center',
-            dataIndex: 'hoCity'
-          },
-          {
-            title: '区',
-            align: 'center',
-            dataIndex: 'hoDistrict'
-          },
-          {
-            title: '地址',
-            align: 'center',
-            dataIndex: 'hoAddress'
-          },
-          {
-            title: '负责人',
-            align: 'center',
-            dataIndex: 'chargePeople'
-          },
-          {
-            title: '联系人',
-            align: 'center',
-            dataIndex: 'contractPeople'
-          },
-          {
-            title: '联系电话',
-            align: 'center',
-            dataIndex: 'mobile'
-          },
-          {
-            title: '邮箱',
-            align: 'center',
-            dataIndex: 'email'
-          },
-          {
-            title: '医院代码',
+            title: '样本编号',
             align: 'center',
             dataIndex: 'code'
           },
           {
-            title: '备注',
+            title: '样本类型',
             align: 'center',
-            dataIndex: 'remark'
+            dataIndex: 'sampleType'
           },
           {
-            title: '是否启用',
+            title: '姓名',
             align: 'center',
-            dataIndex: 'isActive'
+            dataIndex: 'name'
+          },
+          {
+            title: '性别',
+            align: 'center',
+            dataIndex: 'sex'
+          },
+          {
+            title: '年龄',
+            align: 'center',
+            dataIndex: 'age'
+          },
+          {
+            title: '医院名称',
+            align: 'center',
+            dataIndex: 'hoName'
+          },
+          {
+            title: '性质',
+            align: 'center',
+            dataIndex: 'codeQuality'
+          },
+          {
+            title: '癌种',
+            align: 'center',
+            dataIndex: 'typesCancer'
+          },
+          {
+            title: '入库时间',
+            align: 'center',
+            dataIndex: 'stockInTime'
+          },
+          {
+            title: '状态',
+            align: 'center',
+            dataIndex: 'state'
+          },
+          {
+            title: '存放位置',
+            align: 'center',
+            dataIndex: 'location'
+          },
+          {
+            title: '检测时间',
+            align: 'center',
+            dataIndex: 'time'
           },
           {
             title: '操作',
@@ -217,23 +191,15 @@
       },
     },
     methods: {
-      initDictConfig(){
+      initDictConfig () {
       },
-      getSuperFieldList(){
+      getSuperFieldList () {
         let fieldList = []
-        fieldList.push({ type: 'string', value: 'hoName', text: '全称', dictCode: '' })
-        fieldList.push({ type: 'string', value: 'hoShortName', text: '简称', dictCode: '' })
-        fieldList.push({ type: 'string', value: 'hoProvince', text: '省', dictCode: '' })
-        fieldList.push({ type: 'string', value: 'hoCity', text: '市', dictCode: '' })
-        fieldList.push({ type: 'string', value: 'hoDistrict', text: '区', dictCode: '' })
-        fieldList.push({ type: 'string', value: 'hoAddress', text: '地址', dictCode: '' })
-        fieldList.push({ type: 'string', value: 'chargePeople', text: '负责人', dictCode: '' })
-        fieldList.push({ type: 'string', value: 'contractPeople', text: '联系人', dictCode: '' })
-        fieldList.push({ type: 'string', value: 'mobile', text: '联系电话', dictCode: '' })
-        fieldList.push({ type: 'string', value: 'email', text: '邮箱', dictCode: '' })
-        fieldList.push({ type: 'string', value: 'code', text: '医院代码', dictCode: '' })
-        fieldList.push({ type: 'string', value: 'remark', text: '备注', dictCode: '' })
-        fieldList.push({ type: 'int', value: 'isActive', text: '是否启用', dictCode: '' })
+        fieldList.push({ type: 'string', value: 'code', text: '编号', dictCode: '' })
+        fieldList.push({ type: 'string', value: 'hoName', text: '医院名称', dictCode: '' })
+        fieldList.push({ type: 'string', value: 'hoId', text: '医院ID', dictCode: '' })
+        fieldList.push({ type: 'string', value: 'codeQuality', text: '性质', dictCode: '' })
+        fieldList.push({ type: 'string', value: 'typesCancer', text: '癌种', dictCode: '' })
         this.superFieldList = fieldList
       }
     }
