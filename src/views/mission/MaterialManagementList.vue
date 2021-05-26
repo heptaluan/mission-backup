@@ -136,11 +136,6 @@ export default {
           dataIndex: 'materialStockOutTotal'
         },
         {
-          title: '剩余库存量',
-          align: 'center',
-          dataIndex: 'materialSurplus'
-        },
-        {
           title: '操作',
           dataIndex: 'action',
           align: 'center',

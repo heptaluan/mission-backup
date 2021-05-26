@@ -127,16 +127,6 @@
             dataIndex: 'factoryCode'
           },
           {
-            title:'供应商名称',
-            align:"center",
-            dataIndex: 'name'
-          },
-          {
-            title:'供应商联系人',
-            align:"center",
-            dataIndex: 'contactId'
-          },
-          {
             title:'供应商地址',
             align:"center",
             dataIndex: 'adress'

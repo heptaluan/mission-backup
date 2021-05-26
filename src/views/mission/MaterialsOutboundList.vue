@@ -169,31 +169,6 @@
             dataIndex: 'auditId'
           },
           {
-            title:'仓库',
-            align:"center",
-            dataIndex: 'warehouseId_dictText'
-          },
-          {
-            title:'所属项目',
-            align:"center",
-            dataIndex: 'projectId_dictText'
-          },
-          {
-            title:'出库类型',
-            align:"center",
-            dataIndex: 'outboundType_dictText'
-          },
-          {
-            title:'出库对象',
-            align:"center",
-            dataIndex: 'outboundObject_dictText'
-          },
-          {
-            title:'快递单号',
-            align:"center",
-            dataIndex: 'emsNo'
-          },
-          {
             title: '操作',
             dataIndex: 'action',
             align:"center",

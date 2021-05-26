@@ -127,6 +127,11 @@
             dataIndex: 'model'
           },
           {
+            title:'设备ID',
+            align:"center",
+            dataIndex: 'deviceCode'
+          },
+          {
             title:'设备类型',
             align:"center",
             dataIndex: 'deviceType'
