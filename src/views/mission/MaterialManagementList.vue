@@ -2,8 +2,12 @@
   <a-card :bordered="false">
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleStockIn" type="primary" icon="plus">耗材入库</a-button>
-      <a-button @click="handleStockOut" type="primary" icon="download">耗材出库</a-button>
+      <a-button @click="handleStockIn" type="primary" icon="plus"
+        >耗材入库</a-button
+      >
+      <a-button @click="handleStockOut" type="primary" icon="download"
+        >耗材出库</a-button
+      >
     </div>
 
     <!-- table区域-begin -->
@@ -17,7 +21,10 @@
       :dataSource="dataSource"
       :pagination="ipagination"
       :loading="loading"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      :rowSelection="{
+        selectedRowKeys: selectedRowKeys,
+        onChange: onSelectChange,
+      }"
       class="j-table-force-nowrap"
       @change="handleTableChange"
     >
@@ -25,18 +32,29 @@
         <div v-html="text"></div>
       </template>
       <template slot="imgSlot" slot-scope="text">
-        <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+        <span v-if="!text" style="font-size: 12px; font-style: italic"
+          >无图片</span
+        >
         <img
           v-else
           :src="getImgView(text)"
           height="25px"
           alt=""
-          style="max-width:80px;font-size: 12px;font-style: italic;"
+          style="max-width: 80px; font-size: 12px; font-style: italic"
         />
       </template>
       <template slot="fileSlot" slot-scope="text">
-        <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-        <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
+        <span v-if="!text" style="font-size: 12px; font-style: italic"
+          >无文件</span
+        >
+        <a-button
+          v-else
+          :ghost="true"
+          type="primary"
+          icon="download"
+          size="small"
+          @click="downloadFile(text)"
+        >
           下载
         </a-button>
       </template>
@@ -46,13 +64,16 @@
 
         <a-divider type="vertical" />
         <a-dropdown>
-          <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
+          <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
           <a-menu slot="overlay">
             <a-menu-item>
               <a @click="handleDetail(record)">详情</a>
             </a-menu-item>
             <a-menu-item>
-              <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+              <a-popconfirm
+                title="确定删除吗?"
+                @confirm="() => handleDelete(record.id)"
+              >
                 <a>删除</a>
               </a-popconfirm>
             </a-menu-item>
@@ -62,14 +83,16 @@
     </a-table>
 
     <!-- 编辑表单 -->
-    <material-management-modal ref="modalForm" @ok="modalFormOk"></material-management-modal>
+    <material-management-modal
+      ref="modalForm"
+      @ok="modalFormOk"
+    ></material-management-modal>
 
     <!-- 入库表单 -->
     <StockInModal ref="stockInModal" />
 
     <!-- 出库表单 -->
     <StockOutModal ref="stockOutModal" />
-
   </a-card>
 </template>
 
@@ -88,7 +111,7 @@ export default {
   components: {
     MaterialManagementModal,
     StockInModal,
-    StockOutModal
+    StockOutModal,
   },
   data() {
     return {
@@ -106,34 +129,34 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '耗材名称',
           align: 'center',
-          dataIndex: 'materialName'
+          dataIndex: 'materialName',
         },
         {
           title: '耗材编码',
           align: 'center',
-          dataIndex: 'materialCode'
+          dataIndex: 'materialCode',
         },
         {
           title: '耗材类型',
           align: 'center',
-          dataIndex: 'materialType'
+          dataIndex: 'materialType',
         },
         {
           title: '耗材入库总计',
           align: 'center',
-          dataIndex: 'materialStockInTotal'
+          dataIndex: 'materialStockInTotal',
         },
         {
           title: '耗材出库总计',
           align: 'center',
-          dataIndex: 'materialStockOutTotal'
+          dataIndex: 'materialStockOutTotal',
         },
         {
           title: '操作',
@@ -141,24 +164,24 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       url: {
         list: '/mission/materialManagement/list',
         delete: '/mission/materialManagement/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel'
+        importExcelUrl: 'mission/materialManagement/importExcel',
       },
       dictOptions: {},
-      superFieldList: []
+      superFieldList: [],
     }
   },
   computed: {
-    importExcelUrl: function() {
+    importExcelUrl: function () {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    }
+    },
   },
   methods: {
     handleStockIn() {
@@ -167,7 +190,7 @@ export default {
     handleStockOut() {
       this.$refs.stockOutModal.show()
     },
-  }
+  },
 }
 </script>
 <style scoped>
