@@ -11,7 +11,10 @@
       :dataSource="dataSource"
       :pagination="ipagination"
       :loading="loading"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      :rowSelection="{
+        selectedRowKeys: selectedRowKeys,
+        onChange: onSelectChange,
+      }"
       class="j-table-force-nowrap"
       @change="handleTableChange"
     >
@@ -19,18 +22,29 @@
         <div v-html="text"></div>
       </template>
       <template slot="imgSlot" slot-scope="text">
-        <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+        <span v-if="!text" style="font-size: 12px; font-style: italic"
+          >无图片</span
+        >
         <img
           v-else
           :src="getImgView(text)"
           height="25px"
           alt=""
-          style="max-width:80px;font-size: 12px;font-style: italic;"
+          style="max-width: 80px; font-size: 12px; font-style: italic"
         />
       </template>
       <template slot="fileSlot" slot-scope="text">
-        <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-        <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
+        <span v-if="!text" style="font-size: 12px; font-style: italic"
+          >无文件</span
+        >
+        <a-button
+          v-else
+          :ghost="true"
+          type="primary"
+          icon="download"
+          size="small"
+          @click="downloadFile(text)"
+        >
           下载
         </a-button>
       </template>
@@ -70,49 +84,49 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '耗材名称',
           align: 'center',
-          dataIndex: 'materialName'
+          dataIndex: 'materialName',
         },
         {
           title: '耗材编码',
           align: 'center',
-          dataIndex: 'materialCode'
+          dataIndex: 'materialCode',
         },
         {
           title: '耗材类型',
           align: 'center',
-          dataIndex: 'materialType'
+          dataIndex: 'materialType',
         },
         {
           title: '耗材入库数量',
           align: 'center',
-          dataIndex: 'materialStockInTotal'
+          dataIndex: 'materialStockInTotal',
         },
         {
           title: '入库人',
           align: 'center',
-          dataIndex: 'stockInPerson'
+          dataIndex: 'stockInPerson',
         },
         {
           title: '入库时间',
           align: 'center',
-          dataIndex: 'stockInTime'
+          dataIndex: 'stockInTime',
         },
         {
           title: '审核人',
           align: 'center',
-          dataIndex: 'auditorPerson'
+          dataIndex: 'auditorPerson',
         },
         {
           title: '审核时间',
           align: 'center',
-          dataIndex: 'auditorTime'
+          dataIndex: 'auditorTime',
         },
         {
           title: '操作',
@@ -120,27 +134,27 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       url: {
         list: '/mission/materialManagement/list',
         delete: '/mission/materialManagement/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel'
-      }
+        importExcelUrl: 'mission/materialManagement/importExcel',
+      },
     }
   },
   computed: {
-    importExcelUrl: function() {
+    importExcelUrl: function () {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    }
+    },
   },
   methods: {
     handlePass(record) {},
-    handleBack(record) {}
-  }
+    handleBack(record) {},
+  },
 }
 </script>
 <style scoped>
