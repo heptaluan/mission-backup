@@ -10,11 +10,31 @@
     </a-steps>
     <div class="title">{{ getCurrentTitle() }}</div>
     <div class="content">
-      <step1 v-if="currentTab === 0" @nextStep="nextStep" @prevStep="prevStep" />
-      <step2 v-if="currentTab === 1" @nextStep="nextStep" @prevStep="prevStep" />
-      <step3 v-if="currentTab === 2" @nextStep="nextStep" @prevStep="prevStep" />
-      <step4 v-if="currentTab === 3" @nextStep="nextStep" @prevStep="prevStep" />
-      <step5 v-if="currentTab === 4" @nextStep="nextStep" @prevStep="prevStep" />
+      <step1
+        v-if="currentTab === 0"
+        @nextStep="nextStep"
+        @prevStep="prevStep"
+      />
+      <step2
+        v-if="currentTab === 1"
+        @nextStep="nextStep"
+        @prevStep="prevStep"
+      />
+      <step3
+        v-if="currentTab === 2"
+        @nextStep="nextStep"
+        @prevStep="prevStep"
+      />
+      <step4
+        v-if="currentTab === 3"
+        @nextStep="nextStep"
+        @prevStep="prevStep"
+      />
+      <step5
+        v-if="currentTab === 4"
+        @nextStep="nextStep"
+        @prevStep="prevStep"
+      />
       <step6 v-if="currentTab === 5" @finish="finish" />
     </div>
   </a-card>
@@ -56,17 +76,17 @@ export default {
         delete: '/mission/materialManagement/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel'
+        importExcelUrl: 'mission/materialManagement/importExcel',
       },
       dictOptions: {},
-      superFieldList: []
+      superFieldList: [],
     }
   },
   created() {},
   computed: {
-    importExcelUrl: function() {
+    importExcelUrl: function () {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    }
+    },
   },
   methods: {
     initDictConfig() {},
@@ -104,8 +124,8 @@ export default {
     },
     finish() {
       this.currentTab = 0
-    }
-  }
+    },
+  },
 }
 </script>
 
