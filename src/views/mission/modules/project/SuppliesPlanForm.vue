@@ -2,24 +2,24 @@
   <a-spin :spinning="confirmLoading">
     <j-form-container :disabled="formDisabled">
       <a-form-model ref="form" :model="model" :rules="validatorRules" slot="detail">
+        <!-- <a-col :span="24">
+          <a-form-model-item label="耗材编号" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialId">
+            <a-input v-model="model.materialId" placeholder="请输入耗材编号"></a-input>
+          </a-form-model-item>
+        </a-col> -->
         <a-col :span="24">
-          <a-form-model-item label="耗材编号" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialCode">
-            <a-input v-model="model.materialCode" placeholder="请输入耗材编号"></a-input>
+          <a-form-model-item label="耗材名称" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialId">
+            <j-dict-select-tag
+              type="list"
+              v-model="model.materialId"
+              dictCode="material_management,material_name,id"
+              placeholder="请选择耗材名称"
+            />
           </a-form-model-item>
         </a-col>
         <a-col :span="24">
-          <a-form-model-item label="耗材名称" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialName">
-            <a-input v-model="model.materialName" placeholder="请输入耗材名称"></a-input>
-          </a-form-model-item>
-        </a-col>
-        <a-col :span="24">
-          <a-form-model-item
-            label="耗材总需求量"
-            :labelCol="labelCol"
-            :wrapperCol="wrapperCol"
-            prop="materialTotalDemand"
-          >
-            <a-input v-model="model.materialModel" placeholder="请输入耗材总需求量"></a-input>
+          <a-form-model-item label="耗材总需求量" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="totalNo">
+            <a-input v-model="model.totalNo" placeholder="请输入耗材总需求量"></a-input>
           </a-form-model-item>
         </a-col>
       </a-form-model>
@@ -45,6 +45,7 @@ export default {
   data() {
     return {
       model: {},
+      materialList: [],
       labelCol: {
         xs: { span: 24 },
         sm: { span: 5 }
@@ -56,9 +57,9 @@ export default {
       confirmLoading: false,
       validatorRules: {},
       url: {
-        add: '/mission/materialManagement/add',
-        edit: '/mission/materialManagement/edit',
-        queryById: '/mission/materialManagement/queryById'
+        add: '/mission/projectMaterial/add',
+        edit: '/mission/projectMaterial/edit',
+        queryById: '/mission/projectMaterial/queryById'
       }
     }
   },
@@ -80,6 +81,9 @@ export default {
       this.visible = true
     },
     submitForm() {
+      const newModel = Object.assign({}, {
+        projectId: this.getParams('id')
+      }, this.model)
       const that = this
       // 触发表单验证
       this.$refs.form.validate(valid => {
@@ -87,14 +91,14 @@ export default {
           that.confirmLoading = true
           let httpurl = ''
           let method = ''
-          if (!this.model.id) {
+          if (!newModel.id) {
             httpurl += this.url.add
             method = 'post'
           } else {
             httpurl += this.url.edit
             method = 'put'
           }
-          httpAction(httpurl, this.model, method)
+          httpAction(httpurl, newModel, method)
             .then(res => {
               if (res.success) {
                 that.$message.success(res.message)
@@ -108,6 +112,17 @@ export default {
             })
         }
       })
+    },
+    getParams (key) {
+      const search = window.location.search.substring(1)
+      const vars = search.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=')
+        if (pair[0] === key) {
+          return pair[1]
+        }
+      }
+      return false
     }
   }
 }

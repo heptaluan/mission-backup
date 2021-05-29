@@ -11,10 +11,7 @@
       :dataSource="dataSource"
       :pagination="ipagination"
       :loading="loading"
-      :rowSelection="{
-        selectedRowKeys: selectedRowKeys,
-        onChange: onSelectChange,
-      }"
+      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       class="j-table-force-nowrap"
       @change="handleTableChange"
     >
@@ -22,43 +19,29 @@
         <div v-html="text"></div>
       </template>
       <template slot="imgSlot" slot-scope="text">
-        <span v-if="!text" style="font-size: 12px; font-style: italic"
-          >无图片</span
-        >
+        <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
         <img
           v-else
           :src="getImgView(text)"
           height="25px"
           alt=""
-          style="max-width: 80px; font-size: 12px; font-style: italic"
+          style="max-width:80px;font-size: 12px;font-style: italic;"
         />
       </template>
       <template slot="fileSlot" slot-scope="text">
-        <span v-if="!text" style="font-size: 12px; font-style: italic"
-          >无文件</span
-        >
-        <a-button
-          v-else
-          :ghost="true"
-          type="primary"
-          icon="download"
-          size="small"
-          @click="downloadFile(text)"
-        >
+        <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+        <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
           下载
         </a-button>
       </template>
 
       <span slot="action" slot-scope="text, record">
-        <div class="btn-group">
-          <a @click="handlePass(record)">通过</a>
-          <a @click="handleBack(record)">退回</a>
-        </div>
+        <a @click="handleShowDetail(record)">查看详情</a>
       </span>
     </a-table>
 
     <!-- 出库表单 -->
-    <StockOutTipsModal ref="stockOutTipsModal" />
+    <StockOutModal ref="stockOutModal" @ok="modalFormOk" />
   </a-card>
 </template>
 
@@ -67,13 +50,13 @@ import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
-import StockOutTipsModal from './materialManagement/StockOutTipsModal'
+import StockOutModal from './materialManagement/StockOutModal'
 
 export default {
   name: 'StockOut',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
-    StockOutTipsModal,
+    StockOutModal
   },
   data() {
     return {
@@ -91,49 +74,49 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function (t, r, index) {
+          customRender: function(t, r, index) {
             return parseInt(index) + 1
-          },
+          }
         },
         {
-          title: '耗材名称',
+          title: '项目名称',
           align: 'center',
-          dataIndex: 'materialName',
+          dataIndex: 'projectId_dictText'
         },
         {
-          title: '耗材编码',
+          title: '仓库',
           align: 'center',
-          dataIndex: 'materialCode',
+          dataIndex: 'warehouseId_dictText'
         },
         {
-          title: '耗材类型',
+          title: '合作机构',
           align: 'center',
-          dataIndex: 'materialType',
+          dataIndex: 'leaveTarget_dictText'
         },
         {
-          title: '耗材出库数量',
+          title: '创建人',
           align: 'center',
-          dataIndex: 'materialStockOutTotal',
+          dataIndex: 'createBy'
         },
         {
-          title: '出库人',
+          title: '创建时间',
           align: 'center',
-          dataIndex: 'stockOutPerson',
+          dataIndex: 'createTime'
         },
         {
-          title: '出库时间',
+          title: '病例数',
           align: 'center',
-          dataIndex: 'stockOutTime',
+          dataIndex: 'caseAmount'
         },
         {
-          title: '审核人',
+          title: '备注',
           align: 'center',
-          dataIndex: 'auditorPerson',
+          dataIndex: 'remark'
         },
         {
-          title: '审核时间',
+          title: '状态',
           align: 'center',
-          dataIndex: 'auditorTime',
+          dataIndex: 'status_dictText'
         },
         {
           title: '操作',
@@ -141,29 +124,29 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' },
-        },
+          scopedSlots: { customRender: 'action' }
+        }
       ],
       url: {
-        list: '/mission/materialManagement/list',
-        delete: '/mission/materialManagement/delete',
-        deleteBatch: '/mission/materialManagement/deleteBatch',
-        exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel',
-      },
+        list: '/mission/materialManagement/stock/leaveApply/list',
+        delete: '/mission/materialManagement/stock/leaveApply/delete',
+        deleteBatch: '/mission/materialManagement/stock/leaveApply/deleteBatch',
+        exportXlsUrl: '/mission/materialManagement/stock/leaveApply/exportXls',
+        importExcelUrl: 'mission/materialManagement/stock/leaveApply/importExcel'
+      }
     }
   },
   computed: {
-    importExcelUrl: function () {
+    importExcelUrl: function() {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    },
+    }
   },
   methods: {
-    handlePass(record) {
-      this.$refs.stockOutTipsModal.show()
-    },
-    handleBack(record) {},
-  },
+    handleShowDetail(record) {
+      this.$refs.stockOutModal.show(record)
+      this.$refs.stockOutModal.title = '查看详情'
+    }
+  }
 }
 </script>
 <style scoped>

@@ -1,97 +1,103 @@
 <template>
-  <j-modal
-    :title="title"
-    :width="width"
-    :visible="visible"
-    switchFullscreen
-    :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }"
-    cancelText="关闭"
-    @ok="handleOk"
-    @cancel="handleCancel"
-  >
-    <a-form-model
-      style="max-width: 1080px; margin: 40px auto 0;"
-      ref="ruleForm"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
-      :model="form"
-      :rules="rules"
+  <div>
+    <j-modal
+      :title="title"
+      :width="width"
+      :visible="visible"
+      switchFullscreen
+      :okButtonProps="{ class: { 'jee-hidden': dis } }"
+      cancelText="关闭"
+      @ok="handleOk"
+      @cancel="handleCancel"
     >
-      <a-form-model-item ref="code" label="批次号" prop="code">
-        <a-input
-          placeholder="请输入批次号"
-          v-model="form.code"
-          @blur="
-            () => {
-              $refs.code.onFieldBlur()
-            }
-          "
-        />
-      </a-form-model-item>
-
-      <a-form-model-item label="入库仓库" prop="type">
-        <a-select v-model="form.type" placeholder="请选择入库仓库">
-          <a-select-option value="shanghai">
-            入库仓库一
-          </a-select-option>
-          <a-select-option value="beijing">
-            入库仓库二
-          </a-select-option>
-        </a-select>
-      </a-form-model-item>
-
-      <!-- table区域-begin -->
-      <a-table
-        ref="table"
-        size="middle"
-        :scroll="{ x: true }"
-        bordered
-        rowKey="id"
-        :columns="columns"
-        :dataSource="dataSource"
-        :pagination="ipagination"
-        :loading="loading"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-        class="j-table-force-nowrap"
-        @change="handleTableChange"
+      <div class="form-state">
+        <a-tag v-if="state === 2" color="#108ee9">待审核</a-tag>
+        <a-tag v-if="state === 3" color="#87d068">已审核通过</a-tag>
+        <a-tag v-if="state === 4" color="#f50">已退回</a-tag>
+      </div>
+      <a-form-model
+        style="max-width: 1080px; margin: 20px auto 0;"
+        ref="ruleForm"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+        :model="form"
+        :rules="rules"
       >
-        <template slot="htmlSlot" slot-scope="text">
-          <div v-html="text"></div>
-        </template>
-        <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-          <img
-            v-else
-            :src="getImgView(text)"
-            height="25px"
-            alt=""
-            style="max-width:80px;font-size: 12px;font-style: italic;"
+        <a-form-model-item ref="code" label="批次号" prop="code">
+          <a-input
+            :disabled="dis"
+            placeholder="请输入批次号"
+            v-model="form.code"
+            @blur="
+              () => {
+                $refs.code.onFieldBlur()
+              }
+            "
           />
-        </template>
-        <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
-            下载
-          </a-button>
-        </template>
-      </a-table>
-    </a-form-model>
-  </j-modal>
+        </a-form-model-item>
+
+        <a-form-model-item label="入库仓库" prop="type">
+          <j-dict-select-tag
+            :disabled="dis"
+            type="list"
+            v-model="form.type"
+            dictCode="warehouse_manage, name, id"
+            placeholder="请选择入库仓库"
+          />
+        </a-form-model-item>
+        <div class="tool-bar" style="text-align: right">
+          <a-button class="add-btn" @click="handleAddMaterial" type="primary" icon="plus" v-if="!dis">新增</a-button>
+          <a-button class="add-btn" @click="handleCommitMaterial" type="primary" v-if="dis">提交审核</a-button>
+          <a-button class="add-btn" @click="handleRetractMaterial" type="primary" v-if="dis">撤回</a-button>
+        </div>
+
+        <!-- table区域-begin -->
+        <a-table
+          ref="table"
+          size="middle"
+          :scroll="{ x: true }"
+          bordered
+          rowKey="id"
+          :columns="columns"
+          :dataSource="dataSource"
+          :pagination="ipagination"
+          :loading="loading"
+          :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+          class="j-table-force-nowrap"
+          @change="handleTableChange"
+        >
+          <template slot="amount" slot-scope="text, record">
+            <editable-cell :disabled="dis" :text="text" @change="onCellChange(record.id, 'amount', $event)" />
+          </template>
+        </a-table>
+      </a-form-model>
+    </j-modal>
+
+    <MaterialFilterModal ref="materialFilterModal" @ok="submitCallback" />
+  </div>
 </template>
 
 <script>
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
+import MaterialFilterModal from './MaterialFilterModal'
+import EditableCell from './editCell'
+import { stockComeApply, queryByIdStockIn, approve } from 'src/api/mission/project'
 
 export default {
   name: 'StockInModal',
   mixins: [JeecgListMixin, mixinDevice],
+  components: {
+    MaterialFilterModal,
+    EditableCell
+  },
   data() {
     return {
-      title: '',
+      title: '入库单',
       width: 1280,
       visible: false,
       disableSubmit: false,
+      dis: false,
       labelCol: { span: 2 },
       wrapperCol: { span: 6 },
       form: {
@@ -127,35 +133,153 @@ export default {
         {
           title: '耗材数量',
           align: 'center',
-          dataIndex: 'materialTotal'
+          dataIndex: 'amount',
+          scopedSlots: { customRender: 'amount' }
         }
       ],
       url: {
-        list: '/mission/materialManagement/list',
-        delete: '/mission/materialManagement/delete',
-        deleteBatch: '/mission/materialManagement/deleteBatch',
-        exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel'
-      }
+        list: ''
+      },
+      list: [],
+      pId: undefined,
+      state: null
     }
   },
   methods: {
-    show() {
+    show(record) {
+      if (record && record.id) {
+        this.pId = record.id
+        this.loadData(record.id)
+        this.dis = true
+      } else {
+        this.dis = false
+      }
       this.visible = true
     },
-    close() {},
-    submitCallback() {
-      this.$emit('ok')
-      this.visible = false
+    submitCallback(selectRow) {
+      this.dataSource = []
+      if (!Array.isArray(selectRow)) return false
+      selectRow.forEach(row => {
+        row.amount = '0'
+        this.dataSource.push(row)
+      })
+      console.log(this.dataSource)
     },
     handleCancel() {
       console.log(`取消`)
       this.visible = false
     },
     handleOk() {
-      console.log(`确定`)
-      this.visible = false
+      this.submitSave()
+    },
+    submitSave() {
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          const postData = {
+            batchNo: this.form.code,
+            comeStocks: [],
+            warehouseId: this.form.type
+          }
+          this.dataSource.forEach(row => {
+            if (parseInt(row.amount) > 0) {
+              postData.comeStocks.push({
+                amount: parseInt(row.amount),
+                materialId: row.id
+              })
+            }
+          })
+          stockComeApply(postData)
+            .then(res => {
+              if (res.success) {
+                this.$message.success(res.message)
+                this.visible = false
+              }
+            })
+            .finally(() => {
+              // that.confirmLoading = false
+            })
+        }
+      })
+    },
+    handleAddMaterial() {
+      this.$refs.materialFilterModal.show()
+    },
+    handleCommitMaterial() {
+      const that = this
+      const query = {
+        applyId: this.pId,
+        applyType: 1,
+        status: 2
+      }
+      approve(query).then(res => {
+        if (res.success) {
+          that.$message.success(res.message)
+          that.$emit('ok')
+          that.visible = false
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    handleRetractMaterial() {
+      const that = this
+      const query = {
+        applyId: this.pId,
+        applyType: 1,
+        status: 1
+      }
+      approve(query).then(res => {
+        if (res.success) {
+          that.$message.success(res.message)
+          that.$emit('ok')
+          that.visible = false
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    handleSelectionRows(val) {
+      this.list = val
+    },
+    onCellChange(id, dataIndex, value) {
+      const dataSource = [...this.dataSource]
+      const target = dataSource.find(item => item.id === id)
+      if (target) {
+        target[dataIndex] = value
+        this.dataSource = dataSource
+      }
+    },
+    loadData(id) {
+      if (id) {
+        const that = this
+        const query = {
+          applyId: id,
+          applyType: 1
+        }
+        queryByIdStockIn(query).then(res => {
+          if (res.success) {
+            that.dataSource = res.result.applyDetail.records
+            that.form.code = res.result.batchNo
+            that.form.type = res.result.warehouseId
+            that.state = res.result.status
+          } else {
+            that.$message.warning(res.message)
+          }
+        })
+      }
     }
   }
 }
 </script>
+
+<style lang="less" scoped>
+.add-btn {
+  margin-bottom: 20px;
+  margin-right: 15px;
+}
+.form-state {
+  position: absolute;
+  top: 70px;
+  right: 35px;
+}
+</style>

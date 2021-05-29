@@ -49,6 +49,9 @@
 </template>
 
 <script>
+import { putProjectStep, queryById } from 'src/api/mission/project'
+import moment from 'moment'
+
 export default {
   name: 'Step3',
   data() {
@@ -82,7 +85,26 @@ export default {
       // })
     },
     save() {
-      console.log(`save`)
+      const that = this
+      const step = 'Schedule'
+      const postData = {
+        preEndDate: this.form.endTime,
+        startDate: this.form.startTime,
+        cycleTime: this.time,
+        id: this.projectId
+      }
+      putProjectStep(step, postData)
+        .then(res => {
+          if (res.success) {
+            that.$message.success(res.message)
+            that.$emit('ok')
+          } else {
+            that.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          that.confirmLoading = false
+        })
     },
     disabledStartDate(startValue) {
       const endValue = this.form.endTime
@@ -113,7 +135,36 @@ export default {
         const time = this.form.endTime.diff(this.form.startTime, 'day')
         this.time = (time === 0 ? 1 : time) + '天'
       }
+    },
+    loadData() {
+      const that = this
+      queryById({
+        id: this.projectId
+      }).then(res => {
+        if (res.success) {
+          this.form.startTime = moment(res.result.startDate)
+          this.form.endTime = moment(res.result.preEndDate)
+          this.time = res.result.cycleTime
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    getParams(key) {
+      const search = window.location.search.substring(1)
+      const vars = search.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=')
+        if (pair[0] === key) {
+          return pair[1]
+        }
+      }
+      return false
     }
+  },
+  mounted() {
+    this.projectId = this.getParams('id')
+    this.loadData()
   }
 }
 </script>

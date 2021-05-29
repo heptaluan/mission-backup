@@ -8,18 +8,11 @@
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
     >
-      <a-form-model-item label="文件类型" prop="type">
-        <a-select v-model="form.type" placeholder="请选择文件类型">
-          <a-select-option value="shanghai">
-            项目方案一
-          </a-select-option>
-          <a-select-option value="beijing">
-            项目方案二
-          </a-select-option>
-        </a-select>
+      <a-form-model-item label="文件类型" prop="type" v-if="false">
+<!--        <j-dict-select-tag type="list" v-model="form.type" dictCode="ownership_type" placeholder="请选择文件类型" />-->
       </a-form-model-item>
 
-      <a-upload-dragger name="file" :multiple="true" action="xx" @change="handleChange">
+      <a-upload-dragger name="file" :showUploadList="false" :customRequest="upload" :beforeUpload="beforeUpload">
         <p class="ant-upload-drag-icon">
           <a-icon type="inbox" />
         </p>
@@ -65,29 +58,15 @@
           </template>
           <!-- 编辑区域 -->
           <span slot="action" slot-scope="text, record">
-            <a @click="handleEdit(record)">编辑</a>
-
-            <a-divider type="vertical" />
-            <a-dropdown>
-              <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
-              <a-menu slot="overlay">
-                <a-menu-item>
-                  <a @click="handleDetail(record)">详情</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                    <a>删除</a>
-                  </a-popconfirm>
-                </a-menu-item>
-              </a-menu>
-            </a-dropdown>
+              <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                <a>删除</a>
+              </a-popconfirm>
           </span>
         </a-table>
       </div>
 
       <a-form-item :wrapperCol="{ span: 24 }">
         <div class="btn-group">
-          <a-button @click="save">保存</a-button>
           <a-button type="primary" class="prev-btn" @click="prevStep">上一步</a-button>
           <a-button type="primary" @click="nextStep">下一步</a-button>
         </div>
@@ -102,6 +81,7 @@
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
 import MaterialDataManagementModal from '../modules/project/MaterialDataManagementModal'
+import { uploadFile, queryFileList } from 'src/api/mission/project'
 
 export default {
   name: 'Step4',
@@ -139,12 +119,12 @@ export default {
         {
           title: '文件类型',
           align: 'center',
-          dataIndex: 'fileType'
+          dataIndex: 'ownershipType_dictText'
         },
         {
           title: '上传时间',
           align: 'center',
-          dataIndex: 'uploadTime'
+          dataIndex: 'createTime'
         },
         {
           title: '操作',
@@ -156,12 +136,14 @@ export default {
         }
       ],
       url: {
-        list: '/mission/materialManagement/list',
-        delete: '/mission/materialManagement/delete',
+        list: 'mission/fileInfo/list',
+        delete: '/mission/fileInfo/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
         importExcelUrl: 'mission/materialManagement/importExcel'
-      }
+      },
+      projectId: undefined,
+      fileList: undefined
     }
   },
   methods: {
@@ -177,6 +159,48 @@ export default {
         this.$message.error(`${info.file.name} file upload failed.`)
       }
     },
+    // handleRemove(file) {
+    //   const index = this.fileList.indexOf(file)
+    //   const newFileList = this.fileList.slice()
+    //   newFileList.splice(index, 1)
+    //   this.fileList = newFileList
+    // },
+    beforeUpload (file) {
+      this.fileList =  file
+      return true
+    },
+    upload () {
+      const { fileList } = this
+      console.log(fileList.name)
+      const formData = new FormData()
+      formData.append('file', fileList)
+
+      const info = {
+        ownershipType: '2',
+        ownerId: this.projectId,
+        fileName: fileList.name
+      }
+      formData.append('info', JSON.stringify(info))
+      uploadFile(formData).then(res => {
+        if (res.success) {
+          this.fileList = []
+          this.$message.success('文件上传成功！.')
+          this.loadFile()
+        }
+      }).catch(e => {
+        this.uploading = false
+      })
+    },
+    loadFile() {
+      const query = {
+        ownerId: this.projectId
+      }
+      queryFileList(query).then((res)=>{
+        if (res.success) {
+          this.dataSource = res.result.records
+        }
+      })
+    },
     prevStep() {
       this.$emit('prevStep')
     },
@@ -189,10 +213,11 @@ export default {
       //     return false
       //   }
       // })
-    },
-    save() {
-      console.log(`save`)
     }
+  },
+  mounted () {
+    this.projectId = this.getParams('id')
+    this.queryParam.ownerId = this.projectId
   }
 }
 </script>

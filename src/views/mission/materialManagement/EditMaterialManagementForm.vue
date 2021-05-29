@@ -3,29 +3,34 @@
     <j-form-container :disabled="formDisabled">
       <a-form-model ref="form" :model="model" :rules="validatorRules" slot="detail">
         <a-row>
-          <a-col :span="24">
-            <a-form-model-item label="文件存放位置" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="fileUrl">
-              <a-input v-model="model.fileUrl" placeholder="请输入文件存放位置"  ></a-input>
+           <a-col :span="24">
+            <a-form-model-item label="耗材名称" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialName">
+              <a-input v-model="model.materialName" placeholder="请输入耗材名称"  ></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item label="归属类型" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="ownershipType">
-              <j-dict-select-tag type="list" v-model="model.ownershipType" dictCode="	ownership_type" placeholder="请选择归属类型" disabled />
+            <a-form-model-item label="耗材编码" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialCode">
+              <a-input v-model="model.materialCode" placeholder="请输入耗材编码"  ></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item label="归属ID" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="ownerId">
-              <a-input v-model="model.ownerId" placeholder="请输入归属ID"  disabled></a-input>
+            <a-form-model-item label="耗材类型" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialType">
+              <a-input-number v-model="model.materialType" placeholder="请输入耗材类型" style="width: 100%" />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item label="原文件名称" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="fileName">
-              <a-input v-model="model.fileName" placeholder="请输入原文件名称" ></a-input>
+            <a-form-model-item label="耗材入库总计" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="factoryId">
+              <a-input v-model="model.remark" placeholder="请输入耗材入库总计"  ></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item label="文件后缀" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="fileSuffix">
-              <a-input v-model="model.fileSuffix" placeholder="请输入文件后缀" ></a-input>
+            <a-form-model-item label="耗材出库总计" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="factoryId">
+              <a-input v-model="model.remark" placeholder="请输入耗材出库总计"  ></a-input>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="剩余库存量" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="remark">
+              <a-input v-model="model.remark" placeholder="请输入剩余库存量"  ></a-input>
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -40,7 +45,7 @@
   import { validateDuplicateValue } from '@/utils/util'
 
   export default {
-    name: 'FileInfoForm',
+    name: 'EditMaterialManagementForm',
     components: {
     },
     props: {
@@ -48,11 +53,6 @@
       disabled: {
         type: Boolean,
         default: false,
-        required: false
-      },
-      fileType: {
-        type: String,
-        default: '1',
         required: false
       }
     },
@@ -72,11 +72,10 @@
         validatorRules: {
         },
         url: {
-          add: "/mission/fileInfo/add",
-          edit: "/mission/fileInfo/edit",
-          queryById: "/mission/fileInfo/queryById"
-        },
-        disableEdit: true
+          add: "/mission/materialManagement/add",
+          edit: "/mission/materialManagement/edit",
+          queryById: "/mission/materialManagement/queryById"
+        }
       }
     },
     computed: {
@@ -87,7 +86,6 @@
     created () {
        //备份model原始值
       this.modelDefault = JSON.parse(JSON.stringify(this.model));
-      this.modelDefault.ownershipType = this.fileType
     },
     methods: {
       add () {
@@ -115,7 +113,7 @@
             httpAction(httpurl,this.model,method).then((res)=>{
               if(res.success){
                 that.$message.success(res.message);
-                that.$emit('ok', res.result);
+                that.$emit('ok');
               }else{
                 that.$message.warning(res.message);
               }
@@ -123,7 +121,7 @@
               that.confirmLoading = false;
             })
           }
-
+         
         })
       },
     }

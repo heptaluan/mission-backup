@@ -30,6 +30,7 @@
 
 <script>
 import Editor from './Editor'
+import { queryById, putProjectStep } from 'src/api/mission/project'
 
 export default {
   name: 'Step5',
@@ -58,10 +59,56 @@ export default {
       //   }
       // })
     },
+    loadData() {
+      const that = this
+      queryById({
+        id: this.projectId
+      }).then(res => {
+        if (res.success) {
+          this.exclusionContent = res.result.excludeStandard ? res.result.excludeStandard : ''
+          this.inclusionContent = res.result.followingInclusionStandard ? res.result.followingInclusionStandard : ''
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    getParams(key) {
+      const search = window.location.search.substring(1)
+      const vars = search.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=')
+        if (pair[0] === key) {
+          return pair[1]
+        }
+      }
+      return false
+    },
     save() {
-      console.log(this.inclusionContent)
-      console.log(this.exclusionContent)
+      const that = this
+      const step = 'Standards'
+      const postData = {
+        id: this.projectId,
+        excludeStandard: this.exclusionContent,
+        followingInclusionStandard: this.inclusionContent
+      }
+      putProjectStep(step, postData)
+        .then(res => {
+          console.log(res)
+          if (res.success) {
+            that.$message.success(res.message)
+            that.$emit('ok')
+          } else {
+            that.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          that.confirmLoading = false
+        })
     }
+  },
+  mounted() {
+    this.projectId = this.getParams('id')
+    this.loadData()
   }
 }
 </script>

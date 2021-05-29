@@ -92,20 +92,30 @@ export default {
             return parseInt(index) + 1
           }
         },
-        {
-          title: '耗材编号',
-          align: 'center',
-          dataIndex: 'materialCode'
-        },
+        // {
+        //   title: '耗材编号',
+        //   align: 'center',
+        //   dataIndex: 'materialId'
+        // },
         {
           title: '耗材名称',
           align: 'center',
-          dataIndex: 'materialName'
+          dataIndex: 'materialId_dictText'
         },
         {
           title: '耗材总需求量',
           align: 'center',
-          dataIndex: 'materialTotalDemand'
+          dataIndex: 'totalNo'
+        },
+        {
+          title: '创建人',
+          align: 'center',
+          dataIndex: 'createBy'
+        },
+        {
+          title: '创建时间',
+          align: 'center',
+          dataIndex: 'createTime'
         },
         {
           title: '操作',
@@ -117,11 +127,11 @@ export default {
         }
       ],
       url: {
-        list: '/mission/materialManagement/list',
-        delete: '/mission/materialManagement/delete',
-        deleteBatch: '/mission/materialManagement/deleteBatch',
-        exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel'
+        list: '/mission/projectMaterial/list',
+        delete: '/mission/projectMaterial/delete',
+        deleteBatch: '/mission/projectMaterial/deleteBatch',
+        exportXlsUrl: '/mission/projectMaterial/exportXls',
+        importExcelUrl: 'mission/projectMaterial/importExcel'
       }
     }
   },

@@ -8,41 +8,30 @@
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
     >
-      <a-form-model-item ref="chinaName" label="样本总量/Total Samples" prop="total">
+      <a-form-model-item ref="noTotal" label="样本总量/Total Samples" prop="noTotal">
         <a-input
           placeholder="请输入样本总量"
-          v-model="form.chinaName"
+          v-model="form.noTotal"
           @blur="
             () => {
-              $refs.chinaName.onFieldBlur()
+              $refs.noTotal.onFieldBlur()
             }
           "
         />
       </a-form-model-item>
-      <a-form-model-item ref="englishName" label="周预计量/pcs of week" prop="pcs">
+      <a-form-model-item ref="noWeek" label="周预计量/pcs of week" prop="noWeek">
         <a-input
           placeholder="请输入周预计量"
-          v-model="form.englishName"
+          v-model="form.noWeek"
           @blur="
             () => {
-              $refs.englishName.onFieldBlur()
+              $refs.noWeek.onFieldBlur()
             }
           "
         />
       </a-form-model-item>
-      <a-form-model-item ref="code" label="入组样本类型/type of samples" prop="type">
-        <a-input
-          placeholder="请输入入组样本类型"
-          v-model="form.code"
-          @blur="
-            () => {
-              $refs.code.onFieldBlur()
-            }
-          "
-        />
-      </a-form-model-item>
-      <a-form-model-item label="说明/description" prop="desc">
-        <a-input placeholder="请输入项目说明" :rows="4" allowClear v-model="form.desc" type="textarea" />
+      <a-form-model-item label="说明/description" prop="remark">
+        <a-input placeholder="请输入项目说明" :rows="4" allowClear v-model="form.remark" type="textarea" />
       </a-form-model-item>
 
       <a-form-item :wrapperCol="{ span: 13, offset: 5 }">
@@ -57,6 +46,8 @@
 </template>
 
 <script>
+import { getProjectSample, addProjectSample } from 'src/api/mission/project'
+
 export default {
   name: 'Step6',
   data() {
@@ -64,16 +55,14 @@ export default {
       labelCol: { span: 8 },
       wrapperCol: { span: 10 },
       form: {
-        total: '',
-        pcs: '',
-        type: '',
-        desc: ''
+        noTotal: '',
+        noWeek: '',
+        remark: ''
       },
       rules: {
-        total: [{ required: true, message: '请输入样本总量', trigger: 'blur' }],
-        pcs: [{ required: true, message: '请输入周预计量', trigger: 'blur' }],
-        type: [{ required: true, message: '请输入入组样本类型', trigger: 'blur' }],
-        desc: [{ required: true, message: '请输入项目说明', trigger: 'blur' }]
+        noTotal: [{ required: true, message: '请输入样本总量', trigger: 'blur' }],
+        noWeek: [{ required: true, message: '请输入周预计量', trigger: 'blur' }],
+        remark: [{ required: true, message: '请输入项目说明', trigger: 'blur' }]
       }
     }
   },
@@ -91,9 +80,56 @@ export default {
       //   }
       // })
     },
+    loadData() {
+      const that = this
+      getProjectSample({
+        id: this.projectId
+      }).then(res => {
+        if (res.success) {
+          this.form.noTotal = res.result[0].noTotal
+          this.form.noWeek = res.result[0].noWeek
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    getParams(key) {
+      const search = window.location.search.substring(1)
+      const vars = search.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=')
+        if (pair[0] === key) {
+          return pair[1]
+        }
+      }
+      return false
+    },
     save() {
-      console.log(`save`)
+      const that = this
+      const postData = {
+        projectId: this.projectId,
+        noTotal: Number(this.form.noTotal),
+        noWeek: Number(this.form.noWeek),
+        remark: this.form.remark
+      }
+      addProjectSample(postData)
+        .then(res => {
+          console.log(res)
+          if (res.success) {
+            that.$message.success(res.message)
+            that.$emit('ok')
+          } else {
+            that.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          that.confirmLoading = false
+        })
     }
+  },
+  mounted() {
+    this.projectId = this.getParams('id')
+    this.loadData()
   }
 }
 </script>

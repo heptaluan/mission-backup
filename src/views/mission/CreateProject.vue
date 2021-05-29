@@ -7,35 +7,17 @@
       <a-step title="项目资料管理" />
       <a-step title="项目标准" />
       <a-step title="样本规划" />
+      <a-step title="耗材规划" />
     </a-steps>
     <div class="title">{{ getCurrentTitle() }}</div>
     <div class="content">
-      <step1
-        v-if="currentTab === 0"
-        @nextStep="nextStep"
-        @prevStep="prevStep"
-      />
-      <step2
-        v-if="currentTab === 1"
-        @nextStep="nextStep"
-        @prevStep="prevStep"
-      />
-      <step3
-        v-if="currentTab === 2"
-        @nextStep="nextStep"
-        @prevStep="prevStep"
-      />
-      <step4
-        v-if="currentTab === 3"
-        @nextStep="nextStep"
-        @prevStep="prevStep"
-      />
-      <step5
-        v-if="currentTab === 4"
-        @nextStep="nextStep"
-        @prevStep="prevStep"
-      />
-      <step6 v-if="currentTab === 5" @finish="finish" />
+      <step1 v-if="currentTab === 0" @nextStep="nextStep" @prevStep="prevStep" />
+      <step2 v-if="currentTab === 1" @nextStep="nextStep" @prevStep="prevStep" />
+      <step3 v-if="currentTab === 2" @nextStep="nextStep" @prevStep="prevStep" />
+      <step4 v-if="currentTab === 3" @nextStep="nextStep" @prevStep="prevStep" />
+      <step5 v-if="currentTab === 4" @nextStep="nextStep" @prevStep="prevStep" />
+      <step6 v-if="currentTab === 5" @nextStep="nextStep" @prevStep="prevStep" />
+      <step7 v-if="currentTab === 6" @finish="finish" />
     </div>
   </a-card>
 </template>
@@ -51,6 +33,7 @@ import Step3 from './step/Step3'
 import Step4 from './step/Step4'
 import Step5 from './step/Step5'
 import Step6 from './step/Step6'
+import Step7 from './step/Step7'
 
 export default {
   name: 'CreateProject',
@@ -62,6 +45,7 @@ export default {
     Step4,
     Step5,
     Step6,
+    Step7
   },
   data() {
     return {
@@ -76,17 +60,17 @@ export default {
         delete: '/mission/materialManagement/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel',
+        importExcelUrl: 'mission/materialManagement/importExcel'
       },
       dictOptions: {},
-      superFieldList: [],
+      superFieldList: []
     }
   },
   created() {},
   computed: {
-    importExcelUrl: function () {
+    importExcelUrl: function() {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    },
+    }
   },
   methods: {
     initDictConfig() {},
@@ -104,12 +88,16 @@ export default {
           return '项目标准/Project standard'
         case 5:
           return '样本规划/Project Sample Plan'
+        case 6:
+          return '耗材规划/Project supplies Plan'
         default:
           break
       }
     },
     onChange(current) {
-      console.log('onChange:', current)
+      // console.log('onChange:', current)
+      // const projectId = this.getParams('id')
+      // if (!projectId) current = 0
       this.currentTab = current
     },
     prevStep() {
@@ -124,8 +112,8 @@ export default {
     },
     finish() {
       this.currentTab = 0
-    },
-  },
+    }
+  }
 }
 </script>
 

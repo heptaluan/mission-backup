@@ -94,39 +94,34 @@ export default {
           }
         },
         {
-          title: '序号',
-          align: 'center',
-          dataIndex: 'materialCode'
-        },
-        {
           title: '名称',
           align: 'center',
-          dataIndex: 'materialName'
+          dataIndex: 'materialId_dictText'
         },
         {
           title: '样本类型',
           align: 'center',
-          dataIndex: 'materialType'
+          dataIndex: 'sampleId_dictText'
         },
         {
           title: '样本规格',
           align: 'center',
-          dataIndex: 'materialStandards'
+          dataIndex: 'spec'
         },
         {
           title: '自定义前缀',
           align: 'center',
-          dataIndex: 'materialPrefix'
+          dataIndex: 'suffix'
         },
         {
           title: '份数',
           align: 'center',
-          dataIndex: 'materialCopies'
+          dataIndex: 'pcs'
         },
         {
           title: '说明',
           align: 'center',
-          dataIndex: 'materialDesc'
+          dataIndex: 'remark'
         },
         {
           title: '操作',
@@ -138,11 +133,11 @@ export default {
         }
       ],
       url: {
-        list: '/mission/materialManagement/list',
-        delete: '/mission/materialManagement/delete',
-        deleteBatch: '/mission/materialManagement/deleteBatch',
-        exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel'
+        list: '/mission/projectMaterial/plan/list',
+        delete: '/mission/projectMaterial/plan/delete',
+        deleteBatch: '/mission/projectMaterial/plan/deleteBatch',
+        exportXlsUrl: '/mission/projectMaterial/plan/exportXls',
+        importExcelUrl: 'mission/projectMaterial/plan/importExcel'
       }
     }
   },

@@ -4,44 +4,49 @@
       <a-form-model ref="form" :model="model" :rules="validatorRules" slot="detail">
         <a-row>
           <a-row>
-            <a-col :span="24">
+            <!-- <a-col :span="24">
               <a-form-model-item label="序号" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialCode">
-                <a-input v-model="model.materialCode" placeholder="请输入序号"></a-input>
+                <a-input v-model="model.materialId" placeholder="请输入序号"></a-input>
               </a-form-model-item>
-            </a-col>
+            </a-col> -->
             <a-col :span="24">
-              <a-form-model-item label="名称" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialName">
-                <a-input v-model="model.materialName" placeholder="请输入名称"></a-input>
+              <a-form-model-item label="耗材名称" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialId">
+                <j-dict-select-tag
+                  type="list"
+                  v-model="model.materialId"
+                  dictCode="material_management,material_name,id"
+                  placeholder="请选择耗材名称"
+                />
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
               <a-form-model-item label="样本类型" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialType">
-                <a-input v-model="model.materialName" placeholder="请输入样本类型"></a-input>
+                <j-dict-select-tag
+                  type="list"
+                  v-model="model.sampleId"
+                  dictCode="sample_type"
+                  placeholder="请选择样本类型"
+                />
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
-              <a-form-model-item
-                label="样本规格"
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                prop="materialStandards"
-              >
-                <a-input v-model="model.materialName" placeholder="请输入样本规格"></a-input>
+              <a-form-model-item label="规格" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="spec">
+                <a-input v-model="model.spec" placeholder="请输入规格"></a-input>
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
-              <a-form-model-item label="自定义前缀" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialPrefix">
-                <a-input v-model="model.materialName" placeholder="请输入自定义前缀"></a-input>
+              <a-form-model-item label="自定义前缀" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="suffix">
+                <a-input v-model="model.suffix" placeholder="请输入自定义前缀"></a-input>
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
-              <a-form-model-item label="份数" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialCopies">
-                <a-input v-model="model.materialName" placeholder="请输入份数"></a-input>
+              <a-form-model-item label="份数" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="pcs">
+                <a-input v-model="model.pcs" placeholder="请输入份数"></a-input>
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
-              <a-form-model-item label="说明" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialDesc">
-                <a-input v-model="model.materialName" placeholder="请输入说明"></a-input>
+              <a-form-model-item label="说明" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="remark">
+                <a-input v-model="model.remark" placeholder="请输入说明"></a-input>
               </a-form-model-item>
             </a-col>
           </a-row>
@@ -80,9 +85,9 @@ export default {
       confirmLoading: false,
       validatorRules: {},
       url: {
-        add: '/mission/materialManagement/add',
-        edit: '/mission/materialManagement/edit',
-        queryById: '/mission/materialManagement/queryById'
+        add: '/mission/projectMaterial/plan//add',
+        edit: '/mission/projectMaterial/plan/edit',
+        queryById: '/mission/projectMaterial/plan/queryById'
       }
     }
   },
@@ -104,6 +109,9 @@ export default {
       this.visible = true
     },
     submitForm() {
+      const newModel = Object.assign({}, {
+        projectId: this.getParams('id')
+      }, this.model)
       const that = this
       // 触发表单验证
       this.$refs.form.validate(valid => {
@@ -111,14 +119,14 @@ export default {
           that.confirmLoading = true
           let httpurl = ''
           let method = ''
-          if (!this.model.id) {
+          if (!newModel.id) {
             httpurl += this.url.add
             method = 'post'
           } else {
             httpurl += this.url.edit
             method = 'put'
           }
-          httpAction(httpurl, this.model, method)
+          httpAction(httpurl, newModel, method)
             .then(res => {
               if (res.success) {
                 that.$message.success(res.message)
@@ -132,6 +140,17 @@ export default {
             })
         }
       })
+    },
+    getParams (key) {
+      const search = window.location.search.substring(1)
+      const vars = search.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=')
+        if (pair[0] === key) {
+          return pair[1]
+        }
+      }
+      return false
     }
   }
 }

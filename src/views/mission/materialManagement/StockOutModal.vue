@@ -4,13 +4,18 @@
     :width="width"
     :visible="visible"
     switchFullscreen
-    :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }"
+    :okButtonProps="{ class: { 'jee-hidden': dis } }"
     cancelText="关闭"
     @ok="handleOk"
     @cancel="handleCancel"
   >
+    <div class="form-state">
+      <a-tag v-if="state === 2" color="#108ee9">待审核</a-tag>
+      <a-tag v-if="state === 3" color="#87d068">已审核通过</a-tag>
+      <a-tag v-if="state === 4" color="#f50">已退回</a-tag>
+    </div>
     <a-form-model
-      style="max-width: 1080px; margin: 40px auto 0;"
+      style="max-width: 1080px; margin: 20px auto 0;"
       ref="ruleForm"
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
@@ -19,76 +24,48 @@
     >
 
       <a-form-model-item label="出库仓库" prop="warehouse">
-        <a-select v-model="form.type" placeholder="请选择出库仓库">
-          <a-select-option value="shanghai">
-            出库仓库一
-          </a-select-option>
-          <a-select-option value="beijing">
-            出库仓库二
-          </a-select-option>
-        </a-select>
+        <j-dict-select-tag
+          :disabled="dis"
+          type="list"
+          v-model="form.warehouse"
+          dictCode="warehouse_manage, name, id"
+          placeholder="请选择出库仓库"
+          change="onChange"
+        />
       </a-form-model-item>
-      <a-form-model-item label="出库类型" prop="type">
-        <a-select v-model="form.type" placeholder="请选择出库类型">
-          <a-select-option value="shanghai">
-            出库类型一
-          </a-select-option>
-          <a-select-option value="beijing">
-            出库类型二
-          </a-select-option>
-        </a-select>
+
+      <a-form-model-item label="项目" prop="project">
+        <j-dict-select-tag
+          :disabled="dis"
+          type="list"
+          v-model="form.project"
+          dictCode="project_info, project_name, id"
+          placeholder="请选择项目"
+          @input="handleChange"
+        />
       </a-form-model-item>
-      <a-form-model-item label="出库对象" prop="target">
-        <a-select v-model="form.type" placeholder="请选择出库对象">
-          <a-select-option value="shanghai">
-            出库对象一
-          </a-select-option>
-          <a-select-option value="beijing">
-            出库对象二
+
+      <a-form-model-item label="合作单位" prop="cooperator">
+        <a-select :disabled="dis" v-model="form.cooperator" placeholder="请选择合作单位">
+          <a-select-option v-for="item in cooperationList" :key="item.id" :value="item.id">
+            {{ item.caName }}
           </a-select-option>
         </a-select>
       </a-form-model-item>
 
-      <a-form-model-item label="备注" prop="desc">
-        <a-input placeholder="请输入备注" :rows="4" allowClear v-model="form.desc" type="textarea" />
+      <a-form-model-item label="病例数" prop="caseLoad">
+        <a-input :disabled="dis" placeholder="请输入病例数" :rows="4" allowClear v-model="form.caseLoad" />
       </a-form-model-item>
 
-      <!-- table区域-begin -->
-      <a-table
-        ref="table"
-        size="middle"
-        :scroll="{ x: true }"
-        bordered
-        rowKey="id"
-        :columns="columns"
-        :dataSource="dataSource"
-        :pagination="ipagination"
-        :loading="loading"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-        class="j-table-force-nowrap"
-        @change="handleTableChange"
-      >
-        <template slot="htmlSlot" slot-scope="text">
-          <div v-html="text"></div>
-        </template>
-        <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-          <img
-            v-else
-            :src="getImgView(text)"
-            height="25px"
-            alt=""
-            style="max-width:80px;font-size: 12px;font-style: italic;"
-          />
-        </template>
-        <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
-            下载
-          </a-button>
-        </template>
-      </a-table>
-      
+      <a-form-model-item label="备注" prop="remark">
+        <a-input :disabled="dis" placeholder="请输入备注" :rows="4" allowClear v-model="form.remark" />
+      </a-form-model-item>
+
+      <div class="tool-bar" style="text-align: right">
+        <a-button class="add-btn" @click="handleCommitMaterial" type="primary" v-if="dis">提交审核</a-button>
+        <a-button class="add-btn" @click="handleRetractMaterial" type="primary" v-if="dis">撤回</a-button>
+      </div>
+
     </a-form-model>
   </j-modal>
 </template>
@@ -96,23 +73,28 @@
 <script>
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
+import { queryProject, leaveApply, approve, queryByIdStockIn } from 'src/api/mission/project'
 
 export default {
   name: 'StockOutModal',
   mixins: [JeecgListMixin, mixinDevice],
   data() {
     return {
-      title: '',
-      width: 1280,
+      title: '出库单',
+      width: 800,
       visible: false,
       disableSubmit: false,
-      labelCol: { span: 2 },
-      wrapperCol: { span: 10 },
+      dis: false,
+      applyId: '',
+      labelCol: { span: 6 },
+      wrapperCol: { span: 12 },
+      cooperationList: [],
       form: {
         warehouse: undefined,
-        type: undefined,
-        target: undefined,
-        desc: ''
+        project: undefined,
+        cooperator: undefined,
+        caseLoad: '',
+        remark: ''
       },
       rules: {
         warehouse: [{ required: true, message: '请选择出库仓库', trigger: 'blur' }],
@@ -121,44 +103,27 @@ export default {
         desc: [{ required: true, message: '请输入备注', trigger: 'blur' }]
       },
       // 表头
-      columns: [
-        {
-          title: '#',
-          dataIndex: '',
-          key: 'rowIndex',
-          width: 60,
-          align: 'center',
-          customRender: function(t, r, index) {
-            return parseInt(index) + 1
-          }
-        },
-        {
-          title: '耗材序号',
-          align: 'center',
-          dataIndex: 'materialCode'
-        },
-        {
-          title: '耗材名称',
-          align: 'center',
-          dataIndex: 'materialName'
-        },
-        {
-          title: '耗材数量',
-          align: 'center',
-          dataIndex: 'materialTotal'
-        }
-      ],
+      columns: [],
       url: {
         list: '/mission/materialManagement/list',
         delete: '/mission/materialManagement/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
         importExcelUrl: 'mission/materialManagement/importExcel'
-      }
+      },
+      pId: undefined,
+      state: null
     }
   },
   methods: {
-    show() {
+    show(record) {
+      if (record && record.id) {
+        this.pId = record.id
+        this.loadData(record.id)
+        this.dis = true
+      } else {
+        this.dis = false
+      }
       this.visible = true
     },
     handleCancel() {
@@ -166,9 +131,113 @@ export default {
       this.visible = false
     },
     handleOk() {
-      console.log(`确定`)
-      this.visible = false
-    }
-  }
+      const that = this
+      const postData = {
+        caseAmount: this.form.caseLoad,
+        leaveTarget: this.form.cooperator,
+        projectId: this.form.project,
+        remark: this.form.remark,
+        targetType: 1,
+        warehouseId: this.form.warehouse
+      }
+      leaveApply(postData)
+        .then(res => {
+          console.log(res)
+          if (res.success) {
+            that.$message.success(res.message)
+            that.visible = false
+          } else {
+            that.$message.warning(res.message)
+          }
+        })
+        .finally(() => {
+          that.confirmLoading = false
+        })
+    },
+    loadCooperatorData(projectId) {
+      const that = this
+      queryProject({
+        projectId: projectId,
+        page: 1,
+        size: 20
+      }).then(res => {
+        if (res.success) {
+          that.cooperationList = res.result.records
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    handleChange(val) {
+      this.loadCooperatorData(val)
+    },
+    loadData(id) {
+      if (id) {
+        const that = this
+        const query = {
+          applyId: id,
+          applyType: 2
+        }
+        queryByIdStockIn(query).then(res => {
+          if (res.success) {
+            that.form.warehouse = res.result.batchNo
+            that.form.project = res.result.projectId
+            that.form.cooperator = res.result.leaveTarget
+            that.form.caseLoad = res.result.caseAmount
+            that.form.remark = res.result.remark
+
+          } else {
+            that.$message.warning(res.message)
+          }
+        })
+      }
+    },
+    handleCommitMaterial() {
+      const that = this
+      const query = {
+        applyId: this.pId,
+        applyType: 2,
+        status: 2
+      }
+      approve(query).then(res => {
+        if (res.success) {
+          that.$message.success(res.message)
+          that.$emit('ok')
+          that.visible = false
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    handleRetractMaterial() {
+      const that = this
+      const query = {
+        applyId: this.pId,
+        applyType: 2,
+        status: 1
+      }
+      approve(query).then(res => {
+        if (res.success) {
+          that.$message.success(res.message)
+          that.$emit('ok')
+          that.visible = false
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+  },
 }
 </script>
+<style lang="less" scoped>
+.form-state {
+  position: absolute;
+  top: 70px;
+  right: 35px;
+}
+
+.add-btn {
+  margin-bottom: 20px;
+  margin-right: 15px;
+}
+</style>

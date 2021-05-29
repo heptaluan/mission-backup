@@ -160,7 +160,6 @@
         })
       },
       modalFormOk (ruslt) {
-        console.log(ruslt)
         this.getOwnershipType()
         // this.model.ownershipType = result.id
       }

@@ -8,22 +8,23 @@
     :okButtonProps="{ class:{'jee-hidden': disableSubmit} }"
     @cancel="handleCancel"
     cancelText="关闭">
-    <project-info-form ref="realForm" @ok="submitCallback" :disabled="disableSubmit"></project-info-form>
+    <EditMaterialManagementForm ref="realForm" @ok="submitCallback" :disabled="disableSubmit" />
   </j-modal>
 </template>
 
 <script>
 
-  import ProjectInfoForm from './ProjectInfoForm'
+  import EditMaterialManagementForm from './EditMaterialManagementForm'
+
   export default {
-    name: 'ProjectInfoModal',
+    name: 'EditMaterialManagementModal',
     components: {
-      ProjectInfoForm
+      EditMaterialManagementForm
     },
     data () {
       return {
         title:'',
-        width: 800,
+        width:800,
         visible: false,
         disableSubmit: false
       }
