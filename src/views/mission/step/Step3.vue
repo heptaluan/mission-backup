@@ -14,7 +14,7 @@
           v-model="form.startTime"
           :disabled-date="disabledStartDate"
           show-time
-          format="YYYY-MM-DD HH:mm:ss"
+          format="YYYY-MM-DD"
           placeholder="开始时间"
           @openChange="handleStartOpenChange"
           valueFormat
@@ -26,7 +26,7 @@
           v-model="form.endTime"
           :disabled-date="disabledEndDate"
           show-time
-          format="YYYY-MM-DD HH:mm:ss"
+          format="YYYY-MM-DD"
           placeholder="结束时间"
           :open="endOpen"
           @openChange="handleEndOpenChange"
@@ -142,8 +142,12 @@ export default {
         id: this.projectId
       }).then(res => {
         if (res.success) {
-          this.form.startTime = moment(res.result.startDate)
-          this.form.endTime = moment(res.result.preEndDate)
+          if (res.result.startDate) {
+            this.form.startTime = moment(res.result.startDate)
+          }
+          if (res.result.preEndDate) {
+            this.form.endTime = moment(res.result.preEndDate)
+          }
           this.time = res.result.cycleTime
         } else {
           that.$message.warning(res.message)

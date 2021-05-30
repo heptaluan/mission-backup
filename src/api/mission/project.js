@@ -17,6 +17,8 @@ const api = {
   importExcelUrl: prefix + '/importExcelUrl'
 }
 
+// 分组
+
 export const queryOwnershipType = (params) => getAction('/mission/fileInfo/list', params)
 export const queryGroup = (params) => getAction('/mission/projectGroup/list', params)
 export const queryChargePeople = (params) => getAction('/mission/contactManage/list', params)
@@ -31,6 +33,9 @@ export const putProjectStep = (step, params) => putAction(`/mission/projectInfo/
 
 // 项目标准
 export const queryById = (params) => getAction('/mission/projectInfo/queryById', params)
+
+// 项目列表
+export const querypProjectInfo = (params) => getAction('/mission/projectInfo/list', params)
 
 // 样本规划
 export const getProjectSample = (params) => getAction('/mission/projectSample/project', params)
@@ -50,5 +55,9 @@ export const stockComeApply = (params) => postAction('/mission/materialManagemen
 
 // 耗材出入库-出入库申请表审批
 export const approve = (params) => postAction('/mission/materialManagement/stock/apply/approve', params)
+
+// 耗材列表
+export const getProjectMaterialList = (params) => getAction('/mission/projectMaterial/list', params)
+export const getProjectMaterialPlanList = (params) => getAction('/mission/projectMaterial/plan/list', params)
 
 export default api

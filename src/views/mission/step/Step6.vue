@@ -86,8 +86,12 @@ export default {
         id: this.projectId
       }).then(res => {
         if (res.success) {
-          this.form.noTotal = res.result[0].noTotal
-          this.form.noWeek = res.result[0].noWeek
+          if (res.result[0]) {
+            this.id = res.result[0].id
+            this.form.noTotal = res.result[0].noTotal ? res.result[0].noTotal : ''
+            this.form.noWeek = res.result[0].noWeek ? res.result[0].noWeek : ''
+            this.form.remark = res.result[0].remark ? res.result[0].remark : ''
+          }
         } else {
           that.$message.warning(res.message)
         }
@@ -106,11 +110,22 @@ export default {
     },
     save() {
       const that = this
-      const postData = {
-        projectId: this.projectId,
-        noTotal: Number(this.form.noTotal),
-        noWeek: Number(this.form.noWeek),
-        remark: this.form.remark
+      let postData
+      if (this.id) {
+        postData = {
+          id: this.id,
+          projectId: this.projectId,
+          noTotal: Number(this.form.noTotal),
+          noWeek: Number(this.form.noWeek),
+          remark: this.form.remark
+        }
+      } else {
+        postData = {
+          projectId: this.projectId,
+          noTotal: Number(this.form.noTotal),
+          noWeek: Number(this.form.noWeek),
+          remark: this.form.remark
+        }
       }
       addProjectSample(postData)
         .then(res => {

@@ -8,7 +8,7 @@
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
     >
-      <a-form-model-item ref="chinaName" label="项目名称（中文）" prop="projectName">
+      <a-form-model-item ref="projectName" label="项目名称（中文）" prop="projectName">
         <a-input
           placeholder="请输入项目名称（中文）"
           v-model="form.projectName"
@@ -30,7 +30,7 @@
           "
         />
       </a-form-model-item>
-      <a-form-model-item ref="code" label="项目编码/Project Code" prop="projectCode">
+      <a-form-model-item ref="projectCode" label="项目编码/Project Code" prop="projectCode">
         <a-input
           placeholder="请输入项目编码"
           v-model="form.projectCode"
@@ -92,7 +92,7 @@ import api from 'src/api/mission/project'
 import { httpAction, getAction } from '@/api/manage'
 import ProjectGroupModal from 'src/views/mission/modules/ProjectGroupModal'
 import ContactManageModal from 'src/views/mission/modules/ContactManageModal'
-import { queryGroup, queryChargePeople } from 'src/api/mission/project'
+import { queryGroup, queryChargePeople, querypProjectInfo } from 'src/api/mission/project'
 
 export default {
   name: 'Step1',
@@ -108,8 +108,8 @@ export default {
         projectDesign: undefined,
         projectStage: undefined,
         projectGroupId: undefined,
-        leader: undefined,
-        projectGoal: ''
+        chargePeopleId: undefined,
+        projectGoal: '',
       },
       rules: {
         projectName: [{ required: true, message: '请输入项目名称（中文）', trigger: 'blur' }],
@@ -119,7 +119,7 @@ export default {
         projectDesign: [{ required: true, message: '请选择项目设计', trigger: 'change' }],
         projectStage: [{ required: true, message: '请选择项目研究所处阶段', trigger: 'change' }],
         projectGroupId: [{ required: true, message: '请选择项目组', trigger: 'change' }],
-        leader: [{ required: true, message: '请选择项目内部负责人', trigger: 'change' }],
+        chargePeopleId: [{ required: true, message: '请选择项目内部负责人', trigger: 'change' }],
         projectGoal: [{ required: true, message: '请输入项目目的', trigger: 'blur' }]
       },
       isSave: false,
@@ -139,6 +139,7 @@ export default {
     nextStep() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
+          this.save()
           this.$emit('nextStep')
         } else {
           return false
@@ -148,23 +149,27 @@ export default {
     save() {
       const that = this
       // 触发表单验证
+      const id = this.getParams('id')
+      let newForm
+      if (id) {
+        newForm = Object.assign({}, {
+          id: id
+        }, this.form)
+      } else {
+        newForm = Object.assign({}, this.form)
+      }
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           that.confirmLoading = true
           let httpurl = ''
           let method = ''
-          if (!this.form.id) {
-            httpurl += this.url.add
-            method = 'post'
-          } else {
-            httpurl += this.url.edit
-            method = 'put'
-          }
-          httpAction(httpurl, this.form, method).then((res) => {
+          httpurl += this.url.add
+          method = 'post'
+          httpAction(httpurl, newForm, method).then((res) => {
             if (res.success) {
               that.$message.success(res.message)
               that.$emit('ok')
-              const projectId = res.result.projectId
+              const projectId = res.result.id
               window.history.replaceState({}, window.document.title, '?id=' + projectId)
               this.isSave = true
             } else {
@@ -212,12 +217,46 @@ export default {
           that.$message.warning(res.message)
         }
       })
+    },
+    getParams(key) {
+      const search = window.location.search.substring(1)
+      const vars = search.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=')
+        if (pair[0] === key) {
+          return pair[1]
+        }
+      }
+      return false
+    },
+    loadProjectList() {
+      const id = this.getParams('id')
+      if (!id) return
+      const that = this
+      querypProjectInfo({
+        id: id
+      }).then(res => {
+        if (res.success) {
+          this.form.projectName = res.result.records[0].projectName
+          this.form.projectEnName = res.result.records[0].projectEnName
+          this.form.projectCode = res.result.records[0].projectCode
+          this.form.physicalProperty = res.result.records[0].physicalProperty
+          this.form.projectDesign = res.result.records[0].projectDesign
+          this.form.projectStage = res.result.records[0].projectStage
+          this.form.projectGroupId = res.result.records[0].projectGroupId
+          this.form.chargePeopleId = res.result.records[0].chargePeopleId
+          this.form.projectGoal = res.result.records[0].projectGoal
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
     }
   },
   mounted () {
     //备份model原始值
     this.loadGroupData()
     this.loadChargePeople()
+    this.loadProjectList()
   }
 }
 </script>

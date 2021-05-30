@@ -9,7 +9,7 @@
       :wrapper-col="wrapperCol"
     >
       <a-form-model-item label="文件类型" prop="type" v-if="false">
-<!--        <j-dict-select-tag type="list" v-model="form.type" dictCode="ownership_type" placeholder="请选择文件类型" />-->
+        <!--        <j-dict-select-tag type="list" v-model="form.type" dictCode="ownership_type" placeholder="请选择文件类型" />-->
       </a-form-model-item>
 
       <a-upload-dragger name="file" :showUploadList="false" :customRequest="upload" :beforeUpload="beforeUpload">
@@ -30,7 +30,7 @@
           bordered
           rowKey="id"
           :columns="columns"
-          :dataSource="dataSource"
+          :dataSource="list"
           :pagination="ipagination"
           :loading="loading"
           :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
@@ -58,9 +58,9 @@
           </template>
           <!-- 编辑区域 -->
           <span slot="action" slot-scope="text, record">
-              <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                <a>删除</a>
-              </a-popconfirm>
+            <a-popconfirm title="确定删除吗?" @confirm="() => handleDeleteFile(record.id)">
+              <a>删除</a>
+            </a-popconfirm>
           </span>
         </a-table>
       </div>
@@ -82,6 +82,7 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
 import MaterialDataManagementModal from '../modules/project/MaterialDataManagementModal'
 import { uploadFile, queryFileList } from 'src/api/mission/project'
+import { deleteAction } from '@/api/manage'
 
 export default {
   name: 'Step4',
@@ -93,6 +94,7 @@ export default {
     return {
       labelCol: { span: 2 },
       wrapperCol: { span: 6 },
+      list: [],
       form: {
         type: undefined
       },
@@ -159,17 +161,24 @@ export default {
         this.$message.error(`${info.file.name} file upload failed.`)
       }
     },
-    // handleRemove(file) {
-    //   const index = this.fileList.indexOf(file)
-    //   const newFileList = this.fileList.slice()
-    //   newFileList.splice(index, 1)
-    //   this.fileList = newFileList
-    // },
-    beforeUpload (file) {
-      this.fileList =  file
+    handleDeleteFile(id) {
+      const that = this
+      deleteAction(that.url.delete, { id: id }).then(res => {
+        if (res.success) {
+          //重新计算分页问题
+          that.reCalculatePage(1)
+          that.$message.success(res.message)
+          that.loadFileList()
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    beforeUpload(file) {
+      this.fileList = file
       return true
     },
-    upload () {
+    upload() {
       const { fileList } = this
       console.log(fileList.name)
       const formData = new FormData()
@@ -181,23 +190,28 @@ export default {
         fileName: fileList.name
       }
       formData.append('info', JSON.stringify(info))
-      uploadFile(formData).then(res => {
-        if (res.success) {
-          this.fileList = []
-          this.$message.success('文件上传成功！.')
-          this.loadFile()
-        }
-      }).catch(e => {
-        this.uploading = false
-      })
+      uploadFile(formData)
+        .then(res => {
+          if (res.success) {
+            this.fileList = []
+            this.$message.success('文件上传成功！.')
+            this.loadFileList()
+          }
+        })
+        .catch(e => {
+          this.uploading = false
+        })
     },
-    loadFile() {
-      const query = {
-        ownerId: this.projectId
+    loadFileList() {
+      const params = {
+        ownerId: this.projectId,
+        ownershipType: 2,
+        page: 1,
+        size: 20
       }
-      queryFileList(query).then((res)=>{
+      queryFileList(params).then(res => {
         if (res.success) {
-          this.dataSource = res.result.records
+          this.list = res.result.records
         }
       })
     },
@@ -215,9 +229,10 @@ export default {
       // })
     }
   },
-  mounted () {
+  mounted() {
     this.projectId = this.getParams('id')
     this.queryParam.ownerId = this.projectId
+    this.loadFileList()
   }
 }
 </script>

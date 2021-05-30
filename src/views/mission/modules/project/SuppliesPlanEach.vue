@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 操作按钮区域 -->
-    <div class="table-operator">
+    <div class="table-operator" style="margin-top: 20px;">
       <a-button @click="handleAdd" type="primary" icon="plus">添加每人份耗材</a-button>
     </div>
 
@@ -70,6 +70,7 @@
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
 import SuppliesPlanEachModal from './SuppliesPlanEachModal'
+import { getProjectMaterialList, getProjectMaterialPlanList } from 'src/api/mission/project'
 
 export default {
   name: 'SuppliesPlanEachForm',
@@ -141,7 +142,31 @@ export default {
       }
     }
   },
-  methods: {}
+  methods: {
+    getParams(key) {
+      const search = window.location.search.substring(1)
+      const vars = search.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=')
+        if (pair[0] === key) {
+          return pair[1]
+        }
+      }
+      return false
+    },
+    loadData() {
+      const params = {
+        projectId: this.getParams('id'),
+        page: 1,
+        size: 20
+      }
+      getProjectMaterialPlanList(params).then(res => {
+        if (res.success) {
+          this.dataSource = res.result.records
+        }
+      })
+    },
+  }
 }
 </script>
 

@@ -95,9 +95,8 @@ export default {
       }
     },
     onChange(current) {
-      // console.log('onChange:', current)
-      // const projectId = this.getParams('id')
-      // if (!projectId) current = 0
+      const projectId = this.getParams('id')
+      if (!projectId) current = 0
       this.currentTab = current
     },
     prevStep() {
@@ -112,6 +111,22 @@ export default {
     },
     finish() {
       this.currentTab = 0
+    },
+    getParams(key) {
+      const search = window.location.search.substring(1)
+      const vars = search.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=')
+        if (pair[0] === key) {
+          return pair[1]
+        }
+      }
+      return false
+    }
+  },
+  mounted() {
+    if (this.getParams('step')) {
+      this.currentTab = Number(this.getParams('step')) || 0
     }
   }
 }

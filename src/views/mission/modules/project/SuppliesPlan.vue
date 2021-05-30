@@ -69,6 +69,7 @@
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
 import SuppliesPlanModal from './SuppliesPlanModal'
+import { getProjectMaterialList, getProjectMaterialPlanList } from 'src/api/mission/project'
 
 export default {
   name: 'SuppliesPlanForm',
@@ -135,7 +136,31 @@ export default {
       }
     }
   },
-  methods: {}
+  methods: {
+    getParams(key) {
+      const search = window.location.search.substring(1)
+      const vars = search.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=')
+        if (pair[0] === key) {
+          return pair[1]
+        }
+      }
+      return false
+    },
+    loadData() {
+      const params = {
+        projectId: this.getParams('id'),
+        page: 1,
+        size: 20
+      }
+      getProjectMaterialList(params).then(res => {
+        if (res.success) {
+          this.dataSource = res.result.records
+        }
+      })
+    },
+  }
 }
 </script>
 
