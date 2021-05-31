@@ -194,7 +194,7 @@ export default {
         .then(res => {
           if (res.success) {
             this.fileList = []
-            this.$message.success('文件上传成功！.')
+            this.$message.success('文件上传成功！')
             this.loadFileList()
           }
         })

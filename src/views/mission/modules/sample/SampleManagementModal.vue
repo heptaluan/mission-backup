@@ -9,21 +9,21 @@
     @cancel="handleCancel"
     cancelText="关闭"
   >
-    <SampleStockInForm ref="realForm" @ok="submitCallback" :disabled="disableSubmit" />
+    <SampleManagementForm ref="realForm" @ok="submitCallback" :disabled="disableSubmit" />
   </j-modal>
 </template>
 
 <script>
-import SampleStockInForm from './SampleStockInForm'
+import SampleManagementForm from './SampleManagementForm'
 
 export default {
-  name: 'SampleStockInModal',
+  name: 'SampleManagementModal',
   components: {
-    SampleStockInForm
+    SampleManagementForm
   },
   data() {
     return {
-      title: '发起样本入库',
+      title: '样本批量入库',
       width: 800,
       visible: false,
       disableSubmit: false

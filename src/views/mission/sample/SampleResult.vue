@@ -1,32 +1,90 @@
 <template>
   <a-card :bordered="false">
     <a-form-model
-      style="margin-bottom: 40px;"
+      style="max-width: 1080px; margin: 20px auto 0;"
       ref="ruleForm"
+      :model="form"
+      :rules="rules"
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
     >
+      <a-form-model-item ref="code" label="批次号" prop="code">
+        <a-input
+          placeholder="请输入批次号"
+          v-model="form.code"
+          @blur="
+            () => {
+              $refs.code.onFieldBlur()
+            }
+          "
+        />
+      </a-form-model-item>
+
+      <a-form-model-item ref="total" label="总数" prop="total">
+        <a-input
+          placeholder="请输入总数"
+          v-model="form.total"
+          @blur="
+            () => {
+              $refs.total.onFieldBlur()
+            }
+          "
+        />
+      </a-form-model-item>
+
+      <a-form-model-item ref="qualifiedNum" label="合格数" prop="qualifiedNum">
+        <a-input
+          placeholder="请输入合格数"
+          v-model="form.qualifiedNum"
+          @blur="
+            () => {
+              $refs.qualifiedNum.onFieldBlur()
+            }
+          "
+        />
+      </a-form-model-item>
+
+      <a-form-model-item ref="unqualifiedNum" label="不合格数" prop="unqualifiedNum">
+        <a-input
+          placeholder="请输入不合格数"
+          v-model="form.unqualifiedNum"
+          @blur="
+            () => {
+              $refs.unqualifiedNum.onFieldBlur()
+            }
+          "
+        />
+      </a-form-model-item>
+
+      <a-form-model-item label="结果反馈对象" prop="feedback">
+        <a-select v-model="form.feedback" placeholder="请选择结果反馈对象">
+          <a-select-option value="shanghai">
+            类型一
+          </a-select-option>
+          <a-select-option value="beijing">
+            类型二
+          </a-select-option>
+        </a-select>
+      </a-form-model-item>
+
+      <a-form-model-item label="质控报告内容" :labelCol="{ span: 3 }" :wrapperCol="{ span: 20 }"> </a-form-model-item>
+
+      <div class="edit-box">
+        <Editor :content.sync="content" />
+      </div>
+
       <div class="search-group">
-        <div class="group">
-          <div class="title">批次号</div>
-          <a-select style="width: 300px" placeholder="请选择批次号">
-            <a-select-option value="shanghai">
-              批次号一
-            </a-select-option>
-            <a-select-option value="beijing">
-              批次号二
-            </a-select-option>
-          </a-select>
-        </div>
-        <a-button @click="search()" type="primary">搜索</a-button>
+        <a-select style="width: 230px" placeholder="请选择条目进行筛选">
+          <a-select-option value="shanghai">
+            已检测
+          </a-select-option>
+          <a-select-option value="beijing">
+            未检测
+          </a-select-option>
+        </a-select>
+        <a-button @click="handleSearch" type="primary">筛选</a-button>
       </div>
 
-      <!-- 操作按钮区域 -->
-      <div class="table-operator">
-        <a-button @click="handleAdd" type="primary" icon="plus">填写批次质控结果</a-button>
-      </div>
-
-      <!-- table区域-begin -->
       <a-table
         ref="table"
         size="middle"
@@ -61,50 +119,56 @@
           </a-button>
         </template>
 
-        <span slot="action" slot-scope="text, record">
-          <a @click="handleEdit(record)">编辑</a>
+        <template slot="radio" slot-scope="text, record">
+          <a-radio-group v-model="record.value" @change="onRadioChange(record.id, 'amount', $event)">
+            <a-radio :value="1">
+              已检测
+            </a-radio>
+            <a-radio :value="2">
+              未检测
+            </a-radio>
+          </a-radio-group>
+        </template>
 
-          <a-divider type="vertical" />
-          <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <a @click="handleDetail(record)">详情</a>
-              </a-menu-item>
-              <a-menu-item>
-                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
-                  <a>删除</a>
-                </a-popconfirm>
-              </a-menu-item>
-            </a-menu>
-          </a-dropdown>
+        <span slot="action">
+          
         </span>
       </a-table>
     </a-form-model>
-
-    <SampleResultModal ref="modalForm" @ok="modalFormOk" />
   </a-card>
 </template>
 
 <script>
-import '@/assets/less/TableExpand.less'
+import Editor from '../step/Editor'
+import api from 'src/api/mission/sampleInfo'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import SampleResultModal from '../modules/sample/SampleResultModal'
-import api from 'src/api/mission/sample'
 
 export default {
   name: 'SampleResult',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
-    SampleResultModal
+    Editor
   },
   data() {
     return {
-      title: '',
-      labelCol: { span: 2 },
-      wrapperCol: { span: 10 },
-      // 表头
+      labelCol: { span: 3 },
+      wrapperCol: { span: 17 },
+      content: '',
+      form: {
+        code: '5468',
+        total: '100',
+        qualifiedNum: '80',
+        unqualifiedNum: '20',
+        feedback: undefined
+      },
+      rules: {
+        code: [{ required: true, message: '请输入批次号', trigger: 'blur' }],
+        total: [{ required: true, message: '请输入总数', trigger: 'blur' }],
+        qualifiedNum: [{ required: true, message: '请输入合格数', trigger: 'blur' }],
+        unqualifiedNum: [{ required: true, message: '请输入不合格数', trigger: 'blur' }],
+        feedback: [{ required: true, message: '请选择结果反馈对象', trigger: 'change' }]
+      },
       columns: [
         {
           title: '#',
@@ -119,91 +183,74 @@ export default {
         {
           title: '批次号',
           align: 'center',
-          dataIndex: 'index'
+          dataIndex: 'code'
         },
         {
-          title: '质控报告',
+          title: '样本编号',
           align: 'center',
-          dataIndex: 'report'
+          dataIndex: 'sampleCode'
         },
         {
-          title: '总数',
+          title: '样本类型',
           align: 'center',
-          dataIndex: 'total'
+          dataIndex: 'type'
         },
         {
-          title: '合格数',
+          title: '质控责任人',
           align: 'center',
-          dataIndex: 'qualifiedNum'
+          dataIndex: 'person'
         },
         {
-          title: '不合格数',
+          title: '质控时间',
           align: 'center',
-          dataIndex: 'unqualifiedNum'
+          dataIndex: 'time'
         },
         {
-          title: '是否已短信通知',
+          title: '质控指导手册',
+          align: 'center',
+          dataIndex: 'manual'
+        },
+        {
+          title: '质控报告时间',
+          align: 'center',
+          dataIndex: 'time1'
+        },
+        {
+          title: '是否合格',
           align: 'center',
           dataIndex: 'state'
         },
         {
           title: '操作',
-          dataIndex: 'action',
           align: 'center',
-          fixed: 'right',
-          width: 147,
-          scopedSlots: { customRender: 'action' }
+          dataIndex: 'radio',
+          scopedSlots: { customRender: 'radio' }
         }
       ],
       url: {
-        list: api.list,
+        list: '/mission/materialManagement/list',
         delete: api.delete,
         deleteBatch: api.deleteBatch,
         exportXlsUrl: api.exportXlsUrl,
         importExcelUrl: api.importExcelUrl
-      },
-      dictOptions: {},
-      superFieldList: []
-    }
-  },
-  created() {
-    this.getSuperFieldList()
-  },
-  computed: {
-    importExcelUrl: function() {
-      return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
+      }
     }
   },
   methods: {
-    initDictConfig() {},
-    search() {},
-    getSuperFieldList() {
-      let fieldList = []
-      fieldList.push({ type: 'string', value: 'code', text: '编号', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'hoName', text: '医院名称', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'hoId', text: '医院ID', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'codeQuality', text: '性质', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'typesCancer', text: '癌种', dictCode: '' })
-      this.superFieldList = fieldList
+    handleSearch() {},
+    onRadioChange(id, dataIndex, value) {
+
     }
   }
 }
 </script>
-<style scoped lang="less">
-@import '~@assets/less/common.less';
+
+<style lang="less" scoped>
 .search-group {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
+  margin: 40px 0 20px;
 
-  .group {
-    display: flex;
-    align-items: center;
-
-    .title {
-      color: rgba(0, 0, 0, 0.85);
-      margin-right: 10px;
-    }
+  .ant-btn {
+    margin-left: 20px;
   }
 }
 </style>

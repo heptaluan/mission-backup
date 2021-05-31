@@ -8,12 +8,23 @@
     >
       <div class="search-group">
         <div class="group">
+          <div class="title">项目</div>
+          <a-select style="width: 150px" placeholder="请选择项目">
+            <a-select-option value="shanghai">
+              项目一
+            </a-select-option>
+            <a-select-option value="beijing">
+              项目二
+            </a-select-option>
+          </a-select>
+        </div>
+        <div class="group">
           <div class="title">样本编号</div>
-          <a-input style="width: 230px" placeholder="请输入样本编号" />
+          <a-input style="width: 150px" placeholder="请输入样本编号" />
         </div>
         <div class="group">
           <div class="title">批次号</div>
-          <a-select style="width: 230px" placeholder="请选择批次号">
+          <a-select style="width: 150px" placeholder="请选择批次号">
             <a-select-option value="shanghai">
               批次号一
             </a-select-option>
@@ -24,7 +35,7 @@
         </div>
         <div class="group">
           <div class="title">质控责任人</div>
-          <a-select style="width: 230px" placeholder="请选择质控责任人">
+          <a-select style="width: 150px" placeholder="请选择质控责任人">
             <a-select-option value="shanghai">
               责任人一
             </a-select-option>
@@ -34,7 +45,19 @@
           </a-select>
         </div>
 
-        <a-button @click="search()" type="primary">搜索</a-button>
+        <a-button @click="handleSearch" type="primary">搜索</a-button>
+      </div>
+
+      <!-- 项目资料 -->
+      <div class="project-list">
+        <h4 :style="{ marginBottom: '16px' }">
+          项目资料
+        </h4>
+        <a-list bordered :data-source="projectList" style="max-width: 600px">
+          <a-list-item slot="renderItem" slot-scope="item">
+            {{ item }}
+          </a-list-item>
+        </a-list>
       </div>
 
       <!-- table区域-begin -->
@@ -100,6 +123,11 @@ export default {
       title: '',
       labelCol: { span: 2 },
       wrapperCol: { span: 10 },
+      projectList: [
+        '项目一',
+        '项目二',
+        '项目三',
+      ],
       // 表头
       columns: [
         {
@@ -168,38 +196,24 @@ export default {
         deleteBatch: api.deleteBatch,
         exportXlsUrl: api.exportXlsUrl,
         importExcelUrl: api.importExcelUrl
-      },
-      dictOptions: {},
-      superFieldList: []
-    }
-  },
-  created() {
-    this.getSuperFieldList()
-  },
-  computed: {
-    importExcelUrl: function() {
-      return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
+      }
     }
   },
   methods: {
-    initDictConfig() {},
+    handleSearch() {},
     executeTest() {
       this.$refs.sampleTestModal.show()
-    },
-    getSuperFieldList() {
-      let fieldList = []
-      fieldList.push({ type: 'string', value: 'code', text: '编号', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'hoName', text: '医院名称', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'hoId', text: '医院ID', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'codeQuality', text: '性质', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'typesCancer', text: '癌种', dictCode: '' })
-      this.superFieldList = fieldList
     }
   }
 }
 </script>
 <style scoped lang="less">
 @import '~@assets/less/common.less';
+
+.project-list {
+  margin: 20px 0;
+}
+
 .search-group {
   display: flex;
   justify-content: space-between;

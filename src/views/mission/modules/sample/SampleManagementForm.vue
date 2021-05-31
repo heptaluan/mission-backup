@@ -2,19 +2,27 @@
   <a-spin :spinning="confirmLoading">
     <j-form-container :disabled="formDisabled">
       <a-form-model ref="form" :model="form" :rules="rules" slot="detail">
-        <div class="btn-group">
-          <a-button type="primary" icon="download">下载模板</a-button>
-          <a-button type="primary" icon="import">导入excel</a-button>
-        </div>
         <a-row>
           <a-col :span="24">
+            <a-form-model-item label="项目" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="project">
+              <a-select v-model="form.project" placeholder="请选择项目">
+                <a-select-option value="shanghai">
+                  项目一
+                </a-select-option>
+                <a-select-option value="beijing">
+                  项目二
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
             <a-form-model-item label="批次号" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="code">
-              <a-input v-model="model.materialCode" placeholder="请输入批次号"></a-input>
+              <a-input v-model="model.code" placeholder="请输入批次号"></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="质控责任人" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="person">
-              <a-select v-model="form.type" placeholder="请选择质控责任人">
+              <a-select v-model="form.person" placeholder="请选择质控责任人">
                 <a-select-option value="shanghai">
                   责任人一
                 </a-select-option>
@@ -23,6 +31,20 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
+          </a-col>
+          <div class="btn-group">
+            <a-button type="primary" icon="download">下载模板</a-button>
+            <a-button type="primary" icon="import">导入excel</a-button>
+          </div>
+          <a-col :span="24">
+            <a-upload-dragger name="file" :showUploadList="false" :customRequest="upload" :beforeUpload="beforeUpload">
+              <p class="ant-upload-drag-icon">
+                <a-icon type="inbox" />
+              </p>
+              <p class="ant-upload-text">
+                也可以拖动文件到该区域进行上传
+              </p>
+            </a-upload-dragger>
           </a-col>
         </a-row>
       </a-form-model>
@@ -33,9 +55,10 @@
 <script>
 import { httpAction, getAction } from '@/api/manage'
 import { validateDuplicateValue } from '@/utils/util'
+import { uploadFile } from 'src/api/mission/project'
 
 export default {
-  name: 'SampleStockInForm',
+  name: 'SampleManagementForm',
   components: {},
   props: {
     //表单禁用
@@ -58,6 +81,7 @@ export default {
       },
       confirmLoading: false,
       form: {
+        project: undefined,
         code: '',
         person: undefined
       },
@@ -69,7 +93,8 @@ export default {
         add: '/mission/materialManagement/add',
         edit: '/mission/materialManagement/edit',
         queryById: '/mission/materialManagement/queryById'
-      }
+      },
+      fileList: undefined
     }
   },
   computed: {
@@ -118,10 +143,40 @@ export default {
             })
         }
       })
+    },
+    downloadTemplate() {},
+    beforeUpload(file) {
+      this.fileList = file
+      return true
+    },
+    upload() {
+      const { fileList } = this
+      console.log(fileList.name)
+      const formData = new FormData()
+      formData.append('file', fileList)
+
+      const info = {
+        ownershipType: '2',
+        ownerId: this.projectId,
+        fileName: fileList.name
+      }
+      formData.append('info', JSON.stringify(info))
+      uploadFile(formData)
+        .then(res => {
+          if (res.success) {
+            this.fileList = []
+            this.$message.success('文件上传成功！')
+            this.loadFileList()
+          }
+        })
+        .catch(e => {
+          this.uploading = false
+        })
     }
   }
 }
 </script>
+
 <style lang="less" scoped>
 .btn-group {
   margin-bottom: 30px;

@@ -46,15 +46,14 @@
       </a-form-model-item>
 
       <a-form-model-item ref="report" label="检测报告" prop="report">
-        <a-input
-          placeholder="检测报告"
-          v-model="form.report"
-          @blur="
-            () => {
-              $refs.report.onFieldBlur()
-            }
-          "
-        />
+        <a-upload-dragger name="file" :showUploadList="false" :customRequest="upload" :beforeUpload="beforeUpload">
+          <p class="ant-upload-drag-icon">
+            <a-icon type="inbox" />
+          </p>
+          <p class="ant-upload-text">
+            点击或拖动文件到该区域进行上传
+          </p>
+        </a-upload-dragger>
       </a-form-model-item>
     </a-form-model>
   </j-modal>
@@ -63,6 +62,7 @@
 <script>
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
+import { uploadFile } from 'src/api/mission/project'
 
 export default {
   name: 'StockOutTipsModal',
@@ -121,7 +121,8 @@ export default {
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
         importExcelUrl: 'mission/materialManagement/importExcel'
-      }
+      },
+      fileList: undefined
     }
   },
   methods: {
@@ -133,6 +134,34 @@ export default {
     },
     handleOk() {
       this.visible = false
+    },
+    beforeUpload(file) {
+      this.fileList = file
+      return true
+    },
+    upload() {
+      const { fileList } = this
+      console.log(fileList.name)
+      const formData = new FormData()
+      formData.append('file', fileList)
+
+      const info = {
+        ownershipType: '2',
+        ownerId: this.projectId,
+        fileName: fileList.name
+      }
+      formData.append('info', JSON.stringify(info))
+      uploadFile(formData)
+        .then(res => {
+          if (res.success) {
+            this.fileList = []
+            this.$message.success('文件上传成功！')
+            this.loadFileList()
+          }
+        })
+        .catch(e => {
+          this.uploading = false
+        })
     }
   }
 }

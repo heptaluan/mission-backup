@@ -1,45 +1,28 @@
 <template>
   <a-card :bordered="false">
-    <a-form-model
-      style="margin-bottom: 40px;"
-      ref="ruleForm"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
-    >
-      <div class="search-group">
-        <div class="group">
-          <div class="title">样本编号</div>
-          <a-input style="width: 230px" placeholder="请输入样本编号" />
-        </div>
-        <div class="group">
-          <div class="title">批次号</div>
-          <a-select style="width: 230px" placeholder="请选择批次号">
-            <a-select-option value="shanghai">
-              批次号一
-            </a-select-option>
-            <a-select-option value="beijing">
-              批次号二
-            </a-select-option>
-          </a-select>
-        </div>
-        <div class="group">
-          <div class="title">质控责任人</div>
-          <a-select style="width: 230px" placeholder="请选择质控责任人">
-            <a-select-option value="shanghai">
-              责任人一
-            </a-select-option>
-            <a-select-option value="beijing">
-              责任人二
-            </a-select-option>
-          </a-select>
-        </div>
-
-        <a-button @click="search()" type="primary">搜索</a-button>
+    <a-form-model style="margin-bottom: 40px;" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <!-- 查询区域 -->
+      <div class="table-page-search-wrapper">
+        <a-form layout="inline" @keyup.enter.native="searchQuery">
+          <a-row :gutter="24"> </a-row>
+        </a-form>
       </div>
+      <!-- 查询区域-END -->
 
       <!-- 操作按钮区域 -->
-      <div class="table-operator">
-        <a-button @click="handleAdd" type="primary" icon="plus">填写批次质控结果</a-button>
+      <div class="table-operator" style="margin-bottom:20px;">
+        <!-- 高级查询区域 -->
+        <j-super-query
+          :fieldList="superFieldList"
+          ref="superQueryModal"
+          @handleSuperQuery="handleSuperQuery"
+        ></j-super-query>
+        <a-dropdown v-if="selectedRowKeys.length > 0">
+          <a-menu slot="overlay">
+            <a-menu-item key="1" @click="batchDel"><a-icon type="delete" />删除</a-menu-item>
+          </a-menu>
+          <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down"/></a-button>
+        </a-dropdown>
       </div>
 
       <!-- table区域-begin -->
@@ -133,11 +116,6 @@ export default {
           }
         },
         {
-          title: '批次号',
-          align: 'center',
-          dataIndex: 'index'
-        },
-        {
           title: '样本编号',
           align: 'center',
           dataIndex: 'code'
@@ -148,29 +126,54 @@ export default {
           dataIndex: 'sampleType'
         },
         {
-          title: '质控责任人',
+          title: '姓名',
           align: 'center',
           dataIndex: 'responsible'
         },
         {
-          title: '质控时间',
+          title: '性别',
           align: 'center',
           dataIndex: 'time'
         },
         {
-          title: '质控指导手册',
+          title: '年龄',
           align: 'center',
           dataIndex: 'manual'
         },
         {
-          title: '质控报告时间',
+          title: '医院',
           align: 'center',
           dataIndex: 'reportTime'
         },
         {
-          title: '是否合格',
+          title: '性质',
           align: 'center',
-          dataIndex: 'state'
+          dataIndex: 'state1'
+        },
+        {
+          title: '癌种',
+          align: 'center',
+          dataIndex: 'state2'
+        },
+        {
+          title: '入库时间',
+          align: 'center',
+          dataIndex: 'state3'
+        },
+        {
+          title: '状态',
+          align: 'center',
+          dataIndex: 'state4'
+        },
+        {
+          title: '存放位置',
+          align: 'center',
+          dataIndex: 'state5'
+        },
+        {
+          title: '检测时间',
+          align: 'center',
+          dataIndex: 'state6'
         },
         {
           title: '操作',
@@ -182,7 +185,7 @@ export default {
         }
       ],
       url: {
-        list: api.list,
+        list: '/mission/materialManagement/list',
         delete: api.delete,
         deleteBatch: api.deleteBatch,
         exportXlsUrl: api.exportXlsUrl,
