@@ -74,7 +74,6 @@
 
         <span slot="action" slot-scope="text, record">
           <div class="btn-group">
-            <a @click="showDetail(record)">详情</a>
             <a @click="showDetail(record)">质控</a>
           </div>
         </span>

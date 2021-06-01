@@ -130,10 +130,11 @@
           </a-radio-group>
         </template>
 
-        <span slot="action">
-          
-        </span>
       </a-table>
+
+      <div class="btn-group">
+        <a-button type="primary" @click="handleSave">保存</a-button>
+      </div>
     </a-form-model>
   </a-card>
 </template>
@@ -240,7 +241,8 @@ export default {
     handleSearch() {},
     onRadioChange(id, dataIndex, value) {
 
-    }
+    },
+    handleSave() {}
   }
 }
 </script>
@@ -252,5 +254,10 @@ export default {
   .ant-btn {
     margin-left: 20px;
   }
+}
+
+.btn-group {
+  margin-top: 20px;
+  text-align: right;
 }
 </style>
