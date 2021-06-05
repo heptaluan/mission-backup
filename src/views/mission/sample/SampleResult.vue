@@ -3,83 +3,50 @@
     <a-form-model
       style="max-width: 1080px; margin: 20px auto 0;"
       ref="ruleForm"
-      :model="form"
-      :rules="rules"
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
     >
-      <a-form-model-item ref="code" label="批次号" prop="code">
-        <a-input
-          placeholder="请输入批次号"
-          v-model="form.code"
-          @blur="
-            () => {
-              $refs.code.onFieldBlur()
-            }
-          "
-        />
-      </a-form-model-item>
+      <a-descriptions title="样本质控结果">
+        <a-descriptions-item label="批次号">
+          {{ result.batchNo }}
+        </a-descriptions-item>
+        <a-descriptions-item label="总数">
+          {{ result.totalRecordAmount }}
+        </a-descriptions-item>
+        <a-descriptions-item label="合格数">
+          {{ result.qcPassAmount }}
+        </a-descriptions-item>
+        <a-descriptions-item label="不合格数">
+          {{ result.qcRejectAmount }}
+        </a-descriptions-item>
+        <a-descriptions-item label="结果反馈对象">
+          <j-dict-select-tag
+            v-model="informContactId"
+            style="width:200px;"
+            type="list"
+            dictCode="contact_manage, full_name, id"
+            placeholder="请选择质控责任人"
+          />
+        </a-descriptions-item>
+      </a-descriptions>
 
-      <a-form-model-item ref="total" label="总数" prop="total">
-        <a-input
-          placeholder="请输入总数"
-          v-model="form.total"
-          @blur="
-            () => {
-              $refs.total.onFieldBlur()
-            }
-          "
-        />
-      </a-form-model-item>
-
-      <a-form-model-item ref="qualifiedNum" label="合格数" prop="qualifiedNum">
-        <a-input
-          placeholder="请输入合格数"
-          v-model="form.qualifiedNum"
-          @blur="
-            () => {
-              $refs.qualifiedNum.onFieldBlur()
-            }
-          "
-        />
-      </a-form-model-item>
-
-      <a-form-model-item ref="unqualifiedNum" label="不合格数" prop="unqualifiedNum">
-        <a-input
-          placeholder="请输入不合格数"
-          v-model="form.unqualifiedNum"
-          @blur="
-            () => {
-              $refs.unqualifiedNum.onFieldBlur()
-            }
-          "
-        />
-      </a-form-model-item>
-
-      <a-form-model-item label="结果反馈对象" prop="feedback">
-        <a-select v-model="form.feedback" placeholder="请选择结果反馈对象">
-          <a-select-option value="shanghai">
-            类型一
-          </a-select-option>
-          <a-select-option value="beijing">
-            类型二
-          </a-select-option>
-        </a-select>
-      </a-form-model-item>
-
-      <a-form-model-item label="质控报告内容" :labelCol="{ span: 3 }" :wrapperCol="{ span: 20 }"> </a-form-model-item>
+      <div class="edit-title">质控报告内容</div>
 
       <div class="edit-box">
         <Editor :content.sync="content" />
+
+        <div class="btn-group">
+          <a-button type="primary" @click="handleSave('save')">保存</a-button>
+        </div>
       </div>
 
       <div class="search-group">
-        <a-select style="width: 230px" placeholder="请选择条目进行筛选">
-          <a-select-option value="shanghai">
-            已检测
+        <a-select v-model="circuitResult" style="width: 230px" placeholder="请选择条目进行筛选">
+          <a-select-option value="10000">
+            合格
           </a-select-option>
-          <a-select-option value="beijing">
-            未检测
+          <a-select-option value="20000">
+            不合格
           </a-select-option>
         </a-select>
         <a-button @click="handleSearch" type="primary">筛选</a-button>
@@ -120,20 +87,19 @@
         </template>
 
         <template slot="radio" slot-scope="text, record">
-          <a-radio-group v-model="record.value" @change="onRadioChange(record.id, 'amount', $event)">
-            <a-radio :value="1">
-              已检测
+          <a-radio-group v-model="record.circuitResult" @change="onRadioChange(record, $event)">
+            <a-radio :value="10000">
+              合格
             </a-radio>
-            <a-radio :value="2">
-              未检测
+            <a-radio :value="20000">
+              不合格
             </a-radio>
           </a-radio-group>
         </template>
-
       </a-table>
 
       <div class="btn-group">
-        <a-button type="primary" @click="handleSave">保存</a-button>
+        <a-button type="primary" @click="handleSave('end')">质控完成</a-button>
       </div>
     </a-form-model>
   </a-card>
@@ -144,6 +110,7 @@ import Editor from '../step/Editor'
 import api from 'src/api/mission/sampleInfo'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+import { getStockApplyQc, caseSampleQc, putStockApplyQc, getCaseSampleList } from 'src/api/mission/project'
 
 export default {
   name: 'SampleResult',
@@ -156,19 +123,15 @@ export default {
       labelCol: { span: 3 },
       wrapperCol: { span: 17 },
       content: '',
-      form: {
-        code: '5468',
-        total: '100',
-        qualifiedNum: '80',
-        unqualifiedNum: '20',
-        feedback: undefined
-      },
-      rules: {
-        code: [{ required: true, message: '请输入批次号', trigger: 'blur' }],
-        total: [{ required: true, message: '请输入总数', trigger: 'blur' }],
-        qualifiedNum: [{ required: true, message: '请输入合格数', trigger: 'blur' }],
-        unqualifiedNum: [{ required: true, message: '请输入不合格数', trigger: 'blur' }],
-        feedback: [{ required: true, message: '请选择结果反馈对象', trigger: 'change' }]
+      id: '',
+      informContactId: '',
+      circuitResult: '10000',
+      result: {
+        batchNo: '',
+        totalRecordAmount: '',
+        qcPassAmount: '',
+        qcRejectAmount: '',
+        applyId: ''
       },
       columns: [
         {
@@ -229,7 +192,7 @@ export default {
         }
       ],
       url: {
-        list: '/mission/materialManagement/list',
+        list: '/mission/caseSample/list',
         delete: api.delete,
         deleteBatch: api.deleteBatch,
         exportXlsUrl: api.exportXlsUrl,
@@ -238,16 +201,103 @@ export default {
     }
   },
   methods: {
-    handleSearch() {},
-    onRadioChange(id, dataIndex, value) {
-
+    handleSearch() {
+      const that = this
+      const query = {
+        circuitResult: that.circuitResult
+      }
+      getStockApplyQc(query).then(res => {
+        if (res.success) {
+          that.result = res.result
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
     },
-    handleSave() {}
+    onRadioChange(record, e) {
+      const that = this
+      const query = {
+        id: record.id,
+        code: e.target.value
+      }
+      caseSampleQc(query).then(res => {
+        if (res.success) {
+          that.$message.success(res.message)
+          that.loadFormData()
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    getParams(key) {
+      const search = window.location.search.substring(1)
+      const vars = search.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=')
+        if (pair[0] === key) {
+          return pair[1]
+        }
+      }
+      return false
+    },
+    loadFormData() {
+      const that = this
+      const query = {
+        id: this.getParams('id')
+      }
+      getStockApplyQc(query).then(res => {
+        if (res.success) {
+          that.result = res.result
+          that.id = res.result.id
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    handleSave(type) {
+      const that = this
+      let query
+      switch (type) {
+        case 'save':
+          query = {
+            id: that.id,
+            qcReportContent: that.content,
+            informContactId: that.informContactId
+          }
+          break
+        case 'end':
+          query = {
+            id: that.id,
+            circuitResult: 20000
+          }
+          break
+        default:
+          break
+      }
+      putStockApplyQc(query).then(res => {
+        console.log(res)
+        if (res.success) {
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    }
+  },
+  mounted() {
+    this.loadFormData()
   }
 }
 </script>
 
 <style lang="less" scoped>
+.edit-title {
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
 .search-group {
   margin: 40px 0 20px;
 
@@ -259,5 +309,9 @@ export default {
 .btn-group {
   margin-top: 20px;
   text-align: right;
+}
+
+/deep/ .ant-select-dropdown {
+  z-index: 10002;
 }
 </style>

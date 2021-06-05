@@ -81,7 +81,7 @@
       </a-table>
     </a-form-model>
 
-    <SampleResultModal ref="modalForm" @ok="modalFormOk" />
+    <CaseControlModal ref="modalForm" @ok="modalFormOk" />
   </a-card>
 </template>
 
@@ -89,14 +89,14 @@
 import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import SampleResultModal from '../modules/sample/SampleResultModal'
+import CaseControlModal from './modules/sample/CaseControlModal'
 import api from 'src/api/mission/sample'
 
 export default {
-  name: 'SampleControl',
+  name: 'CaseControl',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
-    SampleResultModal
+    CaseControlModal
   },
   data() {
     return {

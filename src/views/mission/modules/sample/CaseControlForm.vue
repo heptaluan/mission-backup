@@ -29,7 +29,7 @@ import { httpAction, getAction } from '@/api/manage'
 import { validateDuplicateValue } from '@/utils/util'
 
 export default {
-  name: 'SampleResultForm',
+  name: 'CaseControlForm',
   components: {},
   props: {
     //表单禁用

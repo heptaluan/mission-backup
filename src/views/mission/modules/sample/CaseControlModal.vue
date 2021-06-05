@@ -9,17 +9,17 @@
     @cancel="handleCancel"
     cancelText="关闭"
   >
-    <SampleResultForm ref="realForm" @ok="submitCallback" :disabled="disableSubmit" />
+    <CaseControlForm ref="realForm" @ok="submitCallback" :disabled="disableSubmit" />
   </j-modal>
 </template>
 
 <script>
-import SampleResultForm from './SampleResultForm'
+import CaseControlForm from './CaseControlForm'
 
 export default {
-  name: 'SampleResultModal',
+  name: 'CaseControlModal',
   components: {
-    SampleResultForm
+    CaseControlForm
   },
   data() {
     return {

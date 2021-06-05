@@ -2,10 +2,6 @@
   <a-card :bordered="false">
     <div class="search-group">
       <div class="group">
-        <div class="title">样本编号</div>
-        <a-input style="width: 230px" placeholder="请输入样本编号" />
-      </div>
-      <div class="group">
         <div class="title">批次号</div>
         <a-select style="width: 230px" placeholder="请选择批次号">
           <a-select-option value="shanghai">
@@ -89,7 +85,7 @@ import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import SampleManagementModal from '../modules/sample/SampleManagementModal'
-import api from 'src/api/mission/sample'
+import { getStockApplyList } from 'src/api/mission/project'
 
 export default {
   name: 'Sample',
@@ -113,69 +109,39 @@ export default {
           }
         },
         {
-          title: '序号',
+          title: '批次号',
           align: 'center',
-          dataIndex: 'index'
+          dataIndex: 'batchNo'
         },
         {
-          title: '样本编号',
-          align: 'center',
-          dataIndex: 'code'
-        },
-        {
-          title: '样本类型',
+          title: '责任人',
           align: 'center',
           dataIndex: 'sampleType'
         },
         {
-          title: '姓名',
+          title: '数量',
           align: 'center',
           dataIndex: 'name'
         },
         {
-          title: '性别',
+          title: '合格数',
           align: 'center',
           dataIndex: 'sex'
         },
         {
-          title: '年龄',
+          title: '不合格数',
           align: 'center',
           dataIndex: 'age'
         },
         {
-          title: '医院名称',
+          title: '是否已短信通知',
           align: 'center',
           dataIndex: 'hoName'
         },
         {
-          title: '性质',
+          title: '创建时间',
           align: 'center',
-          dataIndex: 'codeQuality'
-        },
-        {
-          title: '癌种',
-          align: 'center',
-          dataIndex: 'typesCancer'
-        },
-        {
-          title: '入库时间',
-          align: 'center',
-          dataIndex: 'stockInTime'
-        },
-        {
-          title: '状态',
-          align: 'center',
-          dataIndex: 'state'
-        },
-        {
-          title: '存放位置',
-          align: 'center',
-          dataIndex: 'location'
-        },
-        {
-          title: '检测时间',
-          align: 'center',
-          dataIndex: 'time'
+          dataIndex: 'createTime'
         },
         {
           title: '操作',
@@ -187,18 +153,16 @@ export default {
         }
       ],
       url: {
-        list: '/mission/materialManagement/list',
-        delete: api.delete,
-        deleteBatch: api.deleteBatch,
-        exportXlsUrl: api.exportXlsUrl,
-        importExcelUrl: api.importExcelUrl
+        list: 'mission/caseSample/stockApply/list',
       }
     }
   },
   methods: {
     handleSearch() {},
-    showDetail() {}
-  }
+    showDetail(record) {
+      this.$router.push(`/mission/sample/sampleResult?id=${record.id}`)
+    },
+  },
 }
 </script>
 <style scoped lang="less">

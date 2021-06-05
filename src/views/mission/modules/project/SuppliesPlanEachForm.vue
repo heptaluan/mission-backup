@@ -83,9 +83,16 @@ export default {
         sm: { span: 16 }
       },
       confirmLoading: false,
-      validatorRules: {},
+      validatorRules: {
+        materialId: [{ required: true, message: '请选择耗材名称', trigger: 'change' }],
+        materialType: [{ required: true, message: '请选择样本类型', trigger: 'change' }],
+        suffix: [{ required: true, message: '自定义前缀', trigger: 'blur' },
+          { min: 1, max: 1, message: '自定义前缀长度只有一位', trigger: 'blur' }],
+        spec: [{ required: true, message: '请输入规格', trigger: 'blur' }],
+        pcs: [{ required: true, message: '请输入份数', trigger: 'blur' }],
+      },
       url: {
-        add: '/mission/projectMaterial/plan//add',
+        add: '/mission/projectMaterial/plan/add',
         edit: '/mission/projectMaterial/plan/edit',
         queryById: '/mission/projectMaterial/plan/queryById'
       }

@@ -9,18 +9,13 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item label="说明" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="groupDescribe">
-              <a-input v-model="model.groupDescribe" placeholder="请输入说明"  ></a-input>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
             <a-form-model-item label="项目组内部负责人" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="groupChargeId">
               <j-dict-select-tag type="list" v-model="model.groupChargeId" dictCode="contact_manage,full_name,id" placeholder="请选择项目组内部负责人" />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="项目组材料" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="ownershipType">
-              <a-select v-model="model.ownershipType">
+              <a-select v-model="model.ownershipType" placeholder="请选择项目资料">
                 <div slot="dropdownRender" slot-scope="menu">
                   <v-nodes :vnodes="menu" />
                   <a-divider style="margin: 4px 0;" />
@@ -39,6 +34,11 @@
 <!--              <j-dict-select-tag type="list" v-model="model.ownershipType" dictCode="file_info,file_name,id, ownership_type = '2'" placeholder="请选择项目资料" />-->
             </a-form-model-item>
 <!--            <a-button @click="addData" class="bt-add-data">新增</a-button>-->
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="说明" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="groupDescribe">
+              <a-input v-model="model.groupDescribe" placeholder="请输入说明"  ></a-input>
+            </a-form-model-item>
           </a-col>
         </a-row>
       </a-form-model>
@@ -84,6 +84,9 @@
         },
         confirmLoading: false,
         validatorRules: {
+          groupName: [{ required: true, message: '请输入项目组名称', trigger: 'blur' }],
+          groupChargeId: [{ required: true, message: '项目组内部负责人', trigger: 'change' }],
+          ownershipType: [{ required: true, message: '请选择项目资料', trigger: 'change' }]
         },
         url: {
           add: "/mission/projectGroup/add",

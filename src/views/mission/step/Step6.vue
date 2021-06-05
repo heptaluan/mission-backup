@@ -8,9 +8,9 @@
       :label-col="labelCol"
       :wrapper-col="wrapperCol"
     >
-      <a-form-model-item ref="noTotal" label="样本总量/Total Samples" prop="noTotal">
+      <a-form-model-item ref="noTotal" label="病例总量/Total Samples" prop="noTotal">
         <a-input
-          placeholder="请输入样本总量"
+          placeholder="请输入病例总量"
           v-model="form.noTotal"
           @blur="
             () => {

@@ -115,11 +115,11 @@
           {
             title: '#',
             dataIndex: '',
-            key:'rowIndex',
-            width:60,
-            align:"center",
-            customRender:function (t,r,index) {
-              return parseInt(index)+1;
+            key: 'rowIndex',
+            width: 60,
+            align: 'center',
+            customRender: function(t, r, index) {
+              return parseInt(index) + 1
             }
           },
           {
@@ -161,15 +161,15 @@
             dataIndex: 'workDep'
           },
           {
-            title:'职位',
-            align:"center",
+            title: '职位',
+            align: 'center',
             dataIndex: 'jobTitle'
           },
-          {
-            title:'照片',
-            align:"center",
-            dataIndex: 'picUrl'
-          },
+          // {
+          //   title:'照片',
+          //   align:"center",
+          //   dataIndex: 'picUrl'
+          // },
           {
             title:'联系人类型',
             align:"center",
@@ -183,37 +183,36 @@
           {
             title: '操作',
             dataIndex: 'action',
-            align:"center",
-            fixed:"right",
-            width:147,
+            align: 'center',
+            fixed: 'right',
+            width: 147,
             scopedSlots: { customRender: 'action' }
           }
         ],
         url: {
-          list: "/mission/contactManage/list",
-          delete: "/mission/contactManage/delete",
-          deleteBatch: "/mission/contactManage/deleteBatch",
-          exportXlsUrl: "/mission/contactManage/exportXls",
-          importExcelUrl: "mission/contactManage/importExcel",
-          
+          list: '/mission/contactManage/list',
+          delete: '/mission/contactManage/delete',
+          deleteBatch: '/mission/contactManage/deleteBatch',
+          exportXlsUrl: '/mission/contactManage/exportXls',
+          importExcelUrl: 'mission/contactManage/importExcel'
         },
         dictOptions:{},
-        superFieldList:[],
+        superFieldList:[]
       }
     },
     created() {
-    this.getSuperFieldList();
+      this.getSuperFieldList()
     },
     computed: {
       importExcelUrl: function(){
-        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`;
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
       },
     },
     methods: {
       initDictConfig(){
       },
       getSuperFieldList(){
-        let fieldList=[];
+        let fieldList = []
         fieldList.push({type:'string',value:'fullName',text:'姓名',dictCode:''})
         fieldList.push({type:'int',value:'sex',text:'性别',dictCode:'sex'})
         fieldList.push({type:'date',value:'birthday',text:'生日'})

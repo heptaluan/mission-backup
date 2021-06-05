@@ -97,7 +97,7 @@
 
   import '@/assets/less/TableExpand.less'
   import { mixinDevice } from '@/utils/mixin'
-  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixinForMount'
   import FileInfoModal from './modules/FileInfoModal'
   import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
 
@@ -162,14 +162,18 @@
           deleteBatch: "/mission/fileInfo/deleteBatch",
           exportXlsUrl: "/mission/fileInfo/exportXls",
           importExcelUrl: "mission/fileInfo/importExcel",
-          
+
         },
         dictOptions:{},
         superFieldList:[],
       }
     },
     created() {
-    this.getSuperFieldList();
+      this.queryParam.ownershipType = '2'
+      if (this.$route.name === 'projectGroupMaterial') {
+        this.queryParam.ownershipType = '1'
+      }
+      this.getSuperFieldList();
     },
     computed: {
       importExcelUrl: function(){

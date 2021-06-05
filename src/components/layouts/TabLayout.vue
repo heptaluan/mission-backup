@@ -14,8 +14,8 @@
       @change="changePage"
       @tabClick="tabCallBack"
       @edit="editPage">
-      <a-tab-pane :id="page.fullPath" :key="page.fullPath" v-for="page in pageList" :closable="!(page.meta.title=='首页')">
-        <span slot="tab" :pagekey="page.fullPath">{{ page.meta.title }}</span>
+      <a-tab-pane :id="page.path" :key="page.path" v-for="page in pageList" :closable="!(page.meta.title=='首页')">
+        <span slot="tab" :pagekey="page.path" v-html="translateRouterTitle(page)"></span>
       </a-tab-pane>
     </a-tabs>
     <div style="margin: 12px 12px 0;">
@@ -59,7 +59,8 @@
           { key: '2', icon: 'arrow-right', text: '关闭右侧' },
           { key: '3', icon: 'close', text: '关闭其它' }
         ],
-        reloadFlag:true
+        reloadFlag: true,
+        activeRouter: undefined
       }
     },
     /* update_begin author:wuxianquan date:20190828 for: 关闭当前tab页，供子页面调用 ->望菜单能配置外链，直接弹出新页面而不是嵌入iframe #428 */
@@ -87,51 +88,63 @@
       let currentRoute = Object.assign({}, this.$route)
       currentRoute.meta = Object.assign({}, currentRoute.meta)
       // update-begin-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
-      let storeKey = 'route:title:' + currentRoute.fullPath
+      let storeKey = 'route:title:' + currentRoute.path
       let routeTitle = this.$ls.get(storeKey)
       if (routeTitle) {
         currentRoute.meta.title = routeTitle
       }
       // update-end-author:sunjianlei date:20191223 for: 修复刷新后菜单Tab名字显示异常
       this.pageList.push(currentRoute)
-      this.linkList.push(currentRoute.fullPath)
-      this.activePage = currentRoute.fullPath
+      this.linkList.push(currentRoute.path)
+      this.activePage = currentRoute.path
+      this.activeRouter = currentRoute
     },
     mounted() {
     },
     watch: {
       '$route': function(newRoute) {
         //console.log("新的路由",newRoute)
-        this.activePage = newRoute.fullPath
+        this.activePage = newRoute.path
+        this.activeRouter = newRoute
         if (!this.multipage) {
-          this.linkList = [newRoute.fullPath]
+          this.linkList = [newRoute.path]
           this.pageList = [Object.assign({},newRoute)]
         // update-begin-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
-        } else if(indexKey==newRoute.fullPath) {
+        } else if(indexKey==newRoute.path) {
           //首页时 判断是否缓存 没有缓存 刷新之
           if (newRoute.meta.keepAlive === false) {
             this.routeReload()
           }
         // update-end-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
-        }else if (this.linkList.indexOf(newRoute.fullPath) < 0) {
-          this.linkList.push(newRoute.fullPath)
+        } else if (this.linkList.indexOf(newRoute.path) < 0) {
+          this.linkList.push(newRoute.path)
           this.pageList.push(Object.assign({},newRoute))
           //// update-begin-author:sunjianlei date:20200103 for: 如果新增的页面配置了缓存路由，那么就强制刷新一遍 #842
           // if (newRoute.meta.keepAlive) {
           //   this.routeReload()
           // }
           //// update-end-author:sunjianlei date:20200103 for: 如果新增的页面配置了缓存路由，那么就强制刷新一遍 #842
-        } else if (this.linkList.indexOf(newRoute.fullPath) >= 0) {
-          let oldIndex = this.linkList.indexOf(newRoute.fullPath)
+        } else if (this.linkList.indexOf(newRoute.path) >= 0) {
+          let oldIndex = this.linkList.indexOf(newRoute.path)
           let oldPositionRoute = this.pageList[oldIndex]
           this.pageList.splice(oldIndex, 1, Object.assign({},newRoute,{meta:oldPositionRoute.meta}))
         }
+      },
+      '$route.meta.title': function(newTitle) {
+        if (!this.activeRouter) return false
+        if (this.activeRouter.name !== 'createProject') return false
+        console.log(newTitle)
+        this.pageList.forEach((page) => {
+           if (page.name === 'createProject') {
+             page.meta.title = newTitle
+           }
+        })
       },
       'activePage': function(key) {
         let index = this.linkList.lastIndexOf(key)
         let waitRouter = this.pageList[index]
         // 【TESTA-523】修复：不允许重复跳转路由异常
-        if (waitRouter.fullPath !== this.$route.fullPath) {
+        if (waitRouter.path !== this.$route.path) {
           this.$router.push(Object.assign({}, waitRouter))
         }
         this.changeTitle(waitRouter.meta.title)
@@ -139,7 +152,7 @@
       'multipage': function(newVal) {
         if(this.reloadFlag){
           if (!newVal) {
-            this.linkList = [this.$route.fullPath]
+            this.linkList = [this.$route.path]
             this.pageList = [this.$route]
           }
         }
@@ -179,6 +192,9 @@
           document.title = title + ' · ' + projectTitle
         }
       },
+      translateRouterTitle (page) {
+        return page.meta.title
+      },
       // update-end-author:sunjianlei date:20200120 for: 动态更改页面标题
 
       changePage(key) {
@@ -207,8 +223,8 @@
           return
         }
         console.log("this.pageList ",this.pageList );
-        let removeRoute = this.pageList.filter(item => item.fullPath == key)
-        this.pageList = this.pageList.filter(item => item.fullPath !== key)
+        let removeRoute = this.pageList.filter(item => item.path == key)
+        this.pageList = this.pageList.filter(item => item.path !== key)
         let index = this.linkList.indexOf(key)
         this.linkList = this.linkList.filter(item => item !== key)
         index = index >= this.linkList.length ? this.linkList.length - 1 : index
@@ -279,7 +295,7 @@
           let indexContent = this.pageList.slice(0, 1)[0]
           this.linkList = this.linkList.slice(index, index + 1)
           this.pageList = this.pageList.slice(index, index + 1)
-          this.linkList.unshift(indexContent.fullPath)
+          this.linkList.unshift(indexContent.path)
           this.pageList.unshift(indexContent)
           this.activePage = this.linkList[1]
         }
@@ -293,7 +309,7 @@
         let index = this.linkList.indexOf(pageKey)
         this.linkList = this.linkList.slice(index)
         this.pageList = this.pageList.slice(index)
-        this.linkList.unshift(indexContent.fullPath)
+        this.linkList.unshift(indexContent.path)
         this.pageList.unshift(indexContent)
         if (this.linkList.indexOf(this.activePage) < 0) {
           this.activePage = this.linkList[0]

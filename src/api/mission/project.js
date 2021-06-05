@@ -71,4 +71,21 @@ export const stockComeApply = (params) => postAction('/mission/materialManagemen
 // 耗材出入库-出入库申请表审批
 export const approve = (params) => postAction('/mission/materialManagement/stock/apply/approve', params)
 
+// ================================================= 样本管理
+
+// 病例样本入库-新增样本入库（文件上传）
+export const caseSampleUploadFile = (params) => uploadAction('/mission/caseSample/stockApply/add', params)
+
+// 样本入库单对应的审计报告-通过入库单id查询
+export const getStockApplyQc = (params) => getAction('/mission/caseSample/stockApply/qc', params)
+
+// 病例单个样本-qc
+export const caseSampleQc = (params) => postAction('/mission/caseSample/qc', params)
+
+// 病例单个样本-qc
+export const putStockApplyQc = (step, params) => putAction(`/mission/caseSample/stockApply/qc`, params)
+
+// 病例样本信息-分页列表查询
+export const getCaseSampleList = (params) => getAction('/mission/caseSample/list', params)
+
 export default api

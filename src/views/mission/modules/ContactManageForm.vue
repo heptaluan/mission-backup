@@ -28,8 +28,7 @@
               label="紧急联系电话"
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
-              prop="emergencyMobile"
-            >
+              prop="emergencyMobile">
               <a-input v-model="model.emergencyMobile" placeholder="请输入紧急联系电话"></a-input>
             </a-form-model-item>
           </a-col>
@@ -48,11 +47,11 @@
               <a-input v-model="model.jobTitle" placeholder="请输入职位"></a-input>
             </a-form-model-item>
           </a-col>
-          <a-col :span="24">
-            <a-form-model-item label="照片" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="picUrl">
-              <a-input v-model="model.picUrl" placeholder="请输入照片"></a-input>
-            </a-form-model-item>
-          </a-col>
+<!--          <a-col :span="24">-->
+<!--            <a-form-model-item label="照片" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="picUrl">-->
+<!--              <a-input v-model="model.picUrl" placeholder="请输入照片"></a-input>-->
+<!--            </a-form-model-item>-->
+<!--          </a-col>-->
           <a-col :span="24">
             <a-form-model-item label="联系人类型" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="contactType">
               <j-dict-select-tag
@@ -116,7 +115,13 @@ export default {
         sm: { span: 16 }
       },
       confirmLoading: false,
-      validatorRules: {},
+      validatorRules: {
+        fullName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        sex: [{ required: true, message: '请选择性别', trigger: 'change' }],
+        mobile: [{ required: true, pattern:/^((0\d{2,3}-\d{7,8})|(1[3584]\d{9}))$/,  message: '请输入合法手机号', trigger: 'blur'}],
+        relationUnit: [{ required: true, message: '请选择关联单位/项目组', trigger: 'change' }],
+        contactType: [{ required: true, message: '请选择联系人类型', trigger: 'change' }]
+      },
       url: {
         add: '/mission/contactManage/add',
         edit: '/mission/contactManage/edit',
@@ -139,6 +144,9 @@ export default {
     },
     edit(record) {
       this.model = Object.assign({}, record)
+      if (this.model.contactType) {
+        this.getData(this.model.contactType.toString())
+      }
       this.visible = true
     },
     submitForm() {

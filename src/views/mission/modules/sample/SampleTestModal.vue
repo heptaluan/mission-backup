@@ -74,7 +74,7 @@ export default {
       visible: false,
       disableSubmit: false,
       labelCol: { span: 4 },
-      wrapperCol: { span: 16 },
+      wrapperCol: { span: 18 },
       form: {
         code: '',
         sampleCode: '',

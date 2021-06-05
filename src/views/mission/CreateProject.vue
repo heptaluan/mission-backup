@@ -11,7 +11,7 @@
     </a-steps>
     <div class="title">{{ getCurrentTitle() }}</div>
     <div class="content">
-      <step1 v-if="currentTab === 0" @nextStep="nextStep" @prevStep="prevStep" />
+      <step1 v-if="currentTab === 0" @nextStep="nextStep" @prevStep="prevStep" @activeProject="activeProject" />
       <step2 v-if="currentTab === 1" @nextStep="nextStep" @prevStep="prevStep" />
       <step3 v-if="currentTab === 2" @nextStep="nextStep" @prevStep="prevStep" />
       <step4 v-if="currentTab === 3" @nextStep="nextStep" @prevStep="prevStep" />
@@ -26,6 +26,7 @@
 import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+import { queryById } from 'src/api/mission/project'
 
 import Step1 from './step/Step1'
 import Step2 from './step/Step2'
@@ -63,7 +64,9 @@ export default {
         importExcelUrl: 'mission/materialManagement/importExcel'
       },
       dictOptions: {},
-      superFieldList: []
+      superFieldList: [],
+      projectName: '',
+      projectInfo: undefined
     }
   },
   created() {},
@@ -98,16 +101,22 @@ export default {
       const projectId = this.getParams('id')
       if (!projectId) current = 0
       this.currentTab = current
+      this.changeUrl(current)
     },
     prevStep() {
       if (this.currentTab > 0) {
         this.currentTab -= 1
+        this.changeUrl(this.currentTab)
       }
     },
     nextStep() {
       if (this.currentTab < 8) {
         this.currentTab += 1
+        this.changeUrl(this.currentTab)
       }
+    },
+    activeProject (name) {
+      this.projectName = name
     },
     finish() {
       this.currentTab = 0
@@ -122,11 +131,35 @@ export default {
         }
       }
       return false
+    },
+    getProjectInfo (id) {
+      queryById({ id: id }).then(res => {
+        if (res.success) {
+          this.projectInfo = res.result
+          const title = '编辑项目-' + this.projectInfo.projectName
+          this.$route.meta.title = title
+          // this.$set(this.$route.meta, 'title', title)
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    changeUrl (step) {
+      const projectId = this.$route.query.id
+      if (projectId) {
+        window.history.replaceState({}, window.document.title, '?id=' + projectId + '&step=' + step)
+      }
     }
   },
   mounted() {
     if (this.getParams('step')) {
       this.currentTab = Number(this.getParams('step')) || 0
+    }
+    if (this.$route.query.id) {
+      this.getProjectInfo(this.$route.query.id)
+      this.$route.meta.title = '编辑项目'
+    } else {
+      this.$route.meta.title = '新建项目'
     }
   }
 }

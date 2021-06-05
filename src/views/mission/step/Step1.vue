@@ -170,7 +170,8 @@ export default {
               that.$message.success(res.message)
               that.$emit('ok')
               const projectId = res.result.id
-              window.history.replaceState({}, window.document.title, '?id=' + projectId)
+              that.$emit('activeProject', this.form.projectName)
+              window.history.replaceState({}, window.document.title, '?id=' + projectId + '&step=0')
               this.isSave = true
             } else {
               that.$message.warning(res.message)

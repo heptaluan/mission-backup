@@ -55,7 +55,10 @@ export default {
         sm: { span: 16 }
       },
       confirmLoading: false,
-      validatorRules: {},
+      validatorRules: {
+        materialId: [{ required: true, message: '请选择耗材名称', trigger: 'change' }],
+        totalNo: [{ required: true, message: '请输入耗材总需求量', trigger: 'blur' }],
+      },
       url: {
         add: '/mission/projectMaterial/add',
         edit: '/mission/projectMaterial/edit',

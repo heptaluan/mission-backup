@@ -226,14 +226,14 @@
           deleteBatch: "/mission/projectInfo/deleteBatch",
           exportXlsUrl: "/mission/projectInfo/exportXls",
           importExcelUrl: "mission/projectInfo/importExcel",
-          
+
         },
         dictOptions:{},
         superFieldList:[],
       }
     },
     created() {
-    this.getSuperFieldList();
+      this.getSuperFieldList();
     },
     computed: {
       importExcelUrl: function(){

@@ -58,7 +58,7 @@
 
   import { httpAction, getAction } from '@/api/manage'
   import { validateDuplicateValue } from '@/utils/util'
-
+ // const rexp = /^(?:http(s)??\/)?[\w.-]+(?:.[\w.-]+)+[\w-._~:/?#[]@!$&’*+,;=.]+$/
   export default {
     name: 'CooperationAgencyForm',
     components: {
@@ -85,6 +85,14 @@
         },
         confirmLoading: false,
         validatorRules: {
+          caType: [{ required: true, message: '请选择合作单位类型', trigger: 'change' }],
+          caName: [{ required: true, message: '请输入合作单位名称', trigger: 'blur' }],
+          caCode: [{ required: true, message: '请输入合作单位编码', trigger: 'blur' }],
+          caAddress: [{ required: true, message: '请输入地址', trigger: 'blur' }],
+          caSocialCode: [{ required: true, message: '请输入统一信用代码', trigger: 'blur', pattern: /^[A-Z0-9]{8}-[A-Z0-9]$|^[A-Z0-9]{8}-[A-Z0-9]-[0-9]{2}$/}],
+          caWebsite: [{ pattern: /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\*\+,;=.]+$/, message: '请输入正确的网址', trigger: 'blur' }],
+          caDockingId: [{ required: true, message: '请选择对接人', trigger: 'change' }],
+          caHeadId: [{ required: true, message: '请选择负责人', trigger: 'change' }]
         },
         url: {
           add: "/mission/cooperationAgency/add",
@@ -136,7 +144,7 @@
               that.confirmLoading = false;
             })
           }
-         
+
         })
       },
     }
