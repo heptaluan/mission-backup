@@ -1,11 +1,16 @@
-import { UserLayout, TabLayout, RouteView, BlankLayout, PageView } from '@/components/layouts'
+import {
+  UserLayout,
+  TabLayout,
+  RouteView,
+  BlankLayout,
+  PageView,
+} from '@/components/layouts'
 
 /**
  * 走菜单，走权限控制
  * @type {[null,null]}
  */
 export const asyncRouterMap = [
-
   {
     path: '/',
     name: 'dashboard',
@@ -13,7 +18,6 @@ export const asyncRouterMap = [
     meta: { title: '首页' },
     redirect: '/dashboard/analysis',
     children: [
-
       // // dashboard
       // {
       //   path: '/dashboard',
@@ -282,11 +286,13 @@ export const asyncRouterMap = [
       //     },
       //   ]
       // }
-    ]
+    ],
   },
   {
-    path: '*', redirect: '/404', hidden: true
-  }
+    path: '*',
+    redirect: '/404',
+    hidden: true,
+  },
 ]
 
 /**
@@ -303,24 +309,34 @@ export const constantRouterMap = [
       {
         path: 'login',
         name: 'login',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/Login')
+        component: () =>
+          import(/* webpackChunkName: "user" */ '@/views/user/Login'),
       },
       {
         path: 'register',
         name: 'register',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/register/Register')
+        component: () =>
+          import(
+            /* webpackChunkName: "user" */ '@/views/user/register/Register'
+          ),
       },
       {
         path: 'register-result',
         name: 'registerResult',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/register/RegisterResult')
+        component: () =>
+          import(
+            /* webpackChunkName: "user" */ '@/views/user/register/RegisterResult'
+          ),
       },
       {
         path: 'alteration',
         name: 'alteration',
-        component: () => import(/* webpackChunkName: "user" */ '@/views/user/alteration/Alteration')
+        component: () =>
+          import(
+            /* webpackChunkName: "user" */ '@/views/user/alteration/Alteration'
+          ),
       },
-    ]
+    ],
   },
 
   // {
@@ -355,13 +371,13 @@ export const constantRouterMap = [
       {
         path: 'home',
         name: 'TestHome',
-        component: () => import('@/views/Home')
-      }
-    ]
+        component: () => import('@/views/Home'),
+      },
+    ],
   },
   {
     path: '/404',
-    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
+    component: () =>
+      import(/* webpackChunkName: "fail" */ '@/views/exception/404'),
   },
-
 ]
