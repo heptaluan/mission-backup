@@ -8,50 +8,31 @@
     @ok="handleOk"
     @cancel="handleCancel"
   >
-    <a-form-model ref="form" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-model-item ref="code" label="批次号" prop="code">
-        <a-input
-          placeholder="请输入批次号"
-          v-model="form.code"
-          @blur="
-            () => {
-              $refs.code.onFieldBlur()
-            }
-          "
-        />
+    <a-form-model ref="form" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-model-item label="批次号">
+        <div class="list-item">{{record.batchNo}}</div>
       </a-form-model-item>
 
-      <a-form-model-item ref="sampleCode" label="样本编号" prop="sampleCode">
-        <a-input
-          placeholder="请输入样本编号"
-          v-model="form.sampleCode"
-          @blur="
-            () => {
-              $refs.sampleCode.onFieldBlur()
-            }
-          "
-        />
+      <a-form-model-item label="样本编号">
+        <div class="list-item">{{record.caseIdentity}}-{{record.sampleIdentity}}</div>
       </a-form-model-item>
 
-      <a-form-model-item ref="person" label="检测负责人" prop="person">
-        <a-input
-          placeholder="请输入检测负责人"
-          v-model="form.person"
-          @blur="
-            () => {
-              $refs.person.onFieldBlur()
-            }
-          "
-        />
+      <a-form-model-item label="检测负责人">
+        <div class="list-item">{{nickname()}}</div>
       </a-form-model-item>
 
       <a-form-model-item ref="report" label="检测报告" prop="report">
-        <a-upload-dragger name="file" :showUploadList="false" :customRequest="upload" :beforeUpload="beforeUpload">
+        <a-upload-dragger
+          @change="handleChange"
+          :file-list="fileList"
+          :remove="handleRemove"
+          :before-upload="beforeUpload"
+        >
           <p class="ant-upload-drag-icon">
             <a-icon type="inbox" />
           </p>
           <p class="ant-upload-text">
-            点击或拖动文件到该区域进行上传
+            点击或者拖动文件到该区域进行上传
           </p>
         </a-upload-dragger>
       </a-form-model-item>
@@ -62,7 +43,8 @@
 <script>
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
-import { uploadFile } from 'src/api/mission/project'
+import { uploadFile, caseSampleDetect } from 'src/api/mission/project'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'StockOutTipsModal',
@@ -75,18 +57,7 @@ export default {
       disableSubmit: false,
       labelCol: { span: 4 },
       wrapperCol: { span: 18 },
-      form: {
-        code: '',
-        sampleCode: '',
-        person: '',
-        report: ''
-      },
-      rules: {
-        code: [{ required: true, message: '请输入批次号', trigger: 'blur' }],
-        sampleCode: [{ required: true, message: '请输入样本编号', trigger: 'blur' }],
-        person: [{ required: true, message: '请输入检测负责人', trigger: 'blur' }],
-        report: [{ required: true, message: '请输入检测报告', trigger: 'blur' }]
-      },
+      record: {},
       // 表头
       columns: [
         {
@@ -122,47 +93,60 @@ export default {
         exportXlsUrl: '/mission/materialManagement/exportXls',
         importExcelUrl: 'mission/materialManagement/importExcel'
       },
-      fileList: undefined
+      fileList: [],
+      file: undefined
     }
   },
   methods: {
-    show() {
+    ...mapGetters(["nickname", "avatar"]),
+    show(record) {
+      console.log(record)
+      this.record = record
       this.visible = true
     },
     handleCancel() {
       this.visible = false
     },
     handleOk() {
-      this.visible = false
-    },
-    beforeUpload(file) {
-      this.fileList = file
-      return true
-    },
-    upload() {
-      const { fileList } = this
-      console.log(fileList.name)
-      const formData = new FormData()
-      formData.append('file', fileList)
-
-      const info = {
-        ownershipType: '2',
-        ownerId: this.projectId,
-        fileName: fileList.name
+      const that = this
+      if (!that.fileList[0]) {
+        that.$message.error('上传文件不能为空')
+        return false
       }
-      formData.append('info', JSON.stringify(info))
-      uploadFile(formData)
+      const formData = new FormData()
+      formData.append('file', that.file)
+      formData.append('id', that.record.id)
+      caseSampleDetect(formData)
         .then(res => {
           if (res.success) {
-            this.fileList = []
-            this.$message.success('文件上传成功！')
-            this.loadFileList()
+            that.fileList = []
+            that.$message.success('文件上传成功！')
+            that.$emit('ok');
+            that.visible = false
+          } else {
+            that.$message.error(res.message)
           }
         })
         .catch(e => {
-          this.uploading = false
+          that.$message.error('上传失败，请重新尝试！')
         })
-    }
+    },
+    handleChange(info) {
+      let fileList = [...info.fileList]
+      fileList = fileList.slice(-1)
+      this.fileList = fileList
+    },
+    handleRemove(file) {
+      const index = this.fileList.indexOf(file)
+      const newFileList = this.fileList.slice()
+      newFileList.splice(index, 1)
+      this.fileList = newFileList
+    },
+    beforeUpload(file) {
+      this.fileList = [...this.fileList, file]
+      this.file = file
+      return false
+    },
   }
 }
 </script>

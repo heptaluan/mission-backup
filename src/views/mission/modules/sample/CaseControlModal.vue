@@ -30,10 +30,10 @@ export default {
     }
   },
   methods: {
-    add() {
+    add(record) {
       this.visible = true
       this.$nextTick(() => {
-        this.$refs.realForm.add()
+        this.$refs.realForm.add(record)
       })
     },
     edit(record) {

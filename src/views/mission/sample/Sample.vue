@@ -3,25 +3,18 @@
     <div class="search-group">
       <div class="group">
         <div class="title">批次号</div>
-        <a-select style="width: 230px" placeholder="请选择批次号">
-          <a-select-option value="shanghai">
-            批次号一
-          </a-select-option>
-          <a-select-option value="beijing">
-            批次号二
-          </a-select-option>
-        </a-select>
+        <a-input allowClear v-model="batchNo" placeholder="请输入批次号" ></a-input>
       </div>
       <div class="group">
         <div class="title">质控责任人</div>
-        <a-select style="width: 230px" placeholder="请选择质控责任人">
-          <a-select-option value="shanghai">
-            责任人一
-          </a-select-option>
-          <a-select-option value="beijing">
-            责任人二
-          </a-select-option>
-        </a-select>
+        <j-dict-select-tag
+          allowClear
+          style="width:200px;"
+          v-model="informContactId"
+          type="list"
+          dictCode="contact_manage, full_name, id"
+          placeholder="请选择质控责任人"
+        />
       </div>
 
       <a-button @click="handleSearch" type="primary">搜索</a-button>
@@ -41,7 +34,7 @@
         bordered
         rowKey="id"
         :columns="columns"
-        :dataSource="dataSource"
+        :dataSource="dataList"
         :pagination="ipagination"
         :loading="loading"
         :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
@@ -95,7 +88,10 @@ export default {
   },
   data() {
     return {
-      description: '样本编号管理页面',
+      description: '样本管理页面',
+      batchNo: '',
+      informContactId: '',
+      dataList: [],
       // 表头
       columns: [
         {
@@ -121,7 +117,7 @@ export default {
         {
           title: '数量',
           align: 'center',
-          dataIndex: 'name'
+          dataIndex: 'totalRecordAmount'
         },
         {
           title: '合格数',
@@ -153,15 +149,31 @@ export default {
         }
       ],
       url: {
-        list: 'mission/caseSample/stockApply/list',
+        list: 'mission/caseSample/stockApply/list'
       }
     }
   },
   methods: {
-    handleSearch() {},
+    loadData() {
+      const that = this
+      const query = {
+        batchNo: this.batchNo,
+        informContactId: this.informContactId
+      }
+      getStockApplyList(query).then(res => {
+        if (res.success) {
+          that.dataList = res.result.records
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    handleSearch() {
+      this.loadData()
+    },
     showDetail(record) {
       this.$router.push(`/mission/sample/sampleResult?id=${record.id}`)
-    },
+    }
   },
 }
 </script>
@@ -178,6 +190,7 @@ export default {
     align-items: center;
 
     .title {
+      min-width: 45px;
       color: rgba(0, 0, 0, 0.85);
       margin-right: 10px;
     }

@@ -73,8 +73,14 @@ export const approve = (params) => postAction('/mission/materialManagement/stock
 
 // ================================================= 样本管理
 
+// 文件管理-分页列表查询
+export const getFileInfoList = (params) => getAction('/mission/fileInfo/list', params)
+
 // 病例样本入库-新增样本入库（文件上传）
 export const caseSampleUploadFile = (params) => uploadAction('/mission/caseSample/stockApply/add', params)
+
+// 病例样本检测-上传检测报告（文件上传）
+export const caseSampleDetect = (params) => postAction('/mission/caseSample/detect', params)
 
 // 样本入库单对应的审计报告-通过入库单id查询
 export const getStockApplyQc = (params) => getAction('/mission/caseSample/stockApply/qc', params)
@@ -87,5 +93,8 @@ export const putStockApplyQc = (step, params) => putAction(`/mission/caseSample/
 
 // 病例样本信息-分页列表查询
 export const getCaseSampleList = (params) => getAction('/mission/caseSample/list', params)
+
+// 病例样本入库-入库单分页列表查询
+export const getStockApplyList = (params) => getAction('/mission/caseSample/stockApply/list', params)
 
 export default api

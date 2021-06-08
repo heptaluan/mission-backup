@@ -69,8 +69,6 @@
 </template>
 
 <script>
-import { httpAction, getAction } from '@/api/manage'
-import { validateDuplicateValue } from '@/utils/util'
 import { caseSampleUploadFile } from 'src/api/mission/project'
 
 export default {
@@ -160,6 +158,8 @@ export default {
                 that.fileList = []
                 that.$message.success('文件上传成功！')
                 that.$emit('ok')
+              } else {
+                that.$message.error(res.message)
               }
             })
             .catch(e => {

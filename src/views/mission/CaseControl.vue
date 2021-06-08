@@ -128,12 +128,19 @@ export default {
         {
           title: '姓名',
           align: 'center',
-          dataIndex: 'responsible'
+          dataIndex: 'caseName'
         },
         {
           title: '性别',
           align: 'center',
-          dataIndex: 'time'
+          dataIndex: 'gender',
+          customRender: function(text) {
+            if (text == 1) {
+              return '男'
+            } else {
+              return '女'
+            }
+          }
         },
         {
           title: '年龄',
@@ -173,7 +180,7 @@ export default {
         {
           title: '检测时间',
           align: 'center',
-          dataIndex: 'state6'
+          dataIndex: 'createTime'
         },
         {
           title: '操作',
@@ -185,11 +192,8 @@ export default {
         }
       ],
       url: {
-        list: '/mission/materialManagement/list',
-        delete: api.delete,
-        deleteBatch: api.deleteBatch,
-        exportXlsUrl: api.exportXlsUrl,
-        importExcelUrl: api.importExcelUrl
+        list: 'mission/medicalCase/list',
+        delete: 'mission/medicalCase/delete'
       },
       dictOptions: {},
       superFieldList: []

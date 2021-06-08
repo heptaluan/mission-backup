@@ -41,7 +41,7 @@
       </div>
 
       <div class="search-group">
-        <a-select v-model="circuitResult" style="width: 230px" placeholder="请选择条目进行筛选">
+        <a-select allowClear style="width: 230px" placeholder="请选择条目进行筛选" @change="handleSearchChange">
           <a-select-option value="10000">
             合格
           </a-select-option>
@@ -125,7 +125,7 @@ export default {
       content: '',
       id: '',
       informContactId: '',
-      circuitResult: '10000',
+      searchCircuitResult: '',
       result: {
         batchNo: '',
         totalRecordAmount: '',
@@ -147,7 +147,7 @@ export default {
         {
           title: '批次号',
           align: 'center',
-          dataIndex: 'code'
+          dataIndex: 'batchNo'
         },
         {
           title: '样本编号',
@@ -167,7 +167,7 @@ export default {
         {
           title: '质控时间',
           align: 'center',
-          dataIndex: 'time'
+          dataIndex: 'createTime'
         },
         {
           title: '质控指导手册',
@@ -201,14 +201,17 @@ export default {
     }
   },
   methods: {
+    handleSearchChange(value) {
+      this.searchCircuitResult = value
+    },
     handleSearch() {
       const that = this
       const query = {
-        circuitResult: that.circuitResult
+        circuitResult: that.searchCircuitResult
       }
-      getStockApplyQc(query).then(res => {
+      getCaseSampleList(query).then(res => {
         if (res.success) {
-          that.result = res.result
+          that.dataSource = res.result.records
         } else {
           that.$message.warning(res.message)
         }
@@ -243,7 +246,8 @@ export default {
     loadFormData() {
       const that = this
       const query = {
-        id: this.getParams('id')
+        id: this.getParams('id'),
+        currentCircuit: 3
       }
       getStockApplyQc(query).then(res => {
         if (res.success) {
