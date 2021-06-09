@@ -42,6 +42,8 @@
         </div>
       </span>
     </a-table>
+
+    <CodeControlModal ref="codeControlModal" @ok="modalFormOk" />
   </a-card>
 </template>
 
@@ -49,11 +51,16 @@
 import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
+import CodeControlModal from './modules/sample/CodeControlModal'
+import Vue from 'vue'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
 
 export default {
   name: 'CodeControl',
   mixins: [JeecgListMixin, mixinDevice],
+  components: {
+    CodeControlModal
+  },
   data() {
     return {
       title: '',
@@ -76,7 +83,7 @@ export default {
         {
           title: '出库单编号',
           align: 'center',
-          dataIndex: 'code'
+          dataIndex: 'leaveApplyId'
         },
         {
           title: '出库时间',
@@ -91,7 +98,7 @@ export default {
         {
           title: '数量',
           align: 'center',
-          dataIndex: 'num'
+          dataIndex: 'caseAmount'
         },
         {
           title: '操作',
@@ -103,11 +110,7 @@ export default {
         }
       ],
       url: {
-        list: '/mission/materialManagement/list',
-        delete: '/mission/materialManagement/delete',
-        deleteBatch: '/mission/materialManagement/deleteBatch',
-        exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel'
+        list: 'mission/codeManagement/list'
       }
     }
   },
@@ -117,8 +120,18 @@ export default {
     }
   },
   methods: {
-    preview() {},
-    downloadCode() {}
+    preview(record) {
+      this.$refs.codeControlModal.show(record)
+    },
+    downloadCode(record) {
+      const token = Vue.ls.get(ACCESS_TOKEN)
+      let link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = `${Vue.prototype.API_BASE_URL}/mission/fileInfo/download?id=${record.fileInfoId}&token=${token}`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
   }
 }
 </script>

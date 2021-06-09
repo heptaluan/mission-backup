@@ -152,37 +152,35 @@ export default {
         {
           title: '样本编号',
           align: 'center',
-          dataIndex: 'sampleCode'
+          dataIndex: 'sampleCode',
+          customRender: function(t, r, index) {
+            return `${r.caseIdentity}-${r.sampleIdentity}`
+          }
         },
         {
           title: '样本类型',
           align: 'center',
-          dataIndex: 'type'
+          dataIndex: 'sampleType_dictText'
         },
         {
-          title: '质控责任人',
-          align: 'center',
-          dataIndex: 'person'
-        },
-        {
-          title: '质控时间',
+          title: '导入时间',
           align: 'center',
           dataIndex: 'createTime'
         },
         {
-          title: '质控指导手册',
+          title: '质检人员',
           align: 'center',
-          dataIndex: 'manual'
+          dataIndex: 'qcBy'
         },
         {
-          title: '质控报告时间',
+          title: '质检时间',
           align: 'center',
-          dataIndex: 'time1'
+          dataIndex: 'qcTime'
         },
         {
-          title: '是否合格',
+          title: '阶段',
           align: 'center',
-          dataIndex: 'state'
+          dataIndex: 'currentCircuit_dictText'
         },
         {
           title: '操作',
@@ -192,7 +190,7 @@ export default {
         }
       ],
       url: {
-        list: '/mission/caseSample/list',
+        list: '',
         delete: api.delete,
         deleteBatch: api.deleteBatch,
         exportXlsUrl: api.exportXlsUrl,
@@ -207,7 +205,8 @@ export default {
     handleSearch() {
       const that = this
       const query = {
-        circuitResult: that.searchCircuitResult
+        circuitResult: that.searchCircuitResult,
+        currentCircuit: 3
       }
       getCaseSampleList(query).then(res => {
         if (res.success) {
@@ -253,6 +252,21 @@ export default {
         if (res.success) {
           that.result = res.result
           that.id = res.result.id
+          that.content = res.result.qcReportContent
+          that.informContactId = res.result.informContactId
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    loadData() {
+      const that = this
+      const query = {
+        currentCircuit: 3
+      }
+      getCaseSampleList(query).then(res => {
+        if (res.success) {
+          that.dataSource = res.result.records
         } else {
           that.$message.warning(res.message)
         }
@@ -279,7 +293,6 @@ export default {
           break
       }
       putStockApplyQc(query).then(res => {
-        console.log(res)
         if (res.success) {
         } else {
           that.$message.warning(res.message)

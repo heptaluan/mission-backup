@@ -1,21 +1,47 @@
 <template>
   <a-spin :spinning="confirmLoading">
     <j-form-container :disabled="formDisabled">
-      <a-form-model ref="form" :model="form" :rules="rules" slot="detail">
+      <a-form-model ref="form" :model="model" :rules="validatorRules" slot="detail">
         <a-row>
           <a-col :span="24">
-            <a-form-model-item label="填写的批次" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="person">
-              <a-select v-model="form.type" placeholder="请选择进行填写的批次">
-                <a-select-option value="1">
-                  批次一
-                </a-select-option>
-                <a-select-option value="2">
-                  批次二
-                </a-select-option>
-                <a-select-option value="3">
-                  批次三
-                </a-select-option>
+            <a-form-model-item label="病例编号" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="identifyCode">
+              <a-input disabled="disabled" v-model="model.identifyCode" placeholder="请输入病例编号"></a-input>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="姓名" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="caseName">
+              <a-input disabled="disabled" v-model="model.caseName" placeholder="请输入姓名"></a-input>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="性别" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="gender">
+              <a-select disabled="disabled" v-model="model.gender">
+                <a-select-option :key="1" :value="1">男</a-select-option>
+                <a-select-option :key="2" :value="2">女</a-select-option>
               </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="年龄" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="age">
+              <a-input disabled="disabled" v-model="model.age" placeholder="请输入年龄" />
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="身份证号" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="caseIdentity">
+              <a-input disabled="disabled" v-model="model.caseIdentity" placeholder="请输入身份证号" />
+            </a-form-model-item>
+          </a-col>
+
+
+
+          <a-col :span="24">
+            <a-form-model-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input placeholder="请输入状态" />
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="24">
+            <a-form-model-item label="存放位置" :labelCol="labelCol" :wrapperCol="wrapperCol">
+              <a-input placeholder="请输入存放位置" />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -43,22 +69,15 @@ export default {
     return {
       model: {},
       labelCol: {
-        xs: { span: 25 },
-        sm: { span: 4 }
+        xs: { span: 24 },
+        sm: { span: 5 }
       },
       wrapperCol: {
         xs: { span: 24 },
         sm: { span: 16 }
       },
       confirmLoading: false,
-      form: {
-        code: '',
-        person: undefined
-      },
-      rules: {
-        code: [{ required: true, message: '请输入批次号', trigger: 'blur' }],
-        person: [{ required: true, message: '请选择项目研究所处阶段', trigger: 'change' }]
-      },
+      validatorRules: {},
       url: {
         add: '/mission/materialManagement/add',
         edit: '/mission/materialManagement/edit',
@@ -116,13 +135,3 @@ export default {
   }
 }
 </script>
-<style lang="less" scoped>
-.btn-group {
-  margin-bottom: 30px;
-  padding-left: 20px;
-
-  button {
-    margin-right: 20px;
-  }
-}
-</style>

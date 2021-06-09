@@ -2,16 +2,15 @@
   <a-card :bordered="false">
     <a-form-model style="margin-bottom: 40px;" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
       <!-- 查询区域 -->
-      <div class="table-page-search-wrapper">
+      <!-- <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24"> </a-row>
         </a-form>
-      </div>
+      </div> -->
       <!-- 查询区域-END -->
 
-      <!-- 操作按钮区域 -->
-      <div class="table-operator" style="margin-bottom:20px;">
-        <!-- 高级查询区域 -->
+      <!-- 高级查询区域 -->
+      <!-- <div class="table-operator" style="margin-bottom:20px;">
         <j-super-query
           :fieldList="superFieldList"
           ref="superQueryModal"
@@ -23,7 +22,7 @@
           </a-menu>
           <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down"/></a-button>
         </a-dropdown>
-      </div>
+      </div> -->
 
       <!-- table区域-begin -->
       <a-table
@@ -90,7 +89,6 @@ import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import CaseControlModal from './modules/sample/CaseControlModal'
-import api from 'src/api/mission/sample'
 
 export default {
   name: 'CaseControl',
@@ -116,14 +114,9 @@ export default {
           }
         },
         {
-          title: '样本编号',
+          title: '病例编号',
           align: 'center',
-          dataIndex: 'code'
-        },
-        {
-          title: '样本类型',
-          align: 'center',
-          dataIndex: 'sampleType'
+          dataIndex: 'identifyCode'
         },
         {
           title: '姓名',
@@ -145,27 +138,12 @@ export default {
         {
           title: '年龄',
           align: 'center',
-          dataIndex: 'manual'
+          dataIndex: 'age'
         },
         {
-          title: '医院',
+          title: '身份证号',
           align: 'center',
-          dataIndex: 'reportTime'
-        },
-        {
-          title: '性质',
-          align: 'center',
-          dataIndex: 'state1'
-        },
-        {
-          title: '癌种',
-          align: 'center',
-          dataIndex: 'state2'
-        },
-        {
-          title: '入库时间',
-          align: 'center',
-          dataIndex: 'state3'
+          dataIndex: 'caseIdentity'
         },
         {
           title: '状态',

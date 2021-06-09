@@ -89,12 +89,25 @@ export const getStockApplyQc = (params) => getAction('/mission/caseSample/stockA
 export const caseSampleQc = (params) => postAction('/mission/caseSample/qc', params)
 
 // 病例单个样本-qc
-export const putStockApplyQc = (step, params) => putAction(`/mission/caseSample/stockApply/qc`, params)
+export const putStockApplyQc = (params) => putAction(`/mission/caseSample/stockApply/qc`, params)
 
 // 病例样本信息-分页列表查询
 export const getCaseSampleList = (params) => getAction('/mission/caseSample/list', params)
 
 // 病例样本入库-入库单分页列表查询
 export const getStockApplyList = (params) => getAction('/mission/caseSample/stockApply/list', params)
+
+// ================================================= 编号管理
+
+// 样本编号详情管理-分页列表查询
+export const getCodeManagementList = (params) => getAction('/mission/codeManagement/code/list', params)
+
+// 文件管理-通过id下载
+export const downloadFileInfo = (params) => getAction('/mission/fileInfo/download', params)
+
+// ================================================= 用户列表
+
+// 获取用户列表数据
+export const getUserList = (params) => getAction('/sys/user/list', params)
 
 export default api

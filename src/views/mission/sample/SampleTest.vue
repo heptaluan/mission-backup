@@ -6,12 +6,11 @@
           <div class="title">项目名</div>
           <j-dict-select-tag
             allowClear
-            style="width:200px;"
+            style="width:150px;"
             type="list"
             dictCode="project_info, project_name, id"
             placeholder="请选择项目"
             v-model="searchData.project"
-            @input="handleFileListChange"
           />
         </div>
         <div class="group">
@@ -20,13 +19,13 @@
         </div>
         <div class="group">
           <div class="title">批次号</div>
-          <a-input v-model="searchData.batchNo" allowClear placeholder="请输入批次号"></a-input>
+          <a-input v-model="searchData.batchNo" style="width: 150px" allowClear placeholder="请输入批次号"></a-input>
         </div>
         <div class="group">
           <div class="title">质控责任人</div>
           <j-dict-select-tag
             allowClear
-            style="width:200px;"
+            style="width:150px;"
             type="list"
             dictCode="contact_manage, full_name, id"
             placeholder="请选择质控责任人"
@@ -34,7 +33,7 @@
           />
         </div>
 
-        <a-button @click="handleSearch" type="primary">搜索</a-button>
+        <a-button @click="handleSearch" type="primary">筛选</a-button>
       </div>
 
       <!-- 项目资料 -->
@@ -112,10 +111,10 @@ export default {
       labelCol: { span: 2 },
       wrapperCol: { span: 10 },
       searchData: {
-        project: '',
+        project: undefined,
         sampleIdentity: '',
         batchNo: '',
-        informContactId: ''
+        informContactId: undefined
       },
       dataList: [],
       // 表头
@@ -196,9 +195,6 @@ export default {
           that.$message.warning(res.message)
         }
       })
-    },
-    handleFileListChange(value) {
-      this.searchData.project = value
     },
     handleSearch() {
       this.loadData()

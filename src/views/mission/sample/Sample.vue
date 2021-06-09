@@ -3,21 +3,21 @@
     <div class="search-group">
       <div class="group">
         <div class="title">批次号</div>
-        <a-input allowClear v-model="batchNo" placeholder="请输入批次号" ></a-input>
+        <a-input allowClear v-model="batchNo" placeholder="请输入批次号"></a-input>
       </div>
       <div class="group">
         <div class="title">质控责任人</div>
         <j-dict-select-tag
           allowClear
           style="width:200px;"
-          v-model="informContactId"
           type="list"
           dictCode="contact_manage, full_name, id"
           placeholder="请选择质控责任人"
+          v-model="informContactId"
         />
       </div>
 
-      <a-button @click="handleSearch" type="primary">搜索</a-button>
+      <a-button @click="handleSearch" type="primary">筛选</a-button>
     </div>
 
     <!-- 操作按钮区域 -->
@@ -78,7 +78,7 @@ import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import SampleManagementModal from '../modules/sample/SampleManagementModal'
-import { getStockApplyList } from 'src/api/mission/project'
+import { getStockApplyList, getUserList } from 'src/api/mission/project'
 
 export default {
   name: 'Sample',
@@ -90,7 +90,7 @@ export default {
     return {
       description: '样本管理页面',
       batchNo: '',
-      informContactId: '',
+      informContactId: undefined,
       dataList: [],
       // 表头
       columns: [
@@ -130,14 +130,19 @@ export default {
           dataIndex: 'age'
         },
         {
-          title: '是否已短信通知',
+          title: '入库人',
           align: 'center',
-          dataIndex: 'hoName'
+          dataIndex: 'createBy'
         },
         {
-          title: '创建时间',
+          title: '入库时间',
           align: 'center',
           dataIndex: 'createTime'
+        },
+        {
+          title: '是否已短信通知',
+          align: 'center',
+          dataIndex: 'informApplyResult_dictText'
         },
         {
           title: '操作',
@@ -168,6 +173,16 @@ export default {
         }
       })
     },
+    getUserList() {
+      const that = this
+      getUserList().then(res => {
+        console.log(res)
+        if (res.success) {
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
     handleSearch() {
       this.loadData()
     },
@@ -175,6 +190,9 @@ export default {
       this.$router.push(`/mission/sample/sampleResult?id=${record.id}`)
     }
   },
+  mounted() {
+    this.getUserList()
+  }
 }
 </script>
 <style scoped lang="less">
