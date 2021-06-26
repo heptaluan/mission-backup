@@ -1,11 +1,7 @@
 <template>
   <div class="home">
     <div class="banner">
-      <img
-        alt="Vue logo"
-        style="width: 64px; height: 64px"
-        src="../assets/logo.png"
-      />
+      <img alt="Vue logo" style="width: 64px; height: 64px" src="../assets/logo.png" />
       <h3 style="margin-top: 1rem">Welcome to Your Vue.js App</h3>
     </div>
 
@@ -48,51 +44,21 @@
     <a-divider> AvatarList </a-divider>
     <a-card style="margin-bottom: 3rem">
       <avatar-list :max-length="3">
-        <avatar-list-item
-          tips="Jake"
-          src="https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png"
-        />
-        <avatar-list-item
-          tips="Andy"
-          src="https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png"
-        />
-        <avatar-list-item
-          tips="Niko"
-          src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png"
-        />
-        <avatar-list-item
-          tips="Niko"
-          src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png"
-        />
-        <avatar-list-item
-          tips="Niko"
-          src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png"
-        />
-        <avatar-list-item
-          tips="Niko"
-          src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png"
-        />
-        <avatar-list-item
-          tips="Niko"
-          src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png"
-        />
+        <avatar-list-item tips="Jake" src="https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png" />
+        <avatar-list-item tips="Andy" src="https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png" />
+        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
+        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
+        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
+        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
+        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
       </avatar-list>
 
       <a-divider type="vertical" style="margin: 0 16px" />
 
       <avatar-list size="mini">
-        <avatar-list-item
-          tips="Jake"
-          src="https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png"
-        />
-        <avatar-list-item
-          tips="Andy"
-          src="https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png"
-        />
-        <avatar-list-item
-          tips="Niko"
-          src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png"
-        />
+        <avatar-list-item tips="Jake" src="https://gw.alipayobjects.com/zos/rmsportal/zOsKZmFRdUtvpqCImOVY.png" />
+        <avatar-list-item tips="Andy" src="https://gw.alipayobjects.com/zos/rmsportal/sfjbOqnsXXJgNCjCzDBL.png" />
+        <avatar-list-item tips="Niko" src="https://gw.alipayobjects.com/zos/rmsportal/kZzEzemZyKLKFsojXItE.png" />
       </avatar-list>
     </a-card>
 
@@ -100,33 +66,18 @@
 
     <a-divider> CountDown </a-divider>
     <a-card style="margin-bottom: 3rem">
-      <count-down
-        style="font-size: 2rem"
-        :target="new Date().getTime() + 3000000"
-        :on-end="onEndHandle"
-      >
-      </count-down>
+      <count-down style="font-size: 2rem" :target="new Date().getTime() + 3000000" :on-end="onEndHandle"> </count-down>
 
       <a-divider type="vertical" style="margin: 0 16px" />
 
-      <count-down
-        style="font-size: 2rem"
-        :target="new Date().getTime() + 10000"
-        :on-end="onEndHandle2"
-      >
-      </count-down>
+      <count-down style="font-size: 2rem" :target="new Date().getTime() + 10000" :on-end="onEndHandle2"> </count-down>
     </a-card>
 
     <h2># Ellipsis 组件</h2>
 
     <a-divider> Ellipsis </a-divider>
     <a-card style="margin-bottom: 3rem">
-      <ellipsis :length="100" tooltip>
-        There were injuries alleged in three cases in 2015, and a fourth
-        incident in September, according to the safety recall report. After
-        meeting with US regulators in October, the firm decided to issue a
-        voluntary recall.
-      </ellipsis>
+      <ellipsis :length="100" tooltip> There were injuries alleged in three cases in 2015, and a fourth incident in September, according to the safety recall report. After meeting with US regulators in October, the firm decided to issue a voluntary recall. </ellipsis>
     </a-card>
 
     <h2># NumberInfo 组件</h2>
@@ -180,8 +131,7 @@ export default {
     onEndHandle2() {
       this.$notification.open({
         message: 'Notification Title',
-        description:
-          'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
+        description: 'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
       })
     },
   },

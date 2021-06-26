@@ -3,14 +3,14 @@
     <j-form-container :disabled="formDisabled">
       <a-form-model ref="form" :model="model" :rules="validatorRules" slot="detail">
         <a-row>
-           <a-col :span="24">
+          <a-col :span="24">
             <a-form-model-item label="耗材名称" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialName">
-              <a-input v-model="model.materialName" placeholder="请输入耗材名称"  ></a-input>
+              <a-input v-model="model.materialName" placeholder="请输入耗材名称"></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="耗材编码" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialCode">
-              <a-input v-model="model.materialCode" placeholder="请输入耗材编码"  ></a-input>
+              <a-input v-model="model.materialCode" placeholder="请输入耗材编码"></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
@@ -20,17 +20,17 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="耗材入库总计" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="factoryId">
-              <a-input v-model="model.remark" placeholder="请输入耗材入库总计"  ></a-input>
+              <a-input v-model="model.remark" placeholder="请输入耗材入库总计"></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="耗材出库总计" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="factoryId">
-              <a-input v-model="model.remark" placeholder="请输入耗材出库总计"  ></a-input>
+              <a-input v-model="model.remark" placeholder="请输入耗材出库总计"></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="剩余库存量" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="remark">
-              <a-input v-model="model.remark" placeholder="请输入剩余库存量"  ></a-input>
+              <a-input v-model="model.remark" placeholder="请输入剩余库存量"></a-input>
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -40,90 +40,87 @@
 </template>
 
 <script>
+import { httpAction, getAction } from '@/api/manage'
+import { validateDuplicateValue } from '@/utils/util'
 
-  import { httpAction, getAction } from '@/api/manage'
-  import { validateDuplicateValue } from '@/utils/util'
-
-  export default {
-    name: 'EditMaterialManagementForm',
-    components: {
+export default {
+  name: 'EditMaterialManagementForm',
+  components: {},
+  props: {
+    //表单禁用
+    disabled: {
+      type: Boolean,
+      default: false,
+      required: false,
     },
-    props: {
-      //表单禁用
-      disabled: {
-        type: Boolean,
-        default: false,
-        required: false
-      }
-    },
-    data () {
-      return {
-        model:{
-         },
-        labelCol: {
-          xs: { span: 24 },
-          sm: { span: 5 },
-        },
-        wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
-        },
-        confirmLoading: false,
-        validatorRules: {
-        },
-        url: {
-          add: "/mission/materialManagement/add",
-          edit: "/mission/materialManagement/edit",
-          queryById: "/mission/materialManagement/queryById"
-        }
-      }
-    },
-    computed: {
-      formDisabled(){
-        return this.disabled
+  },
+  data() {
+    return {
+      model: {},
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 5 },
       },
-    },
-    created () {
-       //备份model原始值
-      this.modelDefault = JSON.parse(JSON.stringify(this.model));
-    },
-    methods: {
-      add () {
-        this.edit(this.modelDefault);
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 },
       },
-      edit (record) {
-        this.model = Object.assign({}, record);
-        this.visible = true;
-      },
-      submitForm () {
-        const that = this;
-        // 触发表单验证
-        this.$refs.form.validate(valid => {
-          if (valid) {
-            that.confirmLoading = true;
-            let httpurl = '';
-            let method = '';
-            if(!this.model.id){
-              httpurl+=this.url.add;
-              method = 'post';
-            }else{
-              httpurl+=this.url.edit;
-               method = 'put';
-            }
-            httpAction(httpurl,this.model,method).then((res)=>{
-              if(res.success){
-                that.$message.success(res.message);
-                that.$emit('ok');
-              }else{
-                that.$message.warning(res.message);
-              }
-            }).finally(() => {
-              that.confirmLoading = false;
-            })
-          }
-         
-        })
+      confirmLoading: false,
+      validatorRules: {},
+      url: {
+        add: '/mission/materialManagement/add',
+        edit: '/mission/materialManagement/edit',
+        queryById: '/mission/materialManagement/queryById',
       },
     }
-  }
+  },
+  computed: {
+    formDisabled() {
+      return this.disabled
+    },
+  },
+  created() {
+    //备份model原始值
+    this.modelDefault = JSON.parse(JSON.stringify(this.model))
+  },
+  methods: {
+    add() {
+      this.edit(this.modelDefault)
+    },
+    edit(record) {
+      this.model = Object.assign({}, record)
+      this.visible = true
+    },
+    submitForm() {
+      const that = this
+      // 触发表单验证
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          that.confirmLoading = true
+          let httpurl = ''
+          let method = ''
+          if (!this.model.id) {
+            httpurl += this.url.add
+            method = 'post'
+          } else {
+            httpurl += this.url.edit
+            method = 'put'
+          }
+          httpAction(httpurl, this.model, method)
+            .then(res => {
+              if (res.success) {
+                that.$message.success(res.message)
+                that.$emit('ok')
+              } else {
+                that.$message.warning(res.message)
+              }
+            })
+            .finally(() => {
+              that.confirmLoading = false
+            })
+        }
+      })
+    },
+  },
+}
 </script>

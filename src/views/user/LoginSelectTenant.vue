@@ -1,23 +1,11 @@
 <template>
-  <a-modal
-    :title="title"
-    :width="450"
-    :visible="visible"
-    :closable="false"
-    :maskClosable="false"
-  >
+  <a-modal :title="title" :width="450" :visible="visible" :closable="false" :maskClosable="false">
     <template slot="footer">
       <a-button type="primary" @click="selectOk">确认</a-button>
     </template>
 
     <a-form>
-      <a-form-item
-        v-if="isMultiTenant"
-        :labelCol="{ span: 4 }"
-        :wrapperCol="{ span: 20 }"
-        style="margin-bottom: 10px"
-        :validate-status="validate_status1"
-      >
+      <a-form-item v-if="isMultiTenant" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }" style="margin-bottom: 10px" :validate-status="validate_status1">
         <a-tooltip placement="topLeft">
           <template slot="title">
             <span>您有多个租户，请选择登录租户</span>
@@ -25,12 +13,7 @@
           <a-avatar style="backgroundcolor: #87d068" icon="gold" />
         </a-tooltip>
 
-        <a-select
-          @change="handleTenantChange"
-          :class="{ 'valid-error': validate_status1 == 'error' }"
-          placeholder="请选择登录租户"
-          style="margin-left: 10px; width: 80%"
-        >
+        <a-select @change="handleTenantChange" :class="{ 'valid-error': validate_status1 == 'error' }" placeholder="请选择登录租户" style="margin-left: 10px; width: 80%">
           <a-icon slot="suffixIcon" type="gold" />
           <a-select-option v-for="d in tenantList" :key="d.id" :value="d.id">
             {{ d.name }}
@@ -38,13 +21,7 @@
         </a-select>
       </a-form-item>
 
-      <a-form-item
-        v-if="isMultiDepart"
-        :labelCol="{ span: 4 }"
-        :wrapperCol="{ span: 20 }"
-        style="margin-bottom: 10px"
-        :validate-status="validate_status2"
-      >
+      <a-form-item v-if="isMultiDepart" :labelCol="{ span: 4 }" :wrapperCol="{ span: 20 }" style="margin-bottom: 10px" :validate-status="validate_status2">
         <a-tooltip placement="topLeft">
           <template slot="title">
             <span>您有多个部门，请选择登录部门</span>
@@ -52,18 +29,9 @@
           <a-avatar style="backgroundcolor: rgb(104, 208, 203)" icon="gold" />
         </a-tooltip>
 
-        <a-select
-          @change="handleDepartChange"
-          :class="{ 'valid-error': validate_status2 == 'error' }"
-          placeholder="请选择登录部门"
-          style="margin-left: 10px; width: 80%"
-        >
+        <a-select @change="handleDepartChange" :class="{ 'valid-error': validate_status2 == 'error' }" placeholder="请选择登录部门" style="margin-left: 10px; width: 80%">
           <a-icon slot="suffixIcon" type="gold" />
-          <a-select-option
-            v-for="d in departList"
-            :key="d.id"
-            :value="d.orgCode"
-          >
+          <a-select-option v-for="d in departList" :key="d.id" :value="d.orgCode">
             {{ d.departName }}
           </a-select-option>
         </a-select>
@@ -165,10 +133,7 @@ export default {
     requestFailed(err) {
       this.$notification['error']({
         message: '登录失败',
-        description:
-          ((err.response || {}).data || {}).message ||
-          err.message ||
-          '请求出现错误，请稍后再试',
+        description: ((err.response || {}).data || {}).message || err.message || '请求出现错误，请稍后再试',
         duration: 4,
       })
       this.loginBtn = false
