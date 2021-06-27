@@ -14,18 +14,18 @@ export default {
       type: String,
       default() {
         return ''
-      }
-    }
+      },
+    },
   },
   data() {
     return {
-      editorContent: ''
+      editorContent: '',
     }
   },
   watch: {
     content(val) {
       this._setInitContent(val)
-    }
+    },
   },
   mounted() {
     this.editorContent = this.content
@@ -51,7 +51,7 @@ export default {
     beforeDestroy() {
       this.editor.destroy()
       this.editor = null
-    }
-  }
+    },
+  },
 }
 </script>

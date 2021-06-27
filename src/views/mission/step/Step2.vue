@@ -1,11 +1,6 @@
 <template>
   <div>
-    <a-form-model
-      style="max-width: 1080px; margin: 40px auto 0;"
-      ref="ruleForm"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
-    >
+    <a-form-model style="max-width: 1080px; margin: 40px auto 0" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
       <!-- <a-form-model-item label="绑定组长单位/leader cooperation" prop="cooperation">
         <a-select v-model="form.cooperation" placeholder="请选择组长单位" @change="handleChange">
           <a-select-option v-for="item in cooperationList" :key="item.id" :value="item.id">
@@ -24,9 +19,7 @@
         </a-select>
       </a-form-model-item> -->
 
-      <a-button class="add-btn" type="primary" @click="handleAdd" icon="plus">
-        新增合作单位
-      </a-button>
+      <a-button class="add-btn" type="primary" @click="handleAdd" icon="plus"> 新增合作单位 </a-button>
 
       <a-table
         ref="table"
@@ -72,7 +65,7 @@ import { deleteAction } from '@/api/manage'
 export default {
   name: 'Step2',
   components: {
-    AddCooperationModal
+    AddCooperationModal,
   },
   mixins: [JeecgListMixin, mixinDevice],
   data() {
@@ -87,30 +80,30 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '合作单位',
           align: 'center',
-          dataIndex: 'caName'
+          dataIndex: 'caName',
         },
         {
           title: '合作类型',
           align: 'center',
           dataIndex: 'corporationType',
-          customRender: function(text) {
+          customRender: function (text) {
             return !text ? '' : text === 1 ? '组长单位' : '分中心'
-          }
+          },
         },
         {
           title: '合作开始时间',
           align: 'center',
           dataIndex: 'createTime',
-          customRender: function(text) {
+          customRender: function (text) {
             return !text ? '' : text.length > 10 ? text.substr(0, 10) : text
-          }
+          },
         },
         {
           title: '操作',
@@ -118,13 +111,13 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       url: {
         list: '/mission/cooperationAgency/project',
-        delete: '/mission/cooperationAgency/project/delete'
-      }
+        delete: '/mission/cooperationAgency/project/delete',
+      },
     }
   },
   methods: {
@@ -150,7 +143,7 @@ export default {
       const params = {
         projectId: this.getParams('id'),
         page: 1,
-        size: 20
+        size: 20,
       }
       queryProjectCooperationAgency(params).then(res => {
         if (res.success) {
@@ -164,7 +157,7 @@ export default {
       const that = this
       deleteAction(that.url.delete, {
         agencyId: id,
-        projectId: this.getParams('id')
+        projectId: this.getParams('id'),
       }).then(res => {
         if (res.success) {
           that.reCalculatePage(1)
@@ -174,8 +167,8 @@ export default {
           that.$message.warning(res.message)
         }
       })
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -11,45 +11,24 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button
-        type="primary"
-        icon="download"
-        @click="handleExportXls('样本编号管理')"
-        >导出</a-button
-      >
-      <a-upload
-        name="file"
-        :showUploadList="false"
-        :multiple="false"
-        :headers="tokenHeader"
-        :action="importExcelUrl"
-        @change="handleImportExcel"
-      >
+      <a-button type="primary" icon="download" @click="handleExportXls('样本编号管理')">导出</a-button>
+      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">
         <a-button type="primary" icon="import">导入</a-button>
       </a-upload>
       <!-- 高级查询区域 -->
-      <j-super-query
-        :fieldList="superFieldList"
-        ref="superQueryModal"
-        @handleSuperQuery="handleSuperQuery"
-      ></j-super-query>
+      <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"
-            ><a-icon type="delete" />删除</a-menu-item
-          >
+          <a-menu-item key="1" @click="batchDel"><a-icon type="delete" />删除</a-menu-item>
         </a-menu>
-        <a-button style="margin-left: 8px">
-          批量操作 <a-icon type="down"
-        /></a-button>
+        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
     </div>
 
     <!-- table区域-begin -->
     <div>
       <div class="ant-alert ant-alert-info" style="margin-bottom: 16px">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择
-        <a style="font-weight: 600">{{ selectedRowKeys.length }}</a
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a
         >项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
@@ -75,31 +54,12 @@
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px; font-style: italic"
-            >无图片</span
-          >
-          <img
-            v-else
-            :src="getImgView(text)"
-            height="25px"
-            alt=""
-            style="max-width: 80px; font-size: 12px; font-style: italic"
-          />
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
         </template>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px; font-style: italic"
-            >无文件</span
-          >
-          <a-button
-            v-else
-            :ghost="true"
-            type="primary"
-            icon="download"
-            size="small"
-            @click="downloadFile(text)"
-          >
-            下载
-          </a-button>
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
+          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
         </template>
 
         <span slot="action" slot-scope="text, record">
@@ -113,10 +73,7 @@
                 <a @click="handleDetail(record)">详情</a>
               </a-menu-item>
               <a-menu-item>
-                <a-popconfirm
-                  title="确定删除吗?"
-                  @confirm="() => handleDelete(record.id)"
-                >
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -126,10 +83,7 @@
       </a-table>
     </div>
 
-    <code-management-modal
-      ref="modalForm"
-      @ok="modalFormOk"
-    ></code-management-modal>
+    <code-management-modal ref="modalForm" @ok="modalFormOk"></code-management-modal>
   </a-card>
 </template>
 
