@@ -1,14 +1,5 @@
 <template>
-  <j-modal
-    :title="title"
-    :width="width"
-    :visible="visible"
-    switchFullscreen
-    @ok="handleOk"
-    :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }"
-    @cancel="handleCancel"
-    cancelText="关闭"
-  >
+  <j-modal :title="title" :width="width" :visible="visible" switchFullscreen @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
     <AddCooperationForm ref="realForm" @ok="submitCallback" :disabled="disableSubmit" />
   </j-modal>
 </template>
@@ -19,14 +10,14 @@ import AddCooperationForm from './AddCooperationForm'
 export default {
   name: 'AddCooperationModal',
   components: {
-    AddCooperationForm
+    AddCooperationForm,
   },
   data() {
     return {
       title: '',
       width: 800,
       visible: false,
-      disableSubmit: false
+      disableSubmit: false,
     }
   },
   methods: {
@@ -55,7 +46,7 @@ export default {
     },
     handleCancel() {
       this.close()
-    }
-  }
+    },
+  },
 }
 </script>

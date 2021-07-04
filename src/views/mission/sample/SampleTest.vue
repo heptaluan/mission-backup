@@ -1,17 +1,10 @@
 <template>
   <a-card :bordered="false">
-    <a-form-model style="margin-bottom: 40px;" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form-model style="margin-bottom: 40px" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
       <div class="search-group">
         <div class="group">
           <div class="title">项目名</div>
-          <j-dict-select-tag
-            allowClear
-            style="width:150px;"
-            type="list"
-            dictCode="project_info, project_name, id"
-            placeholder="请选择项目"
-            v-model="searchData.project"
-          />
+          <j-dict-select-tag allowClear style="width: 150px" type="list" dictCode="project_info, project_name, id" placeholder="请选择项目" v-model="searchData.project" />
         </div>
         <div class="group">
           <div class="title">样本编号</div>
@@ -23,14 +16,7 @@
         </div>
         <div class="group">
           <div class="title">质控责任人</div>
-          <j-dict-select-tag
-            allowClear
-            style="width:150px;"
-            type="list"
-            dictCode="contact_manage, full_name, id"
-            placeholder="请选择质控责任人"
-            v-model="searchData.informContactId"
-          />
+          <j-dict-select-tag allowClear style="width: 150px" type="list" dictCode="contact_manage, full_name, id" placeholder="请选择质控责任人" v-model="searchData.informContactId" />
         </div>
 
         <a-button @click="handleSearch" type="primary">筛选</a-button>
@@ -63,20 +49,12 @@
             <div v-html="text"></div>
           </template>
           <template slot="imgSlot" slot-scope="text">
-            <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-            <img
-              v-else
-              :src="getImgView(text)"
-              height="25px"
-              alt=""
-              style="max-width:80px;font-size: 12px;font-style: italic;"
-            />
+            <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+            <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
           </template>
           <template slot="fileSlot" slot-scope="text">
-            <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-            <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
-              下载
-            </a-button>
+            <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
+            <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
           </template>
 
           <span slot="action" slot-scope="text, record">
@@ -103,7 +81,7 @@ export default {
   mixins: [JeecgListMixin, mixinDevice],
   components: {
     SampleTestModal,
-    FileList
+    FileList,
   },
   data() {
     return {
@@ -114,7 +92,7 @@ export default {
         project: undefined,
         sampleIdentity: '',
         batchNo: '',
-        informContactId: undefined
+        informContactId: undefined,
       },
       dataList: [],
       // 表头
@@ -125,44 +103,44 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '批次号',
           align: 'center',
-          dataIndex: 'batchNo'
+          dataIndex: 'batchNo',
         },
         {
           title: '样本编号',
           align: 'center',
-          dataIndex: 'sampleIdentity'
+          dataIndex: 'sampleIdentity',
         },
         {
           title: '样本类型',
           align: 'center',
-          dataIndex: 'sampleType'
+          dataIndex: 'sampleType',
         },
         {
           title: '检测责任人',
           align: 'center',
-          dataIndex: 'responsible'
+          dataIndex: 'responsible',
         },
         {
           title: '检测时间',
           align: 'center',
-          dataIndex: 'time'
+          dataIndex: 'time',
         },
         {
           title: '检测报告时间',
           align: 'center',
-          dataIndex: 'reportTime'
+          dataIndex: 'reportTime',
         },
         {
           title: '检测报告',
           align: 'center',
-          dataIndex: 'state'
+          dataIndex: 'state',
         },
         {
           title: '操作',
@@ -170,12 +148,12 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       url: {
-        list: ''
-      }
+        list: '',
+      },
     }
   },
   methods: {
@@ -186,7 +164,7 @@ export default {
         project: this.searchData.batchNo,
         sampleIdentity: this.searchData.sampleIdentity,
         batchNo: this.searchData.batchNo,
-        informContactId: this.searchData.informContactId
+        informContactId: this.searchData.informContactId,
       }
       getCaseSampleList(query).then(res => {
         if (res.success) {
@@ -204,8 +182,8 @@ export default {
     },
     submitCallback() {
       this.loadData()
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped lang="less">

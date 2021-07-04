@@ -1,11 +1,6 @@
 <template>
   <a-card :bordered="false">
-    <a-form-model
-      style="max-width: 1080px; margin: 20px auto 0;"
-      ref="ruleForm"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
-    >
+    <a-form-model style="max-width: 1080px; margin: 20px auto 0" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-descriptions title="样本质控结果">
         <a-descriptions-item label="批次号">
           {{ result.batchNo }}
@@ -20,13 +15,7 @@
           {{ result.qcRejectAmount }}
         </a-descriptions-item>
         <a-descriptions-item label="结果反馈对象">
-          <j-dict-select-tag
-            v-model="informContactId"
-            style="width:200px;"
-            type="list"
-            dictCode="contact_manage, full_name, id"
-            placeholder="请选择质控责任人"
-          />
+          <j-dict-select-tag v-model="informContactId" style="width: 200px" type="list" dictCode="contact_manage, full_name, id" placeholder="请选择质控责任人" />
         </a-descriptions-item>
       </a-descriptions>
 
@@ -42,12 +31,8 @@
 
       <div class="search-group">
         <a-select allowClear style="width: 230px" placeholder="请选择条目进行筛选" @change="handleSearchChange">
-          <a-select-option value="10000">
-            合格
-          </a-select-option>
-          <a-select-option value="20000">
-            不合格
-          </a-select-option>
+          <a-select-option value="10000"> 合格 </a-select-option>
+          <a-select-option value="20000"> 不合格 </a-select-option>
         </a-select>
         <a-button @click="handleSearch" type="primary">筛选</a-button>
       </div>
@@ -70,30 +55,18 @@
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-          <img
-            v-else
-            :src="getImgView(text)"
-            height="25px"
-            alt=""
-            style="max-width:80px;font-size: 12px;font-style: italic;"
-          />
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
         </template>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
-            下载
-          </a-button>
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
+          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
         </template>
 
         <template slot="radio" slot-scope="text, record">
           <a-radio-group v-model="record.circuitResult" @change="onRadioChange(record, $event)">
-            <a-radio :value="10000">
-              合格
-            </a-radio>
-            <a-radio :value="20000">
-              不合格
-            </a-radio>
+            <a-radio :value="10000"> 合格 </a-radio>
+            <a-radio :value="20000"> 不合格 </a-radio>
           </a-radio-group>
         </template>
       </a-table>
@@ -116,7 +89,7 @@ export default {
   name: 'SampleResult',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
-    Editor
+    Editor,
   },
   data() {
     return {
@@ -131,7 +104,7 @@ export default {
         totalRecordAmount: '',
         qcPassAmount: '',
         qcRejectAmount: '',
-        applyId: ''
+        applyId: '',
       },
       columns: [
         {
@@ -140,62 +113,62 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '批次号',
           align: 'center',
-          dataIndex: 'batchNo'
+          dataIndex: 'batchNo',
         },
         {
           title: '样本编号',
           align: 'center',
           dataIndex: 'sampleCode',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return `${r.caseIdentity}-${r.sampleIdentity}`
-          }
+          },
         },
         {
           title: '样本类型',
           align: 'center',
-          dataIndex: 'sampleType_dictText'
+          dataIndex: 'sampleType_dictText',
         },
         {
           title: '导入时间',
           align: 'center',
-          dataIndex: 'createTime'
+          dataIndex: 'createTime',
         },
         {
           title: '质检人员',
           align: 'center',
-          dataIndex: 'qcBy'
+          dataIndex: 'qcBy',
         },
         {
           title: '质检时间',
           align: 'center',
-          dataIndex: 'qcTime'
+          dataIndex: 'qcTime',
         },
         {
           title: '阶段',
           align: 'center',
-          dataIndex: 'currentCircuit_dictText'
+          dataIndex: 'currentCircuit_dictText',
         },
         {
           title: '操作',
           align: 'center',
           dataIndex: 'radio',
-          scopedSlots: { customRender: 'radio' }
-        }
+          scopedSlots: { customRender: 'radio' },
+        },
       ],
       url: {
         list: '',
         delete: api.delete,
         deleteBatch: api.deleteBatch,
         exportXlsUrl: api.exportXlsUrl,
-        importExcelUrl: api.importExcelUrl
-      }
+        importExcelUrl: api.importExcelUrl,
+      },
     }
   },
   methods: {
@@ -206,7 +179,7 @@ export default {
       const that = this
       const query = {
         circuitResult: that.searchCircuitResult,
-        currentCircuit: 3
+        currentCircuit: 3,
       }
       getCaseSampleList(query).then(res => {
         if (res.success) {
@@ -220,7 +193,7 @@ export default {
       const that = this
       const query = {
         id: record.id,
-        code: e.target.value
+        code: e.target.value,
       }
       caseSampleQc(query).then(res => {
         if (res.success) {
@@ -246,7 +219,7 @@ export default {
       const that = this
       const query = {
         id: this.getParams('id'),
-        currentCircuit: 3
+        currentCircuit: 3,
       }
       getStockApplyQc(query).then(res => {
         if (res.success) {
@@ -262,7 +235,7 @@ export default {
     loadData() {
       const that = this
       const query = {
-        currentCircuit: 3
+        currentCircuit: 3,
       }
       getCaseSampleList(query).then(res => {
         if (res.success) {
@@ -280,13 +253,13 @@ export default {
           query = {
             id: that.id,
             qcReportContent: that.content,
-            informContactId: that.informContactId
+            informContactId: that.informContactId,
           }
           break
         case 'end':
           query = {
             id: that.id,
-            circuitResult: 20000
+            circuitResult: 20000,
           }
           break
         default:
@@ -298,11 +271,11 @@ export default {
           that.$message.warning(res.message)
         }
       })
-    }
+    },
   },
   mounted() {
     this.loadFormData()
-  }
+  },
 }
 </script>
 

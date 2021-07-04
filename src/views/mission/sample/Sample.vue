@@ -7,14 +7,7 @@
       </div>
       <div class="group">
         <div class="title">质控责任人</div>
-        <j-dict-select-tag
-          allowClear
-          style="width:200px;"
-          type="list"
-          dictCode="contact_manage, full_name, id"
-          placeholder="请选择质控责任人"
-          v-model="informContactId"
-        />
+        <j-dict-select-tag allowClear style="width: 200px" type="list" dictCode="contact_manage, full_name, id" placeholder="请选择质控责任人" v-model="informContactId" />
       </div>
 
       <a-button @click="handleSearch" type="primary">筛选</a-button>
@@ -45,20 +38,12 @@
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-          <img
-            v-else
-            :src="getImgView(text)"
-            height="25px"
-            alt=""
-            style="max-width:80px;font-size: 12px;font-style: italic;"
-          />
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
         </template>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
-            下载
-          </a-button>
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
+          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
         </template>
 
         <span slot="action" slot-scope="text, record">
@@ -84,7 +69,7 @@ export default {
   name: 'Sample',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
-    SampleManagementModal
+    SampleManagementModal,
   },
   data() {
     return {
@@ -100,49 +85,49 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '批次号',
           align: 'center',
-          dataIndex: 'batchNo'
+          dataIndex: 'batchNo',
         },
         {
           title: '责任人',
           align: 'center',
-          dataIndex: 'sampleType'
+          dataIndex: 'sampleType',
         },
         {
           title: '数量',
           align: 'center',
-          dataIndex: 'totalRecordAmount'
+          dataIndex: 'totalRecordAmount',
         },
         {
           title: '合格数',
           align: 'center',
-          dataIndex: 'sex'
+          dataIndex: 'sex',
         },
         {
           title: '不合格数',
           align: 'center',
-          dataIndex: 'age'
+          dataIndex: 'age',
         },
         {
           title: '入库人',
           align: 'center',
-          dataIndex: 'createBy'
+          dataIndex: 'createBy',
         },
         {
           title: '入库时间',
           align: 'center',
-          dataIndex: 'createTime'
+          dataIndex: 'createTime',
         },
         {
           title: '是否已短信通知',
           align: 'center',
-          dataIndex: 'informApplyResult_dictText'
+          dataIndex: 'informApplyResult_dictText',
         },
         {
           title: '操作',
@@ -150,12 +135,12 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       url: {
-        list: 'mission/caseSample/stockApply/list'
-      }
+        list: 'mission/caseSample/stockApply/list',
+      },
     }
   },
   methods: {
@@ -163,7 +148,7 @@ export default {
       const that = this
       const query = {
         batchNo: this.batchNo,
-        informContactId: this.informContactId
+        informContactId: this.informContactId,
       }
       getStockApplyList(query).then(res => {
         if (res.success) {
@@ -188,11 +173,11 @@ export default {
     },
     showDetail(record) {
       this.$router.push(`/mission/sample/sampleResult?id=${record.id}`)
-    }
+    },
   },
   mounted() {
     this.getUserList()
-  }
+  },
 }
 </script>
 <style scoped lang="less">

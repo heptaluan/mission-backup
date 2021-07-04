@@ -6,12 +6,7 @@
           <a-row>
             <a-col :span="24">
               <a-form-model-item label="单位角色" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialId">
-                <j-dict-select-tag
-                  type="list"
-                  v-model="model.corporationType"
-                  dictCode="company_type"
-                  placeholder="请选择单位角色"
-                />
+                <j-dict-select-tag type="list" v-model="model.corporationType" dictCode="company_type" placeholder="请选择单位角色" />
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
@@ -42,35 +37,35 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
-      required: false
-    }
+      required: false,
+    },
   },
   data() {
     return {
       model: {
         agencyId: undefined,
-        corporationType: undefined
+        corporationType: undefined,
       },
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 }
+        sm: { span: 5 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 }
+        sm: { span: 16 },
       },
       confirmLoading: false,
       validatorRules: {},
       subCenterList: [],
       url: {
-        add: '/mission/cooperationAgency/project'
-      }
+        add: '/mission/cooperationAgency/project',
+      },
     }
   },
   computed: {
     formDisabled() {
       return this.disabled
-    }
+    },
   },
   created() {
     //备份model原始值
@@ -89,7 +84,7 @@ export default {
       const newModal = Object.assign(
         {},
         {
-          projectId: this.getParams('id')
+          projectId: this.getParams('id'),
         },
         this.model
       )
@@ -141,10 +136,10 @@ export default {
         }
       }
       return false
-    }
+    },
   },
   mounted() {
     this.loadData()
-  }
+  },
 }
 </script>
