@@ -11,22 +11,12 @@
             </a-col> -->
             <a-col :span="24">
               <a-form-model-item label="耗材名称" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialId">
-                <j-dict-select-tag
-                  type="list"
-                  v-model="model.materialId"
-                  dictCode="material_management,material_name,id"
-                  placeholder="请选择耗材名称"
-                />
+                <j-dict-select-tag type="list" v-model="model.materialId" dictCode="material_management,material_name,id" placeholder="请选择耗材名称" />
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
               <a-form-model-item label="样本类型" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialType">
-                <j-dict-select-tag
-                  type="list"
-                  v-model="model.sampleId"
-                  dictCode="sample_type"
-                  placeholder="请选择样本类型"
-                />
+                <j-dict-select-tag type="list" v-model="model.sampleId" dictCode="sample_type" placeholder="请选择样本类型" />
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
@@ -68,40 +58,42 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
-      required: false
-    }
+      required: false,
+    },
   },
   data() {
     return {
       model: {},
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 }
+        sm: { span: 5 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 }
+        sm: { span: 16 },
       },
       confirmLoading: false,
       validatorRules: {
         materialId: [{ required: true, message: '请选择耗材名称', trigger: 'change' }],
         materialType: [{ required: true, message: '请选择样本类型', trigger: 'change' }],
-        suffix: [{ required: true, message: '自定义前缀', trigger: 'blur' },
-          { min: 1, max: 1, message: '自定义前缀长度只有一位', trigger: 'blur' }],
+        suffix: [
+          { required: true, message: '自定义前缀', trigger: 'blur' },
+          { min: 1, max: 1, message: '自定义前缀长度只有一位', trigger: 'blur' },
+        ],
         spec: [{ required: true, message: '请输入规格', trigger: 'blur' }],
         pcs: [{ required: true, message: '请输入份数', trigger: 'blur' }],
       },
       url: {
         add: '/mission/projectMaterial/plan/add',
         edit: '/mission/projectMaterial/plan/edit',
-        queryById: '/mission/projectMaterial/plan/queryById'
-      }
+        queryById: '/mission/projectMaterial/plan/queryById',
+      },
     }
   },
   computed: {
     formDisabled() {
       return this.disabled
-    }
+    },
   },
   created() {
     //备份model原始值
@@ -116,9 +108,13 @@ export default {
       this.visible = true
     },
     submitForm() {
-      const newModel = Object.assign({}, {
-        projectId: this.getParams('id')
-      }, this.model)
+      const newModel = Object.assign(
+        {},
+        {
+          projectId: this.getParams('id'),
+        },
+        this.model
+      )
       const that = this
       // 触发表单验证
       this.$refs.form.validate(valid => {
@@ -148,7 +144,7 @@ export default {
         }
       })
     },
-    getParams (key) {
+    getParams(key) {
       const search = window.location.search.substring(1)
       const vars = search.split('&')
       for (let i = 0; i < vars.length; i++) {
@@ -158,7 +154,7 @@ export default {
         }
       }
       return false
-    }
-  }
+    },
+  },
 }
 </script>
