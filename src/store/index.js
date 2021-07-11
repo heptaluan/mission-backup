@@ -16,16 +16,10 @@ export default new Vuex.Store({
     user,
     permission,
     enhance,
-    online
+    online,
   },
-  state: {
-
-  },
-  mutations: {
-
-  },
-  actions: {
-
-  },
-  getters
+  state: {},
+  mutations: {},
+  actions: {},
+  getters,
 })
