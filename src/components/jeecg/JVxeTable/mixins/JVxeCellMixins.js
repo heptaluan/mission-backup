@@ -5,7 +5,7 @@ import { getEnhancedMixins, JVXERenderType, replaceProps } from '@/components/je
 // noinspection JSUnusedLocalSymbols
 export default {
   inject: {
-    getParentContainer: {default: () => ((node) => node.parentNode)},
+    getParentContainer: { default: () => node => node.parentNode },
   },
   props: {
     value: PropTypes.any,
@@ -43,7 +43,7 @@ export default {
       return this.params.columnIndex
     },
     cellProps() {
-      let {originColumn: col, renderOptions} = this
+      let { originColumn: col, renderOptions } = this
 
       let props = {}
 
@@ -58,7 +58,7 @@ export default {
       }
 
       // 判断是否是禁用的列
-      props['disabled'] = (typeof col['disabled'] === 'boolean' ? col['disabled'] : props['disabled'])
+      props['disabled'] = typeof col['disabled'] === 'boolean' ? col['disabled'] : props['disabled']
 
       // TODO 判断是否是禁用的行
       // if (props['disabled'] !== true) {
@@ -104,14 +104,12 @@ export default {
       },
     },
   },
-  created() {
-  },
+  created() {},
   methods: {
-
     /** 通用处理change事件 */
     handleChangeCommon(value) {
       let handle = this.enhanced.getValue.call(this, value)
-      this.trigger('change', {value: handle})
+      this.trigger('change', { value: handle })
       // 触发valueChange事件
       this.parentTrigger('valueChange', {
         type: this.$type,
@@ -124,7 +122,7 @@ export default {
     },
     /** 通用处理blur事件 */
     handleBlurCommon(value) {
-      this.trigger('blur', {value})
+      this.trigger('blur', { value })
     },
 
     /**
@@ -164,11 +162,10 @@ export default {
       }
       return event
     },
-
   },
   model: {
     prop: 'value',
-    event: 'change'
+    event: 'change',
   },
   /**
    * 【自定义增强】用于实现一些增强事件
@@ -207,11 +204,9 @@ export default {
     // 【切面增强】切面事件处理，一般在某些方法执行后同步执行
     aopEvents: {
       // 单元格被激活编辑时会触发该事件
-      editActived() {
-      },
+      editActived() {},
       // 单元格编辑状态下被关闭时会触发该事件
-      editClosed() {
-      },
+      editClosed() {},
     },
     // 【翻译增强】可以实现例如select组件保存的value，但是span模式下需要显示成text
     translate: {
@@ -224,7 +219,7 @@ export default {
        * @param value 需要翻译的值
        * @returns{*} 返回翻译后的数据
        */
-      handler(value,) {
+      handler(value) {
         // 默认翻译方法
         return filterDictText(this.column.own.options, value)
       },
@@ -260,16 +255,16 @@ export default {
      *
      * @returns 返回新值
      */
-    createValue({row, column, $table, renderOptions, params}) {
+    createValue({ row, column, $table, renderOptions, params }) {
       return column.own.defaultValue
     },
-  }
+  },
 }
 
 function getListeners() {
-  let listeners = Object.assign({}, (this.renderOptions.listeners || {}))
+  let listeners = Object.assign({}, this.renderOptions.listeners || {})
   if (!listeners.change) {
-    listeners.change = async (event) => {
+    listeners.change = async event => {
       vModel.call(this, event.value)
       await this.$nextTick()
       // 处理 change 事件相关逻辑（例如校验）
@@ -290,7 +285,7 @@ export function vModel(value, row, property) {
 }
 
 /** 模拟触发事件 */
-export function dispatchEvent({cell, $event}, className, handler) {
+export function dispatchEvent({ cell, $event }, className, handler) {
   window.setTimeout(() => {
     let element = cell.getElementsByClassName(className)
     if (element && element.length > 0) {
@@ -299,8 +294,8 @@ export function dispatchEvent({cell, $event}, className, handler) {
       } else {
         // 模拟触发点击事件
         console.log($event)
-        if($event){
-          console.log("$event===>",$event)
+        if ($event) {
+          console.log('$event===>', $event)
           element[0].dispatchEvent($event)
         }
       }
