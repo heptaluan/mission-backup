@@ -1,11 +1,6 @@
 <template>
   <div>
-    <a-form-model
-      style="max-width: 1080px; margin: 40px auto 0;"
-      ref="ruleForm"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
-    >
+    <a-form-model style="max-width: 1080px; margin: 40px auto 0" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
       <div class="edit-wrap">
         <div class="title">项目纳入标准/Project inclusion criteria</div>
         <div class="edit-box">
@@ -35,14 +30,14 @@ import { queryById, putProjectStep } from 'src/api/mission/project'
 export default {
   name: 'Step5',
   components: {
-    Editor
+    Editor,
   },
   data() {
     return {
       labelCol: { span: 8 },
       wrapperCol: { span: 10 },
       inclusionContent: '',
-      exclusionContent: ''
+      exclusionContent: '',
     }
   },
   methods: {
@@ -62,7 +57,7 @@ export default {
     loadData() {
       const that = this
       queryById({
-        id: this.projectId
+        id: this.projectId,
       }).then(res => {
         if (res.success) {
           this.exclusionContent = res.result.excludeStandard ? res.result.excludeStandard : ''
@@ -89,7 +84,7 @@ export default {
       const postData = {
         id: this.projectId,
         excludeStandard: this.exclusionContent,
-        followingInclusionStandard: this.inclusionContent
+        followingInclusionStandard: this.inclusionContent,
       }
       putProjectStep(step, postData)
         .then(res => {
@@ -104,12 +99,12 @@ export default {
         .finally(() => {
           that.confirmLoading = false
         })
-    }
+    },
   },
   mounted() {
     this.projectId = this.getParams('id')
     this.loadData()
-  }
+  },
 }
 </script>
 

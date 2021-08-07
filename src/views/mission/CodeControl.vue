@@ -11,7 +11,10 @@
       :dataSource="dataSource"
       :pagination="ipagination"
       :loading="loading"
-      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      :rowSelection="{
+        selectedRowKeys: selectedRowKeys,
+        onChange: onSelectChange,
+      }"
       class="j-table-force-nowrap"
       @change="handleTableChange"
     >
@@ -19,20 +22,12 @@
         <div v-html="text"></div>
       </template>
       <template slot="imgSlot" slot-scope="text">
-        <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-        <img
-          v-else
-          :src="getImgView(text)"
-          height="25px"
-          alt=""
-          style="max-width:80px;font-size: 12px;font-style: italic;"
-        />
+        <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+        <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
       </template>
       <template slot="fileSlot" slot-scope="text">
-        <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-        <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
-          下载
-        </a-button>
+        <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
+        <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
       </template>
 
       <span slot="action" slot-scope="text, record">
@@ -59,7 +54,7 @@ export default {
   name: 'CodeControl',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
-    CodeControlModal
+    CodeControlModal,
   },
   data() {
     return {
@@ -76,29 +71,29 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '出库单编号',
           align: 'center',
-          dataIndex: 'leaveApplyId'
+          dataIndex: 'leaveApplyId',
         },
         {
           title: '出库时间',
           align: 'center',
-          dataIndex: 'time'
+          dataIndex: 'time',
         },
         {
           title: '对象',
           align: 'center',
-          dataIndex: 'target'
+          dataIndex: 'target',
         },
         {
           title: '数量',
           align: 'center',
-          dataIndex: 'caseAmount'
+          dataIndex: 'caseAmount',
         },
         {
           title: '操作',
@@ -106,18 +101,18 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       url: {
-        list: 'mission/codeManagement/list'
-      }
+        list: 'mission/codeManagement/list',
+      },
     }
   },
   computed: {
-    importExcelUrl: function() {
+    importExcelUrl: function () {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    }
+    },
   },
   methods: {
     preview(record) {
@@ -131,8 +126,8 @@ export default {
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped>

@@ -46,7 +46,7 @@ export default {
     Step4,
     Step5,
     Step6,
-    Step7
+    Step7,
   },
   data() {
     return {
@@ -61,19 +61,19 @@ export default {
         delete: '/mission/materialManagement/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel'
+        importExcelUrl: 'mission/materialManagement/importExcel',
       },
       dictOptions: {},
       superFieldList: [],
       projectName: '',
-      projectInfo: undefined
+      projectInfo: undefined,
     }
   },
   created() {},
   computed: {
-    importExcelUrl: function() {
+    importExcelUrl: function () {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    }
+    },
   },
   methods: {
     initDictConfig() {},
@@ -115,7 +115,7 @@ export default {
         this.changeUrl(this.currentTab)
       }
     },
-    activeProject (name) {
+    activeProject(name) {
       this.projectName = name
     },
     finish() {
@@ -132,7 +132,7 @@ export default {
       }
       return false
     },
-    getProjectInfo (id) {
+    getProjectInfo(id) {
       queryById({ id: id }).then(res => {
         if (res.success) {
           this.projectInfo = res.result
@@ -144,12 +144,12 @@ export default {
         }
       })
     },
-    changeUrl (step) {
+    changeUrl(step) {
       const projectId = this.$route.query.id
       if (projectId) {
         window.history.replaceState({}, window.document.title, '?id=' + projectId + '&step=' + step)
       }
-    }
+    },
   },
   mounted() {
     if (this.getParams('step')) {
@@ -161,7 +161,7 @@ export default {
     } else {
       this.$route.meta.title = '新建项目'
     }
-  }
+  },
 }
 </script>
 

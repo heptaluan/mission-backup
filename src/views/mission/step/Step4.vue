@@ -1,13 +1,6 @@
 <template>
   <div>
-    <a-form-model
-      style="max-width: 1080px; margin: 40px auto 0;"
-      ref="ruleForm"
-      :model="form"
-      :rules="rules"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
-    >
+    <a-form-model style="max-width: 1080px; margin: 40px auto 0" ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-model-item label="文件类型" prop="type" v-if="false">
         <!--        <j-dict-select-tag type="list" v-model="form.type" dictCode="ownership_type" placeholder="请选择文件类型" />-->
       </a-form-model-item>
@@ -16,9 +9,7 @@
         <p class="ant-upload-drag-icon">
           <a-icon type="inbox" />
         </p>
-        <p class="ant-upload-text">
-          单击或拖动文件到该区域进行上传
-        </p>
+        <p class="ant-upload-text">单击或拖动文件到该区域进行上传</p>
       </a-upload-dragger>
 
       <!-- table区域-begin -->
@@ -41,20 +32,12 @@
             <div v-html="text"></div>
           </template>
           <template slot="imgSlot" slot-scope="text">
-            <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-            <img
-              v-else
-              :src="getImgView(text)"
-              height="25px"
-              alt=""
-              style="max-width:80px;font-size: 12px;font-style: italic;"
-            />
+            <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+            <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
           </template>
           <template slot="fileSlot" slot-scope="text">
-            <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-            <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
-              下载
-            </a-button>
+            <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
+            <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
           </template>
           <!-- 编辑区域 -->
           <span slot="action" slot-scope="text, record">
@@ -88,7 +71,7 @@ export default {
   name: 'Step4',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
-    MaterialDataManagementModal
+    MaterialDataManagementModal,
   },
   data() {
     return {
@@ -96,10 +79,10 @@ export default {
       wrapperCol: { span: 6 },
       list: [],
       form: {
-        type: undefined
+        type: undefined,
       },
       rules: {
-        type: [{ required: true, message: '请选择文件类型', trigger: 'change' }]
+        type: [{ required: true, message: '请选择文件类型', trigger: 'change' }],
       },
       // 表头
       columns: [
@@ -109,24 +92,24 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '文件名称',
           align: 'center',
-          dataIndex: 'fileName'
+          dataIndex: 'fileName',
         },
         {
           title: '文件类型',
           align: 'center',
-          dataIndex: 'ownershipType_dictText'
+          dataIndex: 'ownershipType_dictText',
         },
         {
           title: '上传时间',
           align: 'center',
-          dataIndex: 'createTime'
+          dataIndex: 'createTime',
         },
         {
           title: '操作',
@@ -134,18 +117,18 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       url: {
         list: 'mission/fileInfo/list',
         delete: '/mission/fileInfo/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel'
+        importExcelUrl: 'mission/materialManagement/importExcel',
       },
       projectId: undefined,
-      fileList: undefined
+      fileList: undefined,
     }
   },
   methods: {
@@ -187,7 +170,7 @@ export default {
       const info = {
         ownershipType: '2',
         ownerId: this.projectId,
-        fileName: fileList.name
+        fileName: fileList.name,
       }
       formData.append('info', JSON.stringify(info))
       uploadFile(formData)
@@ -207,7 +190,7 @@ export default {
         ownerId: this.projectId,
         ownershipType: 2,
         page: 1,
-        size: 20
+        size: 20,
       }
       queryFileList(params).then(res => {
         if (res.success) {
@@ -227,13 +210,13 @@ export default {
       //     return false
       //   }
       // })
-    }
+    },
   },
   mounted() {
     this.projectId = this.getParams('id')
     this.queryParam.ownerId = this.projectId
     this.loadFileList()
-  }
+  },
 }
 </script>
 

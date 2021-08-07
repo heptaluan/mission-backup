@@ -1,28 +1,12 @@
 <template>
   <div>
-    <j-modal
-      :title="title"
-      :width="width"
-      :visible="visible"
-      switchFullscreen
-      :okButtonProps="{ class: { 'jee-hidden': dis } }"
-      cancelText="关闭"
-      @ok="handleOk"
-      @cancel="handleCancel"
-    >
+    <j-modal :title="title" :width="width" :visible="visible" switchFullscreen :okButtonProps="{ class: { 'jee-hidden': dis } }" cancelText="关闭" @ok="handleOk" @cancel="handleCancel">
       <div class="form-state">
         <a-tag v-if="state === 2" color="#108ee9">待审核</a-tag>
         <a-tag v-if="state === 3" color="#87d068">已审核通过</a-tag>
         <a-tag v-if="state === 4" color="#f50">已退回</a-tag>
       </div>
-      <a-form-model
-        style="max-width: 1080px; margin: 20px auto 0;"
-        ref="ruleForm"
-        :label-col="labelCol"
-        :wrapper-col="wrapperCol"
-        :model="form"
-        :rules="rules"
-      >
+      <a-form-model style="max-width: 1080px; margin: 20px auto 0" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol" :model="form" :rules="rules">
         <a-form-model-item ref="code" label="批次号" prop="code">
           <a-input
             :disabled="dis"
@@ -37,13 +21,7 @@
         </a-form-model-item>
 
         <a-form-model-item label="入库仓库" prop="type">
-          <j-dict-select-tag
-            :disabled="dis"
-            type="list"
-            v-model="form.type"
-            dictCode="warehouse_manage, name, id"
-            placeholder="请选择入库仓库"
-          />
+          <j-dict-select-tag :disabled="dis" type="list" v-model="form.type" dictCode="warehouse_manage, name, id" placeholder="请选择入库仓库" />
         </a-form-model-item>
         <div class="tool-bar" style="text-align: right">
           <a-button class="add-btn" @click="handleAddMaterial" type="primary" icon="plus" v-if="!dis">新增</a-button>
@@ -89,7 +67,7 @@ export default {
   mixins: [JeecgListMixin, mixinDevice],
   components: {
     MaterialFilterModal,
-    EditableCell
+    EditableCell,
   },
   data() {
     return {
@@ -102,11 +80,11 @@ export default {
       wrapperCol: { span: 6 },
       form: {
         code: '',
-        type: undefined
+        type: undefined,
       },
       rules: {
         code: [{ required: true, message: '请输入批次号', trigger: 'blur' }],
-        type: [{ required: true, message: '请选择入库仓库', trigger: 'change' }]
+        type: [{ required: true, message: '请选择入库仓库', trigger: 'change' }],
       },
       // 表头
       columns: [
@@ -116,33 +94,33 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '耗材序号',
           align: 'center',
-          dataIndex: 'materialCode'
+          dataIndex: 'materialCode',
         },
         {
           title: '耗材名称',
           align: 'center',
-          dataIndex: 'materialName'
+          dataIndex: 'materialName',
         },
         {
           title: '耗材数量',
           align: 'center',
           dataIndex: 'amount',
-          scopedSlots: { customRender: 'amount' }
-        }
+          scopedSlots: { customRender: 'amount' },
+        },
       ],
       url: {
-        list: ''
+        list: '',
       },
       list: [],
       pId: undefined,
-      state: null
+      state: null,
     }
   },
   methods: {
@@ -178,13 +156,13 @@ export default {
           const postData = {
             batchNo: this.form.code,
             comeStocks: [],
-            warehouseId: this.form.type
+            warehouseId: this.form.type,
           }
           this.dataSource.forEach(row => {
             if (parseInt(row.amount) > 0) {
               postData.comeStocks.push({
                 amount: parseInt(row.amount),
-                materialId: row.id
+                materialId: row.id,
               })
             }
           })
@@ -209,7 +187,7 @@ export default {
       const query = {
         applyId: this.pId,
         applyType: 1,
-        status: 2
+        status: 2,
       }
       approve(query).then(res => {
         if (res.success) {
@@ -226,7 +204,7 @@ export default {
       const query = {
         applyId: this.pId,
         applyType: 1,
-        status: 1
+        status: 1,
       }
       approve(query).then(res => {
         if (res.success) {
@@ -254,7 +232,7 @@ export default {
         const that = this
         const query = {
           applyId: id,
-          applyType: 1
+          applyType: 1,
         }
         queryByIdStockIn(query).then(res => {
           if (res.success) {
@@ -267,8 +245,8 @@ export default {
           }
         })
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

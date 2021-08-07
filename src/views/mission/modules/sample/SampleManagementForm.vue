@@ -5,22 +5,11 @@
         <a-row>
           <a-col :span="24">
             <a-form-model-item label="项目" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="projectId">
-              <j-dict-select-tag
-                type="list"
-                v-model="form.projectId"
-                dictCode="project_info, project_name, id"
-                placeholder="请选择项目"
-              />
+              <j-dict-select-tag type="list" v-model="form.projectId" dictCode="project_info, project_name, id" placeholder="请选择项目" />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item
-              label="批次号"
-              :labelCol="labelCol"
-              :wrapperCol="wrapperCol"
-              ref="batchNo"
-              prop="batchNo"
-            >
+            <a-form-model-item label="批次号" :labelCol="labelCol" :wrapperCol="wrapperCol" ref="batchNo" prop="batchNo">
               <a-input
                 v-model="form.batchNo"
                 placeholder="请输入批次号"
@@ -34,32 +23,20 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="质控责任人" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="qcContactId">
-              <j-dict-select-tag
-                type="list"
-                v-model="form.qcContactId"
-                dictCode="contact_manage, full_name, id"
-                placeholder="请选择质控责任人"
-              />
+              <j-dict-select-tag type="list" v-model="form.qcContactId" dictCode="contact_manage, full_name, id" placeholder="请选择质控责任人" />
             </a-form-model-item>
           </a-col>
           <div class="btn-group">
             <a-button type="primary" icon="download">下载模板</a-button>
           </div>
           <a-col :span="24">
-            <a-upload-dragger
-              @change="handleChange"
-              :file-list="fileList"
-              :remove="handleRemove"
-              :before-upload="beforeUpload"
-            >
+            <a-upload-dragger @change="handleChange" :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload">
               <a-button class="upload-btn" type="primary" icon="import">导入excel</a-button>
 
               <p class="ant-upload-drag-icon">
                 <a-icon type="inbox" />
               </p>
-              <p class="ant-upload-text">
-                也可以拖动文件到该区域进行上传
-              </p>
+              <p class="ant-upload-text">也可以拖动文件到该区域进行上传</p>
             </a-upload-dragger>
           </a-col>
         </a-row>
@@ -79,38 +56,38 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
-      required: false
-    }
+      required: false,
+    },
   },
   data() {
     return {
       model: {},
       labelCol: {
         xs: { span: 25 },
-        sm: { span: 4 }
+        sm: { span: 4 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 }
+        sm: { span: 16 },
       },
       confirmLoading: false,
       form: {
         projectId: undefined,
         batchNo: '',
-        qcContactId: undefined
+        qcContactId: undefined,
       },
       rules: {
         projectId: [{ required: true, message: '请选择项目', trigger: 'change' }],
         batchNo: [{ required: true, message: '请输入批次号', trigger: 'blur' }],
-        qcContactId: [{ required: true, message: '质控责任人', trigger: 'change' }]
+        qcContactId: [{ required: true, message: '质控责任人', trigger: 'change' }],
       },
       url: {
         add: '/mission/materialManagement/add',
         edit: '/mission/materialManagement/edit',
-        queryById: '/mission/materialManagement/queryById'
+        queryById: '/mission/materialManagement/queryById',
       },
       fileList: [],
-      file: undefined
+      file: undefined,
     }
   },
   created() {
@@ -149,7 +126,7 @@ export default {
           const apply = {
             projectId: that.form.projectId,
             qcContactId: that.form.qcContactId,
-            batchNo: that.form.batchNo
+            batchNo: that.form.batchNo,
           }
           formData.append('apply', JSON.stringify(apply))
           caseSampleUploadFile(formData)
@@ -167,8 +144,8 @@ export default {
             })
         }
       })
-    }
-  }
+    },
+  },
 }
 </script>
 

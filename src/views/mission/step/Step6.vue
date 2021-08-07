@@ -1,13 +1,6 @@
 <template>
   <div>
-    <a-form-model
-      style="max-width: 1080px; margin: 40px auto 0;"
-      ref="ruleForm"
-      :model="form"
-      :rules="rules"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
-    >
+    <a-form-model style="max-width: 1080px; margin: 40px auto 0" ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-model-item ref="noTotal" label="病例总量/Total Samples" prop="noTotal">
         <a-input
           placeholder="请输入病例总量"
@@ -57,13 +50,13 @@ export default {
       form: {
         noTotal: '',
         noWeek: '',
-        remark: ''
+        remark: '',
       },
       rules: {
         noTotal: [{ required: true, message: '请输入样本总量', trigger: 'blur' }],
         noWeek: [{ required: true, message: '请输入周预计量', trigger: 'blur' }],
-        remark: [{ required: true, message: '请输入项目说明', trigger: 'blur' }]
-      }
+        remark: [{ required: true, message: '请输入项目说明', trigger: 'blur' }],
+      },
     }
   },
   methods: {
@@ -83,7 +76,7 @@ export default {
     loadData() {
       const that = this
       getProjectSample({
-        id: this.projectId
+        id: this.projectId,
       }).then(res => {
         if (res.success) {
           if (res.result[0]) {
@@ -117,14 +110,14 @@ export default {
           projectId: this.projectId,
           noTotal: Number(this.form.noTotal),
           noWeek: Number(this.form.noWeek),
-          remark: this.form.remark
+          remark: this.form.remark,
         }
       } else {
         postData = {
           projectId: this.projectId,
           noTotal: Number(this.form.noTotal),
           noWeek: Number(this.form.noWeek),
-          remark: this.form.remark
+          remark: this.form.remark,
         }
       }
       addProjectSample(postData)
@@ -140,12 +133,12 @@ export default {
         .finally(() => {
           that.confirmLoading = false
         })
-    }
+    },
   },
   mounted() {
     this.projectId = this.getParams('id')
     this.loadData()
-  }
+  },
 }
 </script>
 

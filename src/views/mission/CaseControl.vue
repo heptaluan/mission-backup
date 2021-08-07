@@ -1,6 +1,6 @@
 <template>
   <a-card :bordered="false">
-    <a-form-model style="margin-bottom: 40px;" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form-model style="margin-bottom: 40px" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
       <!-- 查询区域 -->
       <!-- <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
@@ -35,7 +35,10 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        :rowSelection="{
+          selectedRowKeys: selectedRowKeys,
+          onChange: onSelectChange,
+        }"
         class="j-table-force-nowrap"
         @change="handleTableChange"
       >
@@ -43,20 +46,12 @@
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-          <img
-            v-else
-            :src="getImgView(text)"
-            height="25px"
-            alt=""
-            style="max-width:80px;font-size: 12px;font-style: italic;"
-          />
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
         </template>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
-            下载
-          </a-button>
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
+          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
         </template>
 
         <span slot="action" slot-scope="text, record">
@@ -64,7 +59,7 @@
 
           <a-divider type="vertical" />
           <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
+            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
                 <a @click="handleDetail(record)">详情</a>
@@ -94,7 +89,7 @@ export default {
   name: 'CaseControl',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
-    CaseControlModal
+    CaseControlModal,
   },
   data() {
     return {
@@ -109,56 +104,56 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '病例编号',
           align: 'center',
-          dataIndex: 'identifyCode'
+          dataIndex: 'identifyCode',
         },
         {
           title: '姓名',
           align: 'center',
-          dataIndex: 'caseName'
+          dataIndex: 'caseName',
         },
         {
           title: '性别',
           align: 'center',
           dataIndex: 'gender',
-          customRender: function(text) {
+          customRender: function (text) {
             if (text == 1) {
               return '男'
             } else {
               return '女'
             }
-          }
+          },
         },
         {
           title: '年龄',
           align: 'center',
-          dataIndex: 'age'
+          dataIndex: 'age',
         },
         {
           title: '身份证号',
           align: 'center',
-          dataIndex: 'caseIdentity'
+          dataIndex: 'caseIdentity',
         },
         {
           title: '状态',
           align: 'center',
-          dataIndex: 'state4'
+          dataIndex: 'state4',
         },
         {
           title: '存放位置',
           align: 'center',
-          dataIndex: 'state5'
+          dataIndex: 'state5',
         },
         {
           title: '检测时间',
           align: 'center',
-          dataIndex: 'createTime'
+          dataIndex: 'createTime',
         },
         {
           title: '操作',
@@ -166,38 +161,63 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       url: {
         list: 'mission/medicalCase/list',
-        delete: 'mission/medicalCase/delete'
+        delete: 'mission/medicalCase/delete',
       },
       dictOptions: {},
-      superFieldList: []
+      superFieldList: [],
     }
   },
   created() {
     this.getSuperFieldList()
   },
   computed: {
-    importExcelUrl: function() {
+    importExcelUrl: function () {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    }
+    },
   },
   methods: {
     initDictConfig() {},
     search() {},
     getSuperFieldList() {
       let fieldList = []
-      fieldList.push({ type: 'string', value: 'code', text: '编号', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'hoName', text: '医院名称', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'hoId', text: '医院ID', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'codeQuality', text: '性质', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'typesCancer', text: '癌种', dictCode: '' })
+      fieldList.push({
+        type: 'string',
+        value: 'code',
+        text: '编号',
+        dictCode: '',
+      })
+      fieldList.push({
+        type: 'string',
+        value: 'hoName',
+        text: '医院名称',
+        dictCode: '',
+      })
+      fieldList.push({
+        type: 'string',
+        value: 'hoId',
+        text: '医院ID',
+        dictCode: '',
+      })
+      fieldList.push({
+        type: 'string',
+        value: 'codeQuality',
+        text: '性质',
+        dictCode: '',
+      })
+      fieldList.push({
+        type: 'string',
+        value: 'typesCancer',
+        text: '癌种',
+        dictCode: '',
+      })
       this.superFieldList = fieldList
-    }
-  }
+    },
+  },
 }
 </script>
 <style scoped lang="less">

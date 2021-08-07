@@ -32,8 +32,6 @@
             </a-form-model-item>
           </a-col>
 
-
-
           <a-col :span="24">
             <a-form-model-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input placeholder="请输入状态" />
@@ -62,33 +60,33 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
-      required: false
-    }
+      required: false,
+    },
   },
   data() {
     return {
       model: {},
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 }
+        sm: { span: 5 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 }
+        sm: { span: 16 },
       },
       confirmLoading: false,
       validatorRules: {},
       url: {
         add: '/mission/materialManagement/add',
         edit: '/mission/materialManagement/edit',
-        queryById: '/mission/materialManagement/queryById'
-      }
+        queryById: '/mission/materialManagement/queryById',
+      },
     }
   },
   computed: {
     formDisabled() {
       return this.disabled
-    }
+    },
   },
   created() {
     //备份model原始值
@@ -131,7 +129,7 @@ export default {
             })
         }
       })
-    }
-  }
+    },
+  },
 }
 </script>

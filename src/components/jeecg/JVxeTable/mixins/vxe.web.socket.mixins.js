@@ -67,10 +67,12 @@ const vs = {
     try {
       let ws = this.ws
       if (ws != null && ws.readyState === ws.OPEN) {
-        ws.send(JSON.stringify({
-          type: type,
-          data: message
-        }))
+        ws.send(
+          JSON.stringify({
+            type: type,
+            data: message,
+          })
+        )
       }
     } catch (err) {
       console.warn('【VXEWebSocket】发送消息失败：(' + err.code + ')')
@@ -158,11 +160,11 @@ const vs = {
           break
         // 通用数据传递
         case this.constants.TYPE_CSD:
-          this.callBind(this.CSDMap, data.key, (fn) => fn.apply(this, data.args))
+          this.callBind(this.CSDMap, data.key, fn => fn.apply(this, data.args))
           break
         // 更新form数据
         case this.constants.TYPE_UVT:
-          this.callBind(this.tableMap, data.socketKey, (vm) => this.onVM['onUpdateTable'].apply(vm, data.args))
+          this.callBind(this.tableMap, data.socketKey, vm => this.onVM['onUpdateTable'].apply(vm, data.args))
           break
         default:
           console.warn('【VXEWebSocket】收到不识别的消息类型:' + type)
@@ -201,7 +203,6 @@ const vs = {
       }
     },
   },
-
 }
 
 export default {
@@ -209,11 +210,11 @@ export default {
     // 是否开启使用 webSocket 无痕刷新
     socketReload: {
       type: Boolean,
-      default: false
+      default: false,
     },
     socketKey: {
       type: String,
-      default: 'vxe-default'
+      default: 'vxe-default',
     },
   },
   data() {
@@ -226,7 +227,6 @@ export default {
     }
   },
   methods: {
-
     /** 发送socket消息更新行 */
     socketSendUpdateRow(row) {
       vs.sendMessage(vs.constants.TYPE_UVT, {
@@ -234,7 +234,6 @@ export default {
         args: [row, this.caseId],
       })
     },
-
   },
   beforeDestroy() {
     vs.removeBind(vs.tableMap, this.socketKey, this)

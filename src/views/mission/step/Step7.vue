@@ -1,11 +1,6 @@
 <template>
   <div>
-    <a-form-model
-      style="max-width: 1080px; margin: 40px auto 0;"
-      ref="ruleForm"
-      :label-col="labelCol"
-      :wrapper-col="wrapperCol"
-    >
+    <a-form-model style="max-width: 1080px; margin: 40px auto 0" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
       <!-- 上方表格 -->
       <SuppliesPlan />
 
@@ -35,7 +30,7 @@ export default {
   mixins: [JeecgListMixin, mixinDevice],
   components: {
     SuppliesPlan,
-    SuppliesPlanEach
+    SuppliesPlanEach,
   },
   data() {
     return {
@@ -49,24 +44,24 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '耗材编号',
           align: 'center',
-          dataIndex: 'materialCode'
+          dataIndex: 'materialCode',
         },
         {
           title: '耗材名称',
           align: 'center',
-          dataIndex: 'materialName'
+          dataIndex: 'materialName',
         },
         {
           title: '耗材总需求量',
           align: 'center',
-          dataIndex: 'materialTotalDemand'
+          dataIndex: 'materialTotalDemand',
         },
         {
           title: '操作',
@@ -74,16 +69,16 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       url: {
         list: '/mission/materialManagement/list',
         delete: '/mission/materialManagement/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel'
-      }
+        importExcelUrl: 'mission/materialManagement/importExcel',
+      },
     }
   },
   methods: {
@@ -92,8 +87,8 @@ export default {
     },
     save() {
       console.log(`save`)
-    }
-  }
+    },
+  },
 }
 </script>
 

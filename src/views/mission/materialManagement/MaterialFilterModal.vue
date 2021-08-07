@@ -1,15 +1,6 @@
 <template>
   <div>
-    <j-modal
-      :title="title"
-      :width="width"
-      :visible="visible"
-      switchFullscreen
-      :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }"
-      cancelText="关闭"
-      @ok="handleOk"
-      @cancel="handleCancel"
-    >
+    <j-modal :title="title" :width="width" :visible="visible" switchFullscreen :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" cancelText="关闭" @ok="handleOk" @cancel="handleCancel">
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
@@ -21,18 +12,13 @@
       <!-- 操作按钮区域 -->
       <div class="table-operator">
         <!-- 高级查询区域 -->
-        <j-super-query
-          :fieldList="superFieldList"
-          ref="superQueryModal"
-          @handleSuperQuery="handleSuperQuery"
-        ></j-super-query>
+        <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
       </div>
 
       <!-- table区域-begin -->
       <div>
-        <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-          <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择
-          <a style="font-weight: 600">{{ selectedRowKeys.length }}</a
+        <div class="ant-alert ant-alert-info" style="margin-bottom: 16px">
+          <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a
           >项
           <a style="margin-left: 24px" @click="onClearSelected">清空</a>
         </div>
@@ -55,20 +41,12 @@
             <div v-html="text"></div>
           </template>
           <template slot="imgSlot" slot-scope="text">
-            <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-            <img
-              v-else
-              :src="getImgView(text)"
-              height="25px"
-              alt=""
-              style="max-width:80px;font-size: 12px;font-style: italic;"
-            />
+            <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+            <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
           </template>
           <template slot="fileSlot" slot-scope="text">
-            <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-            <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
-              下载
-            </a-button>
+            <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
+            <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
           </template>
 
           <span slot="action" slot-scope="text, record">
@@ -76,7 +54,7 @@
 
             <a-divider type="vertical" />
             <a-dropdown>
-              <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
+              <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
               <a-menu slot="overlay">
                 <a-menu-item>
                   <a @click="handleDetail(record)">详情</a>
@@ -112,11 +90,11 @@ export default {
       wrapperCol: { span: 6 },
       form: {
         code: '',
-        type: undefined
+        type: undefined,
       },
       rules: {
         code: [{ required: true, message: '请输入批次号', trigger: 'blur' }],
-        type: [{ required: true, message: '请选择入库仓库', trigger: 'change' }]
+        type: [{ required: true, message: '请选择入库仓库', trigger: 'change' }],
       },
       // 表头
       columns: [
@@ -126,25 +104,25 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '耗材序号',
           align: 'center',
-          dataIndex: 'materialCode'
+          dataIndex: 'materialCode',
         },
         {
           title: '耗材名称',
           align: 'center',
-          dataIndex: 'materialName'
+          dataIndex: 'materialName',
         },
         {
           title: '耗材数量',
           align: 'center',
-          dataIndex: 'materialTotal'
-        }
+          dataIndex: 'materialTotal',
+        },
       ],
       superFieldList: [],
       url: {
@@ -152,8 +130,8 @@ export default {
         delete: '/mission/materialManagement/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel'
-      }
+        importExcelUrl: 'mission/materialManagement/importExcel',
+      },
     }
   },
   created() {
@@ -181,8 +159,8 @@ export default {
       fieldList.push({ type: 'string', value: 'remark', text: '备注', dictCode: '' })
       this.superFieldList = fieldList
     },
-    handleAddMaterial() {}
-  }
+    handleAddMaterial() {},
+  },
 }
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 操作按钮区域 -->
-    <div class="table-operator" style="margin-top: 20px;">
+    <div class="table-operator" style="margin-top: 20px">
       <a-button @click="handleAdd" type="primary" icon="plus">添加每人份耗材</a-button>
     </div>
 
@@ -25,20 +25,12 @@
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
-          <img
-            v-else
-            :src="getImgView(text)"
-            height="25px"
-            alt=""
-            style="max-width:80px;font-size: 12px;font-style: italic;"
-          />
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
         </template>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
-            下载
-          </a-button>
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
+          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
         </template>
         <!-- 编辑区域 -->
         <span slot="action" slot-scope="text, record">
@@ -46,7 +38,7 @@
 
           <a-divider type="vertical" />
           <a-dropdown>
-            <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
+            <a class="ant-dropdown-link">更多 <a-icon type="down" /></a>
             <a-menu slot="overlay">
               <a-menu-item>
                 <a @click="handleDetail(record)">详情</a>
@@ -76,7 +68,7 @@ export default {
   name: 'SuppliesPlanEachForm',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
-    SuppliesPlanEachModal
+    SuppliesPlanEachModal,
   },
   data() {
     return {
@@ -90,39 +82,39 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function(t, r, index) {
+          customRender: function (t, r, index) {
             return parseInt(index) + 1
-          }
+          },
         },
         {
           title: '名称',
           align: 'center',
-          dataIndex: 'materialId_dictText'
+          dataIndex: 'materialId_dictText',
         },
         {
           title: '样本类型',
           align: 'center',
-          dataIndex: 'sampleId_dictText'
+          dataIndex: 'sampleId_dictText',
         },
         {
           title: '样本规格',
           align: 'center',
-          dataIndex: 'spec'
+          dataIndex: 'spec',
         },
         {
           title: '自定义前缀',
           align: 'center',
-          dataIndex: 'suffix'
+          dataIndex: 'suffix',
         },
         {
           title: '份数',
           align: 'center',
-          dataIndex: 'pcs'
+          dataIndex: 'pcs',
         },
         {
           title: '说明',
           align: 'center',
-          dataIndex: 'remark'
+          dataIndex: 'remark',
         },
         {
           title: '操作',
@@ -130,16 +122,16 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' }
-        }
+          scopedSlots: { customRender: 'action' },
+        },
       ],
       url: {
         list: '/mission/projectMaterial/plan/list',
         delete: '/mission/projectMaterial/plan/delete',
         deleteBatch: '/mission/projectMaterial/plan/deleteBatch',
         exportXlsUrl: '/mission/projectMaterial/plan/exportXls',
-        importExcelUrl: 'mission/projectMaterial/plan/importExcel'
-      }
+        importExcelUrl: 'mission/projectMaterial/plan/importExcel',
+      },
     }
   },
   methods: {
@@ -158,7 +150,7 @@ export default {
       const params = {
         projectId: this.getParams('id'),
         page: 1,
-        size: 20
+        size: 20,
       }
       getProjectMaterialPlanList(params).then(res => {
         if (res.success) {
@@ -166,7 +158,7 @@ export default {
         }
       })
     },
-  }
+  },
 }
 </script>
 

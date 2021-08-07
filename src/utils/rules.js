@@ -19,17 +19,23 @@ const validateEn = (rule, value, callback) => {
   }
 }
 export const rules = {
-  mobile: [{
-    required: true,
-    message: '请输入手机号',
-    trigger: 'blur'
-  }, { validator: validateMobile, trigger: 'blur' }],
-  userName: [{
-    required: true, message: '请输入用户名', trigger: 'blur'
-  }, { validator: validateEn }],
-  email: [
-    { required: false, type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+  mobile: [
+    {
+      required: true,
+      message: '请输入手机号',
+      trigger: 'blur',
+    },
+    { validator: validateMobile, trigger: 'blur' },
   ],
+  userName: [
+    {
+      required: true,
+      message: '请输入用户名',
+      trigger: 'blur',
+    },
+    { validator: validateEn },
+  ],
+  email: [{ required: false, type: 'email', message: '邮箱格式不正确', trigger: 'blur' }],
   // 验证自然数
   naturalNumber: /^(([0-9]*[1-9][0-9]*)|(0+))$/,
   naturalNumberMsg: '请输入自然数',
@@ -66,7 +72,7 @@ export const rules = {
   // 255位以内的字符
   char0to255: /^.{0,255}$/,
   char0to255Msg: '请输入255位以内的字符',
-  required: function(min, max) {
+  required: function (min, max) {
     let rule = [{ required: true, message: '', trigger: 'blur' }]
     if (min) {
       let r = { min: min, message: '最小长度' + min + '位字符' }
@@ -78,11 +84,11 @@ export const rules = {
     }
     return rule
   },
-  select: function() {
+  select: function () {
     let rule = [{ required: true, message: '', trigger: 'change' }]
     return rule
   },
-  checked: function(min, max) {
+  checked: function (min, max) {
     let rule = [{ required: true, type: 'array', message: '', trigger: 'change' }]
     if (min) {
       let r = { type: 'array', min: min, message: '最少选择' + min + '项' }
@@ -93,18 +99,15 @@ export const rules = {
       rule.push(m)
     }
     return rule
-  }
+  },
 }
 /**
  * @description 排序值验证，排序值不可以大于255
  */
-export const validateOrder = function(rule, value, callback) {
+export const validateOrder = function (rule, value, callback) {
   if (parseInt(value) > 255) {
     return callback(new Error('排序值不可以大于255'))
   } else {
     callback()
   }
 }
-
-
-
