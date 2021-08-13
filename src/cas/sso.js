@@ -76,4 +76,5 @@ function validateSt(ticket, service, callback) {
 function loginSuccess(callback) {
   callback()
 }
+
 export default SSO
