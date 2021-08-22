@@ -4,14 +4,9 @@
       <a-card :bordered="false">
         <!-- 按钮操作区域 -->
         <a-row style="margin-left: 14px">
-          <a-button @click="handleAdd(1)" type="primary">添加部门</a-button>
+          <a-button @click="handleAdd(1)" type="primary">添加机构</a-button>
           <a-button @click="handleAdd(2)" type="primary">添加下级</a-button>
-          <a-button
-            type="primary"
-            icon="download"
-            @click="handleExportXls('部门信息')"
-            >导出</a-button
-          >
+          <a-button type="primary" icon="download" @click="handleExportXls('机构信息')">导出</a-button>
           <a-upload
             name="file"
             :showUploadList="false"
@@ -22,44 +17,21 @@
           >
             <a-button type="primary" icon="import">导入</a-button>
           </a-upload>
-          <a-button title="删除多条数据" @click="batchDel" type="default"
-            >批量删除</a-button
-          >
+          <a-button title="删除多条数据" @click="batchDel" type="default">批量删除</a-button>
           <!--<a-button @click="refresh" type="default" icon="reload" :loading="loading">刷新</a-button>-->
         </a-row>
-        <div
-          style="
-            background: #fff;
-            padding-left: 16px;
-            height: 100%;
-            margin-top: 5px;
-          "
-        >
+        <div style="background: #fff;padding-left:16px;height: 100%; margin-top: 5px">
           <a-alert type="info" :showIcon="true">
             <div slot="message">
-              当前选择：<span v-if="this.currSelected.title">{{
-                getCurrSelectedTitle()
-              }}</span>
-              <a
-                v-if="this.currSelected.title"
-                style="margin-left: 10px"
-                @click="onClearSelected"
-                >取消选择</a
-              >
+              当前选择：<span v-if="this.currSelected.title">{{ getCurrSelectedTitle() }}</span>
+              <a v-if="this.currSelected.title" style="margin-left: 10px" @click="onClearSelected">取消选择</a>
             </div>
           </a-alert>
-          <a-input-search
-            @search="onSearch"
-            style="width: 100%; margin-top: 10px"
-            placeholder="请输入部门名称"
-          />
+          <a-input-search @search="onSearch" style="width:100%;margin-top: 10px" placeholder="请输入机构名称" />
           <!-- 树-->
           <a-col :md="10" :sm="24">
             <template>
-              <a-dropdown
-                :trigger="[this.dropTrigger]"
-                @visibleChange="dropStatus"
-              >
+              <a-dropdown :trigger="[this.dropTrigger]" @visibleChange="dropStatus">
                 <span style="user-select: none">
                   <a-tree
                     checkable
@@ -91,12 +63,8 @@
       <div class="drawer-bootom-button">
         <a-dropdown :trigger="['click']" placement="topCenter">
           <a-menu slot="overlay">
-            <a-menu-item key="1" @click="switchCheckStrictly(1)"
-              >父子关联</a-menu-item
-            >
-            <a-menu-item key="2" @click="switchCheckStrictly(2)"
-              >取消关联</a-menu-item
-            >
+            <a-menu-item key="1" @click="switchCheckStrictly(1)">父子关联</a-menu-item>
+            <a-menu-item key="2" @click="switchCheckStrictly(2)">取消关联</a-menu-item>
             <a-menu-item key="3" @click="checkALL">全部勾选</a-menu-item>
             <a-menu-item key="4" @click="cancelCheckALL">取消全选</a-menu-item>
             <a-menu-item key="5" @click="expandAll">展开所有</a-menu-item>
@@ -112,24 +80,12 @@
         <a-tab-pane tab="基本信息" key="1">
           <a-card :bordered="false" v-if="selectedKeys.length > 0">
             <a-form-model ref="form" :model="model" :rules="validatorRules">
-              <a-form-model-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                prop="departName"
-                label="机构名称"
-              >
-                <a-input
-                  placeholder="请输入机构/部门名称"
-                  v-model="model.departName"
-                />
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="departName" label="机构名称">
+                <a-input placeholder="请输入机构/部门名称" v-model="model.departName" />
               </a-form-model-item>
-              <a-form-model-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="上级部门"
-              >
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级机构">
                 <a-tree-select
-                  style="width: 100%"
+                  style="width:100%"
                   :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
                   :treeData="treeData"
                   :disabled="disable"
@@ -138,95 +94,70 @@
                 >
                 </a-tree-select>
               </a-form-model-item>
-              <a-form-model-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                prop="orgCode"
-                label="机构编码"
-              >
-                <a-input
-                  disabled
-                  placeholder="请输入机构编码"
-                  v-model="model.orgCode"
-                />
+              <!-- <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="orgCode" label="机构编码">
+                <a-input disabled placeholder="请输入机构编码" v-model="model.orgCode" />
+              </a-form-model-item> -->
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="caCode" label="自定义编码">
+                <a-input disabled placeholder="请输入自定义编码" v-model="model.caCode" />
               </a-form-model-item>
-              <a-form-model-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                prop="orgCategory"
-                label="机构类型"
-              >
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="caSocialCode" label="统一信用代码">
+                <a-input placeholder="请输入统一信用代码" v-model="model.caSocialCode" />
+              </a-form-model-item>
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="orgCategory" label="机构类型">
                 <template v-if="orgCategoryDisabled">
-                  <a-radio-group
-                    v-model="model.orgCategory"
-                    placeholder="请选择机构类型"
-                  >
-                    <a-radio value="1"> 公司 </a-radio>
+                  <a-radio-group v-model="model.orgCategory" placeholder="请选择机构类型">
+                    <a-radio value="1">
+                      公司
+                    </a-radio>
                   </a-radio-group>
                 </template>
                 <template v-else>
-                  <a-radio-group
-                    v-model="model.orgCategory"
-                    placeholder="请选择机构类型"
-                  >
-                    <a-radio value="2"> 部门 </a-radio>
-                    <a-radio value="3"> 岗位 </a-radio>
+                  <a-radio-group v-model="model.orgCategory" placeholder="请选择机构类型">
+                    <a-radio value="2">
+                      机构
+                    </a-radio>
+                    <a-radio value="3">
+                      岗位
+                    </a-radio>
                   </a-radio-group>
                 </template>
               </a-form-model-item>
-              <a-form-model-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="排序"
-              >
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="caFunction" label="机构功能">
+                <j-dict-select-tag
+                  allowClear
+                  v-model="model.caFunction"
+                  dictCode="agency_function"
+                  placeholder="请选择机构功能"
+                />
+              </a-form-model-item>
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="排序">
                 <a-input-number v-model="model.departOrder" />
               </a-form-model-item>
-              <a-form-model-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="手机号"
-              >
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="手机号">
                 <a-input placeholder="请输入手机号" v-model="model.mobile" />
               </a-form-model-item>
-              <a-form-model-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="地址"
-              >
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="地址">
                 <a-input placeholder="请输入地址" v-model="model.address" />
               </a-form-model-item>
-              <a-form-model-item
-                :labelCol="labelCol"
-                :wrapperCol="wrapperCol"
-                label="备注"
-              >
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="网址">
+                <a-input placeholder="请输入网址" v-model="model.caWebsite" />
+              </a-form-model-item>
+              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="备注">
                 <a-textarea placeholder="请输入备注" v-model="model.memo" />
               </a-form-model-item>
             </a-form-model>
             <div class="anty-form-btn">
-              <a-button
-                @click="emptyCurrForm"
-                type="default"
-                htmlType="button"
-                icon="sync"
-                >重置</a-button
-              >
-              <a-button
-                @click="submitCurrForm"
-                type="primary"
-                htmlType="button"
-                icon="form"
-                >保存</a-button
-              >
+              <a-button @click="emptyCurrForm" type="default" htmlType="button" icon="sync">重置</a-button>
+              <a-button @click="submitCurrForm" type="primary" htmlType="button" icon="form">保存</a-button>
             </div>
           </a-card>
           <a-card v-else>
             <a-empty>
-              <span slot="description"> 请先选择一个部门! </span>
+              <span slot="description"> 请先选择一个机构! </span>
             </a-empty>
           </a-card>
         </a-tab-pane>
-        <a-tab-pane tab="部门权限" key="2" forceRender>
+        <a-tab-pane tab="机构权限" key="2" forceRender>
           <depart-auth-modal ref="departAuth" />
         </a-tab-pane>
       </a-tabs>
@@ -236,11 +167,7 @@
 </template>
 <script>
 import DepartModal from './modules/DepartModal'
-import {
-  queryDepartTreeList,
-  searchByKeywords,
-  deleteByDepartId,
-} from '@/api/api'
+import { queryDepartTreeList, searchByKeywords, deleteByDepartId } from '@/api/api'
 import { httpAction, deleteAction } from '@/api/manage'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import DepartAuthModal from './modules/DepartAuthModal'
@@ -248,47 +175,47 @@ import DepartAuthModal from './modules/DepartAuthModal'
 const columns = [
   {
     title: '机构名称',
-    dataIndex: 'departName',
+    dataIndex: 'departName'
   },
   {
     title: '机构类型',
     align: 'center',
-    dataIndex: 'orgType',
+    dataIndex: 'orgType'
   },
   {
     title: '机构编码',
-    dataIndex: 'orgCode',
+    dataIndex: 'orgCode'
   },
   {
     title: '手机号',
-    dataIndex: 'mobile',
+    dataIndex: 'mobile'
   },
   {
     title: '传真',
-    dataIndex: 'fax',
+    dataIndex: 'fax'
   },
   {
     title: '地址',
-    dataIndex: 'address',
+    dataIndex: 'address'
   },
   {
     title: '排序',
     align: 'center',
-    dataIndex: 'departOrder',
+    dataIndex: 'departOrder'
   },
   {
     title: '操作',
     align: 'center',
     dataIndex: 'action',
-    scopedSlots: { customRender: 'action' },
-  },
+    scopedSlots: { customRender: 'action' }
+  }
 ]
 export default {
   name: 'DepartList',
   mixins: [JeecgListMixin],
   components: {
     DepartAuthModal,
-    DepartModal,
+    DepartModal
   },
   data() {
     return {
@@ -317,36 +244,36 @@ export default {
       checkStrictly: true,
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 },
+        sm: { span: 5 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 },
+        sm: { span: 16 }
       },
       graphDatasource: {
         nodes: [],
-        edges: [],
+        edges: []
       },
       validatorRules: {
         departName: [{ required: true, message: '请输入机构/部门名称!' }],
         orgCode: [{ required: true, message: '请输入机构编码!' }],
         orgCategory: [{ required: true, message: '请输入机构类型!' }],
-        mobile: [{ validator: this.validateMobile }],
+        mobile: [{ validator: this.validateMobile }]
       },
       url: {
         delete: '/sys/sysDepart/delete',
         edit: '/sys/sysDepart/edit',
         deleteBatch: '/sys/sysDepart/deleteBatch',
         exportXlsUrl: 'sys/sysDepart/exportXls',
-        importExcelUrl: 'sys/sysDepart/importExcel',
+        importExcelUrl: 'sys/sysDepart/importExcel'
       },
-      orgCategoryDisabled: false,
+      orgCategoryDisabled: false
     }
   },
   computed: {
-    importExcelUrl: function () {
+    importExcelUrl: function() {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    },
+    }
   },
   methods: {
     loadData() {
@@ -412,7 +339,7 @@ export default {
     addRootNode() {
       this.$refs.nodeModal.add(this.currFlowId, '')
     },
-    batchDel: function () {
+    batchDel: function() {
       console.log(this.checkedKeys)
       if (this.checkedKeys.length <= 0) {
         this.$message.warning('请选择一条记录！')
@@ -424,11 +351,8 @@ export default {
         var that = this
         this.$confirm({
           title: '确认删除',
-          content:
-            '确定要删除所选中的 ' +
-            this.checkedKeys.length +
-            ' 条数据，以及子节点数据吗?',
-          onOk: function () {
+          content: '确定要删除所选中的 ' + this.checkedKeys.length + ' 条数据，以及子节点数据吗?',
+          onOk: function() {
             deleteAction(that.url.deleteBatch, { ids: ids }).then(res => {
               if (res.success) {
                 that.$message.success(res.message)
@@ -438,7 +362,7 @@ export default {
                 that.$message.warning(res.message)
               }
             })
-          },
+          }
         })
       }
     },
@@ -522,7 +446,7 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           if (!this.currSelected.id) {
-            this.$message.warning('请点击选择要修改部门!')
+            this.$message.warning('请点击选择要修改机构!')
             return
           }
 
@@ -558,7 +482,7 @@ export default {
       } else if (num == 2) {
         let key = this.currSelected.key
         if (!key) {
-          this.$message.warning('请先点击选中上级部门！')
+          this.$message.warning('请先点击选中上级机构！')
           return false
         }
         this.$refs.departModal.add(this.selectedKeys)
@@ -572,15 +496,13 @@ export default {
       var that = this
       this.$confirm({
         title: '确认删除',
-        content: '确定要删除此部门以及子节点数据吗?',
-        onOk: function () {
+        content: '确定要删除此机构以及子节点数据吗?',
+        onOk: function() {
           deleteByDepartId({ id: that.rightClickSelectedKey }).then(resp => {
             if (resp.success) {
               //删除成功后，去除已选中中的数据
               that.checkedKeys.splice(
-                that.checkedKeys.findIndex(
-                  key => key === that.rightClickSelectedKey
-                ),
+                that.checkedKeys.findIndex(key => key === that.rightClickSelectedKey),
                 1
               )
               that.$message.success('删除成功!')
@@ -594,27 +516,25 @@ export default {
               that.$message.warning('删除失败!')
             }
           })
-        },
+        }
       })
     },
     selectDirectiveOk(record) {
       console.log('选中指令数据', record)
-      this.nodeSettingForm.setFieldsValue({
-        directiveCode: record.directiveCode,
-      })
+      this.nodeSettingForm.setFieldsValue({ directiveCode: record.directiveCode })
       this.currSelected.sysCode = record.sysCode
     },
     getFlowGraphData(node) {
       this.graphDatasource.nodes.push({
         id: node.id,
-        text: node.flowNodeName,
+        text: node.flowNodeName
       })
       if (node.children.length > 0) {
         for (let a = 0; a < node.children.length; a++) {
           let temp = node.children[a]
           this.graphDatasource.edges.push({
             source: node.id,
-            target: temp.id,
+            target: temp.id
           })
           this.getFlowGraphData(temp)
         }
@@ -650,14 +570,14 @@ export default {
           this.getAllKeys(node.children[a])
         }
       }
-    },
+    }
     //---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------
   },
   created() {
     this.currFlowId = this.$route.params.id
     this.currFlowName = this.$route.params.name
     // this.loadTree()
-  },
+  }
 }
 </script>
 <style scoped>

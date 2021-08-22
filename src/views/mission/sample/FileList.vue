@@ -20,12 +20,20 @@
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+          <img
+            v-else
+            :src="getImgView(text)"
+            height="25px"
+            alt=""
+            style="max-width:80px;font-size: 12px;font-style: italic;"
+          />
         </template>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
-          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
+            下载
+          </a-button>
         </template>
         <!-- 编辑区域 -->
         <span slot="action" slot-scope="text, record">
@@ -47,8 +55,8 @@ export default {
   props: {
     id: {
       type: String,
-      default: '',
-    },
+      default: ''
+    }
   },
   data() {
     return {
@@ -62,14 +70,14 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function (t, r, index) {
+          customRender: function(t, r, index) {
             return parseInt(index) + 1
-          },
+          }
         },
         {
           title: '文件名称',
           align: 'center',
-          dataIndex: 'materialId_dictText',
+          dataIndex: 'materialId_dictText'
         },
         {
           title: '操作',
@@ -77,25 +85,25 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' },
-        },
+          scopedSlots: { customRender: 'action' }
+        }
       ],
       url: {
-        list: '/mission/projectMaterial/list',
-      },
+        list: '/mission/projectMaterial/list'
+      }
     }
   },
   watch: {
     id(newVal, oldVal) {
       this.loadData(newVal)
-    },
+    }
   },
   methods: {
     loadData(id) {
       const that = this
       const query = {
         ownerId: id ? id : that.id,
-        ownershipType: 6,
+        ownershipType: 6
       }
       getFileInfoList(query).then(res => {
         if (res.success) {
@@ -107,8 +115,8 @@ export default {
     },
     handlePreview(record) {
       window.open(`https://www.baidu.com/`)
-    },
-  },
+    }
+  }
 }
 </script>
 

@@ -10,7 +10,7 @@
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="toCreateProject" type="primary" icon="plus">新建项目</a-button>
+      <a-button @click="toCreateProject" type="primary" icon="plus" v-has="'proAdd'">新建项目</a-button>
       <!-- <a-button type="primary" icon="download" @click="handleExportXls('项目')">导出</a-button>
       <a-upload
         name="file"
@@ -25,7 +25,7 @@
       <!-- 高级查询区域 -->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete" />删除</a-menu-item>
+          <a-menu-item key="1" @click="batchDel"><a-icon type="delete" v-has="'proAdd'" />删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down"/></a-button>
       </a-dropdown>
@@ -75,16 +75,16 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <a @click="toCreateProject(record)">编辑</a>
+          <a @click="toCreateProject(record)" v-has="'proAdd'">编辑</a>
 
-          <a-divider type="vertical" />
+          <a-divider type="vertical" v-has="'proAdd'" />
           <a-dropdown>
             <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
             <a-menu slot="overlay">
               <a-menu-item>
                 <a @click="handleDetail(record)">详情</a>
               </a-menu-item>
-              <a-menu-item>
+              <a-menu-item v-has="'proAdd'">
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                   <a>删除</a>
                 </a-popconfirm>
@@ -210,7 +210,7 @@ export default {
     toCreateProject(record) {
       if (record.id) {
         this.$router.push({
-          path: `createProject?id=${record.id}&step=${record.editStep}`
+          path: `/createProject?id=${record.id}&step=${record.editStep}`
         })
       } else {
         this.$router.push({

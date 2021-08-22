@@ -6,14 +6,19 @@
           <a-row>
             <a-col :span="24">
               <a-form-model-item label="单位角色" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialId">
-                <j-dict-select-tag type="list" v-model="model.corporationType" dictCode="company_type" placeholder="请选择单位角色" />
+                <j-dict-select-tag
+                  type="list"
+                  v-model="model.corporationType"
+                  dictCode="agency_cooperate_type"
+                  placeholder="请选择单位角色"
+                />
               </a-form-model-item>
             </a-col>
             <a-col :span="24">
               <a-form-model-item label="合作单位" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="materialType">
                 <a-select v-model="model.agencyId" placeholder="请选择合作单位">
                   <a-select-option v-for="item in subCenterList" :key="item.id" :value="item.id">
-                    {{ item.caName }}
+                    {{ item.departName }}
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
@@ -27,7 +32,7 @@
 
 <script>
 import { httpAction, getAction } from '@/api/manage'
-import { queryCooperationAgency } from 'src/api/mission/project'
+import { getCooperationUnitList } from 'src/api/mission/project'
 
 export default {
   name: 'AddCooperationForm',
@@ -37,35 +42,35 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
-      required: false,
-    },
+      required: false
+    }
   },
   data() {
     return {
       model: {
         agencyId: undefined,
-        corporationType: undefined,
+        corporationType: undefined
       },
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 },
+        sm: { span: 5 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 },
+        sm: { span: 16 }
       },
       confirmLoading: false,
       validatorRules: {},
       subCenterList: [],
       url: {
-        add: '/mission/cooperationAgency/project',
-      },
+        add: '/mission/cooperationAgency/project'
+      }
     }
   },
   computed: {
     formDisabled() {
       return this.disabled
-    },
+    }
   },
   created() {
     //备份model原始值
@@ -84,7 +89,7 @@ export default {
       const newModal = Object.assign(
         {},
         {
-          projectId: this.getParams('id'),
+          projectId: this.getParams('id')
         },
         this.model
       )
@@ -118,9 +123,9 @@ export default {
     },
     loadData() {
       const that = this
-      queryCooperationAgency().then(res => {
+      getCooperationUnitList().then(res => {
         if (res.success) {
-          that.subCenterList = res.result.records
+          that.subCenterList = res.result
         } else {
           that.$message.warning(res.message)
         }
@@ -136,10 +141,10 @@ export default {
         }
       }
       return false
-    },
+    }
   },
   mounted() {
     this.loadData()
-  },
+  }
 }
 </script>

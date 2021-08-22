@@ -1,14 +1,21 @@
 <template>
   <a-card :bordered="false">
-    <a-form-model style="margin-bottom: 40px" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form-model style="margin-bottom: 40px;" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
       <div class="search-group">
         <div class="group">
           <div class="title">项目名</div>
-          <j-dict-select-tag allowClear style="width: 150px" type="list" dictCode="project_info, project_name, id" placeholder="请选择项目" v-model="searchData.project" />
+          <j-dict-select-tag
+            allowClear
+            style="width:150px;"
+            type="list"
+            dictCode="project_info, project_name, id, logical_state=1"
+            placeholder="请选择项目"
+            v-model="searchData.project"
+          />
         </div>
         <div class="group">
           <div class="title">样本编号</div>
-          <a-input v-model="searchData.sampleIdentity" allowClear style="width: 150px" placeholder="请输入样本编号" />
+          <a-input v-model="searchData.caseSampleIdentity" allowClear style="width: 150px" placeholder="请输入样本编号" />
         </div>
         <div class="group">
           <div class="title">批次号</div>
@@ -16,7 +23,17 @@
         </div>
         <div class="group">
           <div class="title">质控责任人</div>
-          <j-dict-select-tag allowClear style="width: 150px" type="list" dictCode="contact_manage, full_name, id" placeholder="请选择质控责任人" v-model="searchData.informContactId" />
+          <a-select
+            allowClear
+            style="width:200px;"
+            v-model="searchData.qcContactId"
+            placeholder="请选择质控责任人"
+            @change="handleSelectChange"
+          >
+            <a-select-option v-for="item in userList" :key="item.id" :value="item.id">
+              {{ item.realname }}
+            </a-select-option>
+          </a-select>
         </div>
 
         <a-button @click="handleSearch" type="primary">筛选</a-button>
@@ -49,16 +66,24 @@
             <div v-html="text"></div>
           </template>
           <template slot="imgSlot" slot-scope="text">
-            <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
-            <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
+            <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+            <img
+              v-else
+              :src="getImgView(text)"
+              height="25px"
+              alt=""
+              style="max-width:80px;font-size: 12px;font-style: italic;"
+            />
           </template>
           <template slot="fileSlot" slot-scope="text">
-            <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
-            <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
+            <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+            <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
+              下载
+            </a-button>
           </template>
 
           <span slot="action" slot-scope="text, record">
-            <a @click="executeTest(record)">检测</a>
+            <a @click="executeTest(record)" v-if="isTestLeader">检测</a>
           </span>
         </a-table>
       </div>
@@ -74,14 +99,14 @@ import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import SampleTestModal from '../modules/sample/SampleTestModal'
 import FileList from './FileList'
-import { getCaseSampleList } from 'src/api/mission/project'
+import { getCaseSampleList, getUserList, getAuthForTest } from 'src/api/mission/project'
 
 export default {
   name: 'SampleTest',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
     SampleTestModal,
-    FileList,
+    FileList
   },
   data() {
     return {
@@ -90,10 +115,11 @@ export default {
       wrapperCol: { span: 10 },
       searchData: {
         project: undefined,
-        sampleIdentity: '',
+        caseSampleIdentity: '',
         batchNo: '',
-        informContactId: undefined,
+        qcContactId: undefined
       },
+      userList: [],
       dataList: [],
       // 表头
       columns: [
@@ -103,44 +129,55 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function (t, r, index) {
+          customRender: function(t, r, index) {
             return parseInt(index) + 1
-          },
+          }
         },
         {
           title: '批次号',
           align: 'center',
-          dataIndex: 'batchNo',
+          dataIndex: 'batchNo'
         },
+        {
+          title: '项目名',
+          align: 'center',
+          dataIndex: 'projectId_dictText'
+        },
+        {
+          title: '性质',
+          align: 'center',
+          dataIndex: 'researchType_dictText'
+        },
+
         {
           title: '样本编号',
           align: 'center',
-          dataIndex: 'sampleIdentity',
+          dataIndex: 'caseSampleIdentity'
         },
         {
           title: '样本类型',
           align: 'center',
-          dataIndex: 'sampleType',
+          dataIndex: 'sampleType_dictText'
+        },
+        {
+          title: '质检责任人',
+          align: 'center',
+          dataIndex: 'qcBy'
+        },
+        {
+          title: '质检时间',
+          align: 'center',
+          dataIndex: 'qcTime'
         },
         {
           title: '检测责任人',
           align: 'center',
-          dataIndex: 'responsible',
+          dataIndex: 'detectBy'
         },
         {
           title: '检测时间',
           align: 'center',
-          dataIndex: 'time',
-        },
-        {
-          title: '检测报告时间',
-          align: 'center',
-          dataIndex: 'reportTime',
-        },
-        {
-          title: '检测报告',
-          align: 'center',
-          dataIndex: 'state',
+          dataIndex: 'detectTime'
         },
         {
           title: '操作',
@@ -148,12 +185,13 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' },
-        },
+          scopedSlots: { customRender: 'action' }
+        }
       ],
       url: {
-        list: '',
+        list: ''
       },
+      isTestLeader: false
     }
   },
   methods: {
@@ -162,9 +200,9 @@ export default {
       const query = {
         currentCircuit: 4,
         project: this.searchData.batchNo,
-        sampleIdentity: this.searchData.sampleIdentity,
+        sampleIdentity: this.searchData.caseSampleIdentity,
         batchNo: this.searchData.batchNo,
-        informContactId: this.searchData.informContactId,
+        qcContactId: this.searchData.qcContactId
       }
       getCaseSampleList(query).then(res => {
         if (res.success) {
@@ -183,7 +221,31 @@ export default {
     submitCallback() {
       this.loadData()
     },
+    handleSelectChange(value) {
+      this.qcContactId = value
+    },
+    getUserList() {
+      const that = this
+      getUserList().then(res => {
+        if (res.success) {
+          that.userList = res.result
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    getAuth() {
+      getAuthForTest().then(res => {
+        if (res.success) {
+          this.isTestLeader = res.result
+        }
+      })
+    }
   },
+  mounted() {
+    this.getAuth()
+    this.getUserList()
+  }
 }
 </script>
 <style scoped lang="less">

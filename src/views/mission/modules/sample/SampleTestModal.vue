@@ -1,24 +1,39 @@
 <template>
-  <j-modal :title="title" :width="width" :visible="visible" switchFullscreen :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @ok="handleOk" @cancel="handleCancel">
+  <j-modal
+    :title="title"
+    :width="width"
+    :visible="visible"
+    switchFullscreen
+    :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }"
+    @ok="handleOk"
+    @cancel="handleCancel"
+  >
     <a-form-model ref="form" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-model-item label="批次号">
-        <div class="list-item">{{ record.batchNo }}</div>
+        <div class="list-item">{{record.batchNo}}</div>
       </a-form-model-item>
 
       <a-form-model-item label="样本编号">
-        <div class="list-item">{{ record.caseIdentity }}-{{ record.sampleIdentity }}</div>
+        <div class="list-item">{{record.caseIdentity}}-{{record.sampleIdentity}}</div>
       </a-form-model-item>
 
       <a-form-model-item label="检测负责人">
-        <div class="list-item">{{ nickname() }}</div>
+        <div class="list-item">{{nickname()}}</div>
       </a-form-model-item>
 
       <a-form-model-item ref="report" label="检测报告" prop="report">
-        <a-upload-dragger @change="handleChange" :file-list="fileList" :remove="handleRemove" :before-upload="beforeUpload">
+        <a-upload-dragger
+          @change="handleChange"
+          :file-list="fileList"
+          :remove="handleRemove"
+          :before-upload="beforeUpload"
+        >
           <p class="ant-upload-drag-icon">
             <a-icon type="inbox" />
           </p>
-          <p class="ant-upload-text">点击或者拖动文件到该区域进行上传</p>
+          <p class="ant-upload-text">
+            点击或者拖动文件到该区域进行上传
+          </p>
         </a-upload-dragger>
       </a-form-model-item>
     </a-form-model>
@@ -51,39 +66,39 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function (t, r, index) {
+          customRender: function(t, r, index) {
             return parseInt(index) + 1
-          },
+          }
         },
         {
           title: '耗材序号',
           align: 'center',
-          dataIndex: 'materialCode',
+          dataIndex: 'materialCode'
         },
         {
           title: '耗材名称',
           align: 'center',
-          dataIndex: 'materialName',
+          dataIndex: 'materialName'
         },
         {
           title: '耗材数量',
           align: 'center',
-          dataIndex: 'materialTotal',
-        },
+          dataIndex: 'materialTotal'
+        }
       ],
       url: {
         list: '/mission/materialManagement/list',
         delete: '/mission/materialManagement/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
-        importExcelUrl: 'mission/materialManagement/importExcel',
+        importExcelUrl: 'mission/materialManagement/importExcel'
       },
       fileList: [],
-      file: undefined,
+      file: undefined
     }
   },
   methods: {
-    ...mapGetters(['nickname', 'avatar']),
+    ...mapGetters(["nickname", "avatar"]),
     show(record) {
       console.log(record)
       this.record = record
@@ -106,7 +121,7 @@ export default {
           if (res.success) {
             that.fileList = []
             that.$message.success('文件上传成功！')
-            that.$emit('ok')
+            that.$emit('ok');
             that.visible = false
           } else {
             that.$message.error(res.message)
@@ -132,6 +147,6 @@ export default {
       this.file = file
       return false
     },
-  },
+  }
 }
 </script>

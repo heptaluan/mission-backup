@@ -10,12 +10,12 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="姓名" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="caseName">
-              <a-input disabled="disabled" v-model="model.caseName" placeholder="请输入姓名"></a-input>
+              <a-input v-model="model.caseName" placeholder="请输入姓名"></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="性别" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="gender">
-              <a-select disabled="disabled" v-model="model.gender">
+              <a-select v-model="model.gender">
                 <a-select-option :key="1" :value="1">男</a-select-option>
                 <a-select-option :key="2" :value="2">女</a-select-option>
               </a-select>
@@ -23,23 +23,12 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="年龄" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="age">
-              <a-input disabled="disabled" v-model="model.age" placeholder="请输入年龄" />
+              <a-input v-model="model.age" placeholder="请输入年龄" />
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="身份证号" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="caseIdentity">
-              <a-input disabled="disabled" v-model="model.caseIdentity" placeholder="请输入身份证号" />
-            </a-form-model-item>
-          </a-col>
-
-          <a-col :span="24">
-            <a-form-model-item label="状态" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input placeholder="请输入状态" />
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
-            <a-form-model-item label="存放位置" :labelCol="labelCol" :wrapperCol="wrapperCol">
-              <a-input placeholder="请输入存放位置" />
+              <a-input v-model="model.caseIdentity" placeholder="请输入身份证号" />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -60,33 +49,31 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
-      required: false,
-    },
+      required: false
+    }
   },
   data() {
     return {
       model: {},
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 5 },
+        sm: { span: 5 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 },
+        sm: { span: 16 }
       },
       confirmLoading: false,
       validatorRules: {},
       url: {
-        add: '/mission/materialManagement/add',
-        edit: '/mission/materialManagement/edit',
-        queryById: '/mission/materialManagement/queryById',
-      },
+        edit: '/mission/medicalCase/edit',
+      }
     }
   },
   computed: {
     formDisabled() {
       return this.disabled
-    },
+    }
   },
   created() {
     //备份model原始值
@@ -129,7 +116,7 @@ export default {
             })
         }
       })
-    },
-  },
+    }
+  }
 }
 </script>

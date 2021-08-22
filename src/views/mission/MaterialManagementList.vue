@@ -2,8 +2,9 @@
   <a-card :bordered="false">
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleStockIn" type="primary" icon="plus">耗材入库</a-button>
-      <a-button @click="handleStockOut" type="primary" icon="download">耗材出库</a-button>
+      <a-button @click="handleAddStock" type="primary" icon="plus" v-has="'stockAdd'">新增耗材</a-button>
+      <a-button @click="handleStockIn" type="primary" icon="plus" v-has="'mStockIn'">耗材入库</a-button>
+      <a-button @click="handleStockOut" type="primary" icon="download" v-has="'mStockOut'">耗材出库</a-button>
     </div>
 
     <!-- table区域-begin -->
@@ -42,16 +43,16 @@
       </template>
 
       <span slot="action" slot-scope="text, record">
-        <a @click="handleEdit(record)">编辑</a>
+        <a @click="handleEdit(record)" v-has="'stockAdd'">编辑</a>
 
-        <a-divider type="vertical" />
+        <a-divider type="vertical" v-has="'stockAdd'"/>
         <a-dropdown>
           <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
           <a-menu slot="overlay">
             <a-menu-item>
               <a @click="handleDetail(record)">详情</a>
             </a-menu-item>
-            <a-menu-item>
+            <a-menu-item v-has="'stockAdd'">
               <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
                 <a>删除</a>
               </a-popconfirm>
@@ -61,8 +62,11 @@
       </span>
     </a-table>
 
+    <!-- 新增耗材 -->
+    <AddStockModal ref="addStockModal" @ok="modalFormOk" />
+
     <!-- 编辑表单 -->
-    <EditMaterialManagementModal ref="modalForm" @ok="modalFormOk" />
+    <AddStockModal ref="modalForm" @ok="modalFormOk" />
 
     <!-- 耗材入库 -->
     <StockInModal ref="stockInModal" />
@@ -76,18 +80,18 @@
 import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import EditMaterialManagementModal from './materialManagement/EditMaterialManagementModal'
 import StockInModal from './materialManagement/StockInModal'
 import StockOutModal from './materialManagement/StockOutModal'
+import AddStockModal from './materialManagement/AddStockModal'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 
 export default {
   name: 'MaterialManagementList',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
-    EditMaterialManagementModal,
     StockInModal,
-    StockOutModal
+    StockOutModal,
+    AddStockModal
   },
   data() {
     return {
@@ -122,22 +126,31 @@ export default {
         {
           title: '耗材类型',
           align: 'center',
-          dataIndex: 'materialType'
+          dataIndex: 'materialType_dictText'
         },
         {
-          title: '耗材入库总计',
+          title: '总库存数量',
           align: 'center',
-          dataIndex: 'materialStockInTotal'
+          dataIndex: 'currentAmount',
+          customRender: function(text) {
+            return text ? text : 0
+          }
         },
         {
-          title: '耗材出库总计',
+          title: '入库数量',
           align: 'center',
-          dataIndex: 'materialStockOutTotal'
+          dataIndex: 'comeAmount',
+          customRender: function(text) {
+            return text ? text : 0
+          }
         },
         {
-          title: '剩余库存量',
+          title: '出库数量',
           align: 'center',
-          dataIndex: 'materialSurplus'
+          dataIndex: 'leaveAmount',
+          customRender: function(text) {
+            return text ? text : 0
+          }
         },
         {
           title: '操作',
@@ -165,6 +178,9 @@ export default {
     }
   },
   methods: {
+    handleAddStock() {
+      this.$refs.addStockModal.show()
+    },
     handleStockIn() {
       this.$refs.stockInModal.show()
     },

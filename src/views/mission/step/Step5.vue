@@ -1,6 +1,11 @@
 <template>
   <div>
-    <a-form-model style="max-width: 1080px; margin: 40px auto 0" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form-model
+      style="max-width: 1080px; margin: 40px auto 0;"
+      ref="ruleForm"
+      :label-col="labelCol"
+      :wrapper-col="wrapperCol"
+    >
       <div class="edit-wrap">
         <div class="title">项目纳入标准/Project inclusion criteria</div>
         <div class="edit-box">
@@ -30,14 +35,14 @@ import { queryById, putProjectStep } from 'src/api/mission/project'
 export default {
   name: 'Step5',
   components: {
-    Editor,
+    Editor
   },
   data() {
     return {
       labelCol: { span: 8 },
       wrapperCol: { span: 10 },
       inclusionContent: '',
-      exclusionContent: '',
+      exclusionContent: ''
     }
   },
   methods: {
@@ -45,7 +50,9 @@ export default {
       this.$emit('prevStep')
     },
     nextStep() {
-      this.$emit('nextStep')
+      const cb = ()=> this.$emit('nextStep')
+      this.save(cb)
+      // this.$emit('nextStep')
       // this.$refs.ruleForm.validate(valid => {
       //   if (valid) {
       //     this.$emit('nextStep')
@@ -57,7 +64,7 @@ export default {
     loadData() {
       const that = this
       queryById({
-        id: this.projectId,
+        id: this.projectId
       }).then(res => {
         if (res.success) {
           this.exclusionContent = res.result.excludeStandard ? res.result.excludeStandard : ''
@@ -78,33 +85,41 @@ export default {
       }
       return false
     },
-    save() {
+    save(cb) {
       const that = this
       const step = 'Standards'
-      const postData = {
-        id: this.projectId,
-        excludeStandard: this.exclusionContent,
-        followingInclusionStandard: this.inclusionContent,
+      const valid = this.validate()
+      if (valid) {
+        const postData = {
+          id: this.projectId,
+          excludeStandard: this.exclusionContent,
+          followingInclusionStandard: this.inclusionContent
+        }
+        putProjectStep(step, postData)
+          .then(res => {
+            if (res.success) {
+              that.$message.success(res.message)
+              that.$emit('ok')
+              if (typeof cb === 'function') cb()
+            } else {
+              that.$message.warning(res.message)
+            }
+          })
+          .finally(() => {
+            that.confirmLoading = false
+          })
       }
-      putProjectStep(step, postData)
-        .then(res => {
-          console.log(res)
-          if (res.success) {
-            that.$message.success(res.message)
-            that.$emit('ok')
-          } else {
-            that.$message.warning(res.message)
-          }
-        })
-        .finally(() => {
-          that.confirmLoading = false
-        })
     },
+    // 暂时不用验证
+    validate () {
+      // if (this.exclusionContent)
+      return true
+    }
   },
   mounted() {
     this.projectId = this.getParams('id')
     this.loadData()
-  },
+  }
 }
 </script>
 

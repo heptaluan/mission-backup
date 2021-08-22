@@ -1,28 +1,29 @@
 import JEditableTable from '@/components/jeecg/JEditableTable'
-import { VALIDATE_NO_PASSED, getRefPromise, validateFormModelAndTables } from '@/utils/JEditableTableUtil'
+import { VALIDATE_NO_PASSED, getRefPromise,validateFormModelAndTables} from '@/utils/JEditableTableUtil'
 import { httpAction, getAction } from '@/api/manage'
 
 export const JEditableTableModelMixin = {
   components: {
-    JEditableTable,
+    JEditableTable
   },
   data() {
     return {
       title: '操作',
       visible: false,
       confirmLoading: false,
-      model: {},
+      model:{},
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 6 },
+        sm: { span: 6 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 18 },
-      },
+        sm: { span: 18 }
+      }
     }
   },
   methods: {
+
     /** 获取所有的editableTable实例 */
     getAllTable() {
       if (!(this.refKeys instanceof Array)) {
@@ -46,9 +47,9 @@ export const JEditableTableModelMixin = {
     /** 当点击新增按钮时调用此方法 */
     add() {
       //update-begin-author:lvdandan date:20201113 for:LOWCOD-1049 JEditaTable,子表默认添加一条数据，addDefaultRowNum设置无效 #1930
-      return new Promise(resolve => {
-        this.tableReset()
-        resolve()
+      return new Promise((resolve) => {
+        this.tableReset();
+        resolve();
       }).then(() => {
         // 默认新增空数据
         let rowNum = this.addDefaultRowNum
@@ -56,7 +57,7 @@ export const JEditableTableModelMixin = {
           rowNum = 1
           console.warn('由于你没有在 data 中定义 addDefaultRowNum 或 addDefaultRowNum 不是数字，所以默认添加一条空数据，如果不想默认添加空数据，请将定义 addDefaultRowNum 为 0')
         }
-        this.eachAllTable(item => {
+        this.eachAllTable((item) => {
           item.add(rowNum)
         })
         if (typeof this.addAfter === 'function') this.addAfter(this.model)
@@ -66,8 +67,8 @@ export const JEditableTableModelMixin = {
     },
     /** 当点击了编辑（修改）按钮时调用此方法 */
     edit(record) {
-      if (record && '{}' != JSON.stringify(record) && record.id) {
-        this.tableReset()
+      if(record && '{}'!=JSON.stringify(record)&&record.id){
+        this.tableReset();
       }
       if (typeof this.editBefore === 'function') this.editBefore(record)
       this.visible = true
@@ -82,54 +83,49 @@ export const JEditableTableModelMixin = {
       this.$emit('close')
     },
     //清空子表table的数据
-    tableReset() {
-      this.eachAllTable(item => {
+    tableReset(){
+      this.eachAllTable((item) => {
         item.clearRow()
       })
     },
     /** 查询某个tab的数据 */
     requestSubTableData(url, params, tab, success) {
       tab.loading = true
-      getAction(url, params)
-        .then(res => {
-          let { result } = res
-          let dataSource = []
-          if (result) {
-            if (Array.isArray(result)) {
-              dataSource = result
-            } else if (Array.isArray(result.records)) {
-              dataSource = result.records
-            }
+      getAction(url, params).then(res => {
+        let { result } = res
+        let dataSource = []
+        if (result) {
+          if (Array.isArray(result)) {
+            dataSource = result
+          } else if (Array.isArray(result.records)) {
+            dataSource = result.records
           }
-          tab.dataSource = dataSource
-          typeof success === 'function' ? success(res) : ''
-        })
-        .finally(() => {
-          tab.loading = false
-        })
+        }
+        tab.dataSource = dataSource
+        typeof success === 'function' ? success(res) : ''
+      }).finally(() => {
+        tab.loading = false
+      })
     },
     /** 发起请求，自动判断是执行新增还是修改操作 */
     request(formData) {
-      let url = this.url.add,
-        method = 'post'
+      let url = this.url.add, method = 'post'
       if (this.model.id) {
         url = this.url.edit
         method = 'put'
       }
       this.confirmLoading = true
-      httpAction(url, formData, method)
-        .then(res => {
-          if (res.success) {
-            this.$message.success(res.message)
-            this.$emit('ok')
-            this.close()
-          } else {
-            this.$message.warning(res.message)
-          }
-        })
-        .finally(() => {
-          this.confirmLoading = false
-        })
+      httpAction(url, formData, method).then((res) => {
+        if (res.success) {
+          this.$message.success(res.message)
+          this.$emit('ok')
+          this.close()
+        } else {
+          this.$message.warning(res.message)
+        }
+      }).finally(() => {
+        this.confirmLoading = false
+      })
     },
 
     /* --- handle 事件 --- */
@@ -148,37 +144,33 @@ export const JEditableTableModelMixin = {
     /** 确定按钮点击事件 */
     handleOk() {
       /** 触发表单验证 */
-      this.getAllTable()
-        .then(tables => {
-          /** 一次性验证主表和所有的次表 */
-          return validateFormModelAndTables(this.$refs.form, this.model, tables)
-        })
-        .then(allValues => {
-          /** 一次性验证一对一的所有子表 */
-          return this.validateSubForm(allValues)
-        })
-        .then(allValues => {
-          if (typeof this.classifyIntoFormData !== 'function') {
-            throw this.throwNotFunction('classifyIntoFormData')
-          }
-          let formData = this.classifyIntoFormData(allValues)
-          // 发起请求
-          return this.request(formData)
-        })
-        .catch(e => {
-          if (e.error === VALIDATE_NO_PASSED) {
-            // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
-            //update--begin--autor:liusq-----date:20210316------for：未通过表单验证跳转tab问题------
-            this.activeKey = e.index == null ? this.activeKey : e.paneKey ? e.paneKey : this.refKeys[e.index]
-            //update--end--autor:liusq-----date:20210316------for：未通过表单验证跳转tab问题------
-          } else {
-            console.error(e)
-          }
-        })
+      this.getAllTable().then(tables => {
+        /** 一次性验证主表和所有的次表 */
+        return validateFormModelAndTables(this.$refs.form,this.model, tables)
+      }).then(allValues => {
+        /** 一次性验证一对一的所有子表 */
+        return this.validateSubForm(allValues)
+      }).then(allValues => {
+        if (typeof this.classifyIntoFormData !== 'function') {
+          throw this.throwNotFunction('classifyIntoFormData')
+        }
+        let formData = this.classifyIntoFormData(allValues)
+        // 发起请求
+        return this.request(formData)
+      }).catch(e => {
+        if (e.error === VALIDATE_NO_PASSED) {
+          // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
+          //update--begin--autor:liusq-----date:20210316------for：未通过表单验证跳转tab问题------
+          this.activeKey = e.index == null ? this.activeKey : (e.paneKey?e.paneKey:this.refKeys[e.index])
+          //update--end--autor:liusq-----date:20210316------for：未通过表单验证跳转tab问题------
+        } else {
+          console.error(e)
+        }
+      })
     },
     //校验所有子表表单
-    validateSubForm(allValues) {
-      return new Promise(resolve => {
+    validateSubForm(allValues){
+      return new Promise((resolve) => {
         resolve(allValues)
       })
     },
@@ -192,6 +184,7 @@ export const JEditableTableModelMixin = {
     /** not a array */
     throwNotArray(name) {
       return `${name} 未定义或不是一个数组`
-    },
-  },
+    }
+
+  }
 }

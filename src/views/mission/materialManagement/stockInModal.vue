@@ -1,12 +1,29 @@
 <template>
   <div>
-    <j-modal :title="title" :width="width" :visible="visible" switchFullscreen :okButtonProps="{ class: { 'jee-hidden': dis } }" cancelText="关闭" @ok="handleOk" @cancel="handleCancel">
+    <j-modal
+      :title="title"
+      :width="width"
+      :visible="visible"
+      switchFullscreen
+      :okButtonProps="{ class: { 'jee-hidden': dis } }"
+      cancelText="关闭"
+      :footer ='footer'
+      @ok="handleOk"
+      @cancel="handleCancel"
+    >
       <div class="form-state">
         <a-tag v-if="state === 2" color="#108ee9">待审核</a-tag>
-        <a-tag v-if="state === 3" color="#87d068">已审核通过</a-tag>
+        <a-tag v-if="state === 3" color="#87d068">待入库</a-tag>
         <a-tag v-if="state === 4" color="#f50">已退回</a-tag>
       </div>
-      <a-form-model style="max-width: 1080px; margin: 20px auto 0" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol" :model="form" :rules="rules">
+      <a-form-model
+        style="max-width: 1080px; margin: 20px auto 0;"
+        ref="ruleForm"
+        :label-col="labelCol"
+        :wrapper-col="wrapperCol"
+        :model="form"
+        :rules="rules"
+      >
         <a-form-model-item ref="code" label="批次号" prop="code">
           <a-input
             :disabled="dis"
@@ -21,12 +38,15 @@
         </a-form-model-item>
 
         <a-form-model-item label="入库仓库" prop="type">
-          <j-dict-select-tag :disabled="dis" type="list" v-model="form.type" dictCode="warehouse_manage, name, id" placeholder="请选择入库仓库" />
+          <j-dict-select-tag
+            :disabled="dis"
+            type="list"
+            v-model="form.type"
+            dictCode="warehouse_manage, name, id"
+            placeholder="请选择入库仓库"
+          />
         </a-form-model-item>
         <div class="tool-bar" style="text-align: right">
-          <a-button class="add-btn" @click="handleAddMaterial" type="primary" icon="plus" v-if="!dis">新增</a-button>
-          <a-button class="add-btn" @click="handleCommitMaterial" type="primary" v-if="dis">提交审核</a-button>
-          <a-button class="add-btn" @click="handleRetractMaterial" type="primary" v-if="dis">撤回</a-button>
         </div>
 
         <!-- table区域-begin -->
@@ -49,6 +69,22 @@
           </template>
         </a-table>
       </a-form-model>
+      <div style="margin-top: 60px"></div>
+      <div class="footer-bar">
+        <a-button class="add-btn" @click="handleAddMaterial" type="primary" icon="plus" v-if="!dis" v-has="'stockInAdd'">新增</a-button>
+        <span v-if="state === 1 && dis " v-has="'stockInAdd'">
+            <a-button class="add-btn" @click="handleCommitMaterial" type="primary">提交审核</a-button>
+            <a-button class="add-btn" @click="handleRetractMaterial" type="primary">撤回</a-button>
+          </span>
+        <span v-if="state === 2" v-has="'stockInCheck'">
+            <a-button class="add-btn" @click="handlePassMaterial" type="primary" v-if="dis">通过</a-button>
+            <a-button class="add-btn" @click="handleRetractMaterial" type="primary" v-if="dis">退回</a-button>
+        </span>
+        <span class="flex-1"></span>
+        <a-button key="submit" type="primary" :loading="loading" @click="handleOk">保存</a-button>
+        <a-button key="submitAndCheck" type="primary" :loading="loading" @click="handleOkAndCommitCheck">保存并提交审核</a-button>
+        <a-button key="back" @click="handleCancel">取消</a-button>
+      </div>
     </j-modal>
 
     <MaterialFilterModal ref="materialFilterModal" @ok="submitCallback" />
@@ -60,31 +96,32 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
 import MaterialFilterModal from './MaterialFilterModal'
 import EditableCell from './editCell'
-import { stockComeApply, queryByIdStockIn, approve } from 'src/api/mission/project'
+import { stockComeApply, queryByIdStockIn, approve, getAuthForQc } from 'src/api/mission/project'
 
 export default {
   name: 'StockInModal',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
     MaterialFilterModal,
-    EditableCell,
+    EditableCell
   },
   data() {
     return {
       title: '入库单',
       width: 1280,
       visible: false,
+      footer: null,
       disableSubmit: false,
       dis: false,
       labelCol: { span: 2 },
       wrapperCol: { span: 6 },
       form: {
         code: '',
-        type: undefined,
+        type: undefined
       },
       rules: {
         code: [{ required: true, message: '请输入批次号', trigger: 'blur' }],
-        type: [{ required: true, message: '请选择入库仓库', trigger: 'change' }],
+        type: [{ required: true, message: '请选择入库仓库', trigger: 'change' }]
       },
       // 表头
       columns: [
@@ -94,33 +131,35 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function (t, r, index) {
+          customRender: function(t, r, index) {
             return parseInt(index) + 1
-          },
+          }
         },
         {
-          title: '耗材序号',
+          title: '耗材编码',
           align: 'center',
           dataIndex: 'materialCode',
         },
         {
           title: '耗材名称',
           align: 'center',
-          dataIndex: 'materialName',
+          dataIndex: 'materialName'
         },
         {
           title: '耗材数量',
           align: 'center',
           dataIndex: 'amount',
           scopedSlots: { customRender: 'amount' },
-        },
+          width: 200
+        }
       ],
       url: {
-        list: '',
+        list: ''
       },
       list: [],
       pId: undefined,
       state: null,
+      isLeading: undefined
     }
   },
   methods: {
@@ -130,6 +169,8 @@ export default {
         this.loadData(record.id)
         this.dis = true
       } else {
+        this.form = {}
+        this.dataSource = []
         this.dis = false
       }
       this.visible = true
@@ -150,19 +191,23 @@ export default {
     handleOk() {
       this.submitSave()
     },
-    submitSave() {
+    handleOkAndCommitCheck() {
+      this.submitSave(true)
+    },
+    submitSave(commit) {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           const postData = {
             batchNo: this.form.code,
             comeStocks: [],
             warehouseId: this.form.type,
+            isAutoSubmitApprove: commit ? 1 : 0
           }
           this.dataSource.forEach(row => {
             if (parseInt(row.amount) > 0) {
               postData.comeStocks.push({
                 amount: parseInt(row.amount),
-                materialId: row.id,
+                materialId: row.id
               })
             }
           })
@@ -171,6 +216,9 @@ export default {
               if (res.success) {
                 this.$message.success(res.message)
                 this.visible = false
+                this.$emit('ok')
+              } else {
+                this.$message.error(res.message)
               }
             })
             .finally(() => {
@@ -187,7 +235,30 @@ export default {
       const query = {
         applyId: this.pId,
         applyType: 1,
-        status: 2,
+        status: 2
+      }
+      approve(query).then(res => {
+        if (res.success) {
+          that.$message.success(res.message)
+          that.$emit('ok')
+          that.visible = false
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    handlePassMaterial () {
+      this.commitState(3)
+    },
+    handleBackMaterial () {
+      this.commitState(1)
+    },
+    commitState (status) {
+      const that = this
+      const query = {
+        applyId: this.pId,
+        applyType: 1,
+        status: status
       }
       approve(query).then(res => {
         if (res.success) {
@@ -204,7 +275,7 @@ export default {
       const query = {
         applyId: this.pId,
         applyType: 1,
-        status: 1,
+        status: 1
       }
       approve(query).then(res => {
         if (res.success) {
@@ -232,7 +303,7 @@ export default {
         const that = this
         const query = {
           applyId: id,
-          applyType: 1,
+          applyType: 1
         }
         queryByIdStockIn(query).then(res => {
           if (res.success) {
@@ -246,13 +317,22 @@ export default {
         })
       }
     },
+    getAuth() {
+      // getAuthForQc().then(res => {
+      //   if (res.success) {
+      //     this.isLeading = res.result
+      //   }
+      // })
+    }
   },
+  mounted () {
+    this.getAuth()
+  }
 }
 </script>
 
 <style lang="less" scoped>
 .add-btn {
-  margin-bottom: 20px;
   margin-right: 15px;
 }
 .form-state {
@@ -260,4 +340,24 @@ export default {
   top: 70px;
   right: 35px;
 }
+.footer-bar {
+  margin-top: 10px;
+  padding: 10px 30px;
+  text-align: right;
+  background: transparent;
+  border-top: 1px solid #e8e8e8;
+  border-radius: 0 0 4px 4px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  align-items: center
+}
+  .footer-bar .ant-btn {
+    margin-right: 15px;
+  }
+  .footer-bar .flex-1 {
+    flex: 1;
+  }
 </style>

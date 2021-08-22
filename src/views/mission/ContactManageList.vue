@@ -3,7 +3,8 @@
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
-        <a-row :gutter="24"> </a-row>
+        <a-row :gutter="24">
+        </a-row>
       </a-form>
     </div>
     <!-- 查询区域-END -->
@@ -19,7 +20,7 @@
       <j-super-query :fieldList="superFieldList" ref="superQueryModal" @handleSuperQuery="handleSuperQuery"></j-super-query>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete" />删除</a-menu-item>
+          <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down" /></a-button>
       </a-dropdown>
@@ -27,39 +28,43 @@
 
     <!-- table区域-begin -->
     <div>
-      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a
-        >项
+      <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择 <a style="font-weight: 600">{{ selectedRowKeys.length }}</a>项
         <a style="margin-left: 24px" @click="onClearSelected">清空</a>
       </div>
 
       <a-table
         ref="table"
         size="middle"
-        :scroll="{ x: true }"
+        :scroll="{x:true}"
         bordered
         rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{
-          selectedRowKeys: selectedRowKeys,
-          onChange: onSelectChange,
-        }"
+        :rowSelection="{selectedRowKeys: selectedRowKeys, onChange: onSelectChange}"
         class="j-table-force-nowrap"
-        @change="handleTableChange"
-      >
+        @change="handleTableChange">
+
         <template slot="htmlSlot" slot-scope="text">
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width:80px;font-size: 12px;font-style: italic;"/>
         </template>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
-          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button
+            v-else
+            :ghost="true"
+            type="primary"
+            icon="download"
+            size="small"
+            @click="downloadFile(text)">
+            下载
+          </a-button>
         </template>
 
         <span slot="action" slot-scope="text, record">
@@ -80,6 +85,7 @@
             </a-menu>
           </a-dropdown>
         </span>
+
       </a-table>
     </div>
 
@@ -88,189 +94,141 @@
 </template>
 
 <script>
-import '@/assets/less/TableExpand.less'
-import { mixinDevice } from '@/utils/mixin'
-import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import ContactManageModal from './modules/ContactManageModal'
-import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 
-export default {
-  name: 'ContactManageList',
-  mixins: [JeecgListMixin, mixinDevice],
-  components: {
-    ContactManageModal,
-  },
-  data() {
-    return {
-      description: '联系人管理管理页面',
-      // 表头
-      columns: [
-        {
-          title: '#',
-          dataIndex: '',
-          key: 'rowIndex',
-          width: 60,
-          align: 'center',
-          customRender: function (t, r, index) {
-            return parseInt(index) + 1
+  import '@/assets/less/TableExpand.less'
+  import { mixinDevice } from '@/utils/mixin'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+  import ContactManageModal from './modules/ContactManageModal'
+  import {filterMultiDictText} from '@/components/dict/JDictSelectUtil'
+
+  export default {
+    name: 'ContactManageList',
+    mixins:[JeecgListMixin, mixinDevice],
+    components: {
+      ContactManageModal
+    },
+    data () {
+      return {
+        description: '联系人管理管理页面',
+        // 表头
+        columns: [
+          {
+            title: '#',
+            dataIndex: '',
+            key: 'rowIndex',
+            width: 60,
+            align: 'center',
+            customRender: function(t, r, index) {
+              return parseInt(index) + 1
+            }
           },
-        },
-        {
-          title: '姓名',
-          align: 'center',
-          dataIndex: 'fullName',
-        },
-        {
-          title: '性别',
-          align: 'center',
-          dataIndex: 'sex_dictText',
-        },
-        {
-          title: '生日',
-          align: 'center',
-          dataIndex: 'birthday',
-          customRender: function (text) {
-            return !text ? '' : text.length > 10 ? text.substr(0, 10) : text
+          {
+            title:'姓名',
+            align:"center",
+            dataIndex: 'fullName'
           },
+          {
+            title:'性别',
+            align:"center",
+            dataIndex: 'sex_dictText'
+          },
+          {
+            title:'生日',
+            align:"center",
+            dataIndex: 'birthday',
+            customRender:function (text) {
+              return !text?"":(text.length>10?text.substr(0,10):text)
+            }
+          },
+          {
+            title:'联系电话',
+            align:"center",
+            dataIndex: 'mobile'
+          },
+          {
+            title:'紧急联系电话',
+            align:"center",
+            dataIndex: 'emergencyMobile'
+          },
+          {
+            title:'工作单位',
+            align:"center",
+            dataIndex: 'workCompany'
+          },
+          {
+            title:'部门/科室',
+            align:"center",
+            dataIndex: 'workDep'
+          },
+          {
+            title: '职位',
+            align: 'center',
+            dataIndex: 'jobTitle'
+          },
+          // {
+          //   title:'照片',
+          //   align:"center",
+          //   dataIndex: 'picUrl'
+          // },
+          {
+            title:'联系人类型',
+            align:"center",
+            dataIndex: 'contactType_dictText'
+          },
+          {
+            title:'关联单位/项目组',
+            align:"center",
+            dataIndex: 'relationUnit_dictText'
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            align: 'center',
+            fixed: 'right',
+            width: 147,
+            scopedSlots: { customRender: 'action' }
+          }
+        ],
+        url: {
+          list: '/mission/contactManage/list',
+          delete: '/mission/contactManage/delete',
+          deleteBatch: '/mission/contactManage/deleteBatch',
+          exportXlsUrl: '/mission/contactManage/exportXls',
+          importExcelUrl: 'mission/contactManage/importExcel'
         },
-        {
-          title: '联系电话',
-          align: 'center',
-          dataIndex: 'mobile',
-        },
-        {
-          title: '紧急联系电话',
-          align: 'center',
-          dataIndex: 'emergencyMobile',
-        },
-        {
-          title: '工作单位',
-          align: 'center',
-          dataIndex: 'workCompany',
-        },
-        {
-          title: '部门/科室',
-          align: 'center',
-          dataIndex: 'workDep',
-        },
-        {
-          title: '职位',
-          align: 'center',
-          dataIndex: 'jobTitle',
-        },
-        // {
-        //   title:'照片',
-        //   align:"center",
-        //   dataIndex: 'picUrl'
-        // },
-        {
-          title: '联系人类型',
-          align: 'center',
-          dataIndex: 'contactType_dictText',
-        },
-        {
-          title: '关联单位/项目组',
-          align: 'center',
-          dataIndex: 'relationUnit_dictText',
-        },
-        {
-          title: '操作',
-          dataIndex: 'action',
-          align: 'center',
-          fixed: 'right',
-          width: 147,
-          scopedSlots: { customRender: 'action' },
-        },
-      ],
-      url: {
-        list: '/mission/contactManage/list',
-        delete: '/mission/contactManage/delete',
-        deleteBatch: '/mission/contactManage/deleteBatch',
-        exportXlsUrl: '/mission/contactManage/exportXls',
-        importExcelUrl: 'mission/contactManage/importExcel',
+        dictOptions:{},
+        superFieldList:[]
+      }
+    },
+    created() {
+      this.getSuperFieldList()
+    },
+    computed: {
+      importExcelUrl: function(){
+        return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
       },
-      dictOptions: {},
-      superFieldList: [],
+    },
+    methods: {
+      initDictConfig(){
+      },
+      getSuperFieldList(){
+        let fieldList = []
+        fieldList.push({type:'string',value:'fullName',text:'姓名',dictCode:''})
+        fieldList.push({type:'int',value:'sex',text:'性别',dictCode:'sex'})
+        fieldList.push({type:'date',value:'birthday',text:'生日'})
+        fieldList.push({type:'string',value:'mobile',text:'联系电话',dictCode:''})
+        fieldList.push({type:'string',value:'emergencyMobile',text:'紧急联系电话',dictCode:''})
+        fieldList.push({type:'string',value:'workCompany',text:'工作单位',dictCode:''})
+        fieldList.push({type:'string',value:'workDep',text:'部门/科室',dictCode:''})
+        fieldList.push({type:'string',value:'jobTitle',text:'职位',dictCode:''})
+        fieldList.push({type:'string',value:'picUrl',text:'照片',dictCode:''})
+        fieldList.push({type:'int',value:'contactType',text:'联系人类型',dictCode:'contact_type'})
+        fieldList.push({type:'string',value:'relationUnit',text:'关联单位/项目组',dictCode:''})
+        this.superFieldList = fieldList
+      }
     }
-  },
-  created() {
-    this.getSuperFieldList()
-  },
-  computed: {
-    importExcelUrl: function () {
-      return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    },
-  },
-  methods: {
-    initDictConfig() {},
-    getSuperFieldList() {
-      let fieldList = []
-      fieldList.push({
-        type: 'string',
-        value: 'fullName',
-        text: '姓名',
-        dictCode: '',
-      })
-      fieldList.push({
-        type: 'int',
-        value: 'sex',
-        text: '性别',
-        dictCode: 'sex',
-      })
-      fieldList.push({ type: 'date', value: 'birthday', text: '生日' })
-      fieldList.push({
-        type: 'string',
-        value: 'mobile',
-        text: '联系电话',
-        dictCode: '',
-      })
-      fieldList.push({
-        type: 'string',
-        value: 'emergencyMobile',
-        text: '紧急联系电话',
-        dictCode: '',
-      })
-      fieldList.push({
-        type: 'string',
-        value: 'workCompany',
-        text: '工作单位',
-        dictCode: '',
-      })
-      fieldList.push({
-        type: 'string',
-        value: 'workDep',
-        text: '部门/科室',
-        dictCode: '',
-      })
-      fieldList.push({
-        type: 'string',
-        value: 'jobTitle',
-        text: '职位',
-        dictCode: '',
-      })
-      fieldList.push({
-        type: 'string',
-        value: 'picUrl',
-        text: '照片',
-        dictCode: '',
-      })
-      fieldList.push({
-        type: 'int',
-        value: 'contactType',
-        text: '联系人类型',
-        dictCode: 'contact_type',
-      })
-      fieldList.push({
-        type: 'string',
-        value: 'relationUnit',
-        text: '关联单位/项目组',
-        dictCode: '',
-      })
-      this.superFieldList = fieldList
-    },
-  },
-}
+  }
 </script>
 <style scoped>
-@import '~@assets/less/common.less';
+  @import '~@assets/less/common.less';
 </style>

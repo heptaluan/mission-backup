@@ -13,11 +13,11 @@
               <a-input v-model="model.caName" placeholder="请输入合作单位名称"  ></a-input>
             </a-form-model-item>
           </a-col>
-          <a-col :span="24">
+          <!-- <a-col :span="24">
             <a-form-model-item label="合作单位编码" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="caCode">
               <a-input v-model="model.caCode" placeholder="请输入合作单位编码"  ></a-input>
             </a-form-model-item>
-          </a-col>
+          </a-col> -->
           <a-col :span="24">
             <a-form-model-item label="地址" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="caAddress">
               <a-input v-model="model.caAddress" placeholder="请输入地址"  ></a-input>
@@ -38,7 +38,7 @@
               <j-dict-select-tag type="list" v-model="model.caDockingId" dictCode="contact_manage,full_name,id" placeholder="请选择对接人" />
             </a-form-model-item>
           </a-col>
-          <a-col :span="24">
+          <!-- <a-col :span="24">
             <a-form-model-item label="负责人" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="caHeadId">
               <j-dict-select-tag type="list" v-model="model.caHeadId" dictCode="contact_manage,full_name,id" placeholder="请选择负责人" />
             </a-form-model-item>
@@ -47,7 +47,7 @@
             <a-form-model-item label="科室/部门" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="caDep">
               <a-input v-model="model.caDep" placeholder="请输入科室/部门"  ></a-input>
             </a-form-model-item>
-          </a-col>
+          </a-col> -->
         </a-row>
       </a-form-model>
     </j-form-container>
@@ -87,9 +87,9 @@
         validatorRules: {
           caType: [{ required: true, message: '请选择合作单位类型', trigger: 'change' }],
           caName: [{ required: true, message: '请输入合作单位名称', trigger: 'blur' }],
-          caCode: [{ required: true, message: '请输入合作单位编码', trigger: 'blur' }],
+          // caCode: [{ required: true, message: '请输入合作单位编码', trigger: 'blur' }],
           caAddress: [{ required: true, message: '请输入地址', trigger: 'blur' }],
-          caSocialCode: [{ required: true, message: '请输入统一信用代码', trigger: 'blur', pattern: /^[A-Z0-9]{8}-[A-Z0-9]$|^[A-Z0-9]{8}-[A-Z0-9]-[0-9]{2}$/}],
+          caSocialCode: [{ required: true, message: '请输入统一信用代码', trigger: 'blur', pattern: /^([0-9A-HJ-NPQRTUWXY]{2}\d{6}[0-9A-HJ-NPQRTUWXY]{10}|[1-9]\d{14})$/}],
           caWebsite: [{ pattern: /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\*\+,;=.]+$/, message: '请输入正确的网址', trigger: 'blur' }],
           caDockingId: [{ required: true, message: '请选择对接人', trigger: 'change' }],
           caHeadId: [{ required: true, message: '请选择负责人', trigger: 'change' }]

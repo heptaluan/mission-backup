@@ -20,12 +20,20 @@
           <div v-html="text"></div>
         </template>
         <template slot="imgSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
-          <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+          <img
+            v-else
+            :src="getImgView(text)"
+            height="25px"
+            alt=""
+            style="max-width:80px;font-size: 12px;font-style: italic;"
+          />
         </template>
         <template slot="fileSlot" slot-scope="text">
-          <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
-          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
+            下载
+          </a-button>
         </template>
       </a-table>
     </a-form-model>
@@ -56,57 +64,58 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function (t, r, index) {
+          customRender: function(t, r, index) {
             return parseInt(index) + 1
-          },
+          }
         },
         {
           title: '机构',
           align: 'center',
-          dataIndex: 'agencyId_dictText',
+          dataIndex: 'agencyId_dictText'
         },
         {
           title: '病例编号',
           align: 'center',
-          dataIndex: 'codeMedicalCase',
+          dataIndex: 'codeMedicalCase'
         },
         {
           title: '样本编号',
           align: 'center',
-          dataIndex: 'codeNumber',
+          dataIndex: 'codeNumber'
         },
         {
           title: '癌症类别',
           align: 'center',
-          dataIndex: 'cancerType_dictText',
+          dataIndex: 'cancerType_dictText'
         },
         {
           title: '研究类别',
           align: 'center',
-          dataIndex: 'researchType_dictText',
+          dataIndex: 'researchType_dictText'
         },
         {
           title: '样本类别',
           align: 'center',
-          dataIndex: 'sampleType_dictText',
+          dataIndex: 'sampleType_dictText'
         },
         {
           title: '创建时间',
           align: 'center',
-          dataIndex: 'createTime',
-        },
+          dataIndex: 'createTime'
+        }
       ],
       url: {
-        list: '/mission/materialManagement/list',
-      },
+        list: 'unload'
+      }
     }
   },
   methods: {
     show(record) {
       this.record = record
       this.visible = true
-      this.loadData()
-      console.log(record)
+      this.$nextTick(() => {
+        this.loadListData()
+      })
     },
     handleCancel() {
       this.visible = false
@@ -115,10 +124,10 @@ export default {
       this.$emit('ok')
       this.visible = false
     },
-    loadData() {
+    loadListData() {
       const that = this
       getCodeManagementList({
-        codeManageId: that.record.id,
+        codeManageId: that.record.id
       }).then(res => {
         if (res.success) {
           that.dataSource = res.result.records
@@ -126,7 +135,7 @@ export default {
           that.$message.warning(res.message)
         }
       })
-    },
-  },
+    }
+  }
 }
 </script>

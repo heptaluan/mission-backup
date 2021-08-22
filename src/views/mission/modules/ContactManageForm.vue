@@ -52,25 +52,25 @@
 <!--              <a-input v-model="model.picUrl" placeholder="请输入照片"></a-input>-->
 <!--            </a-form-model-item>-->
 <!--          </a-col>-->
-          <a-col :span="24">
-            <a-form-model-item label="联系人类型" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="contactType">
-              <j-dict-select-tag
-                @input="handleChange"
-                type="list"
-                v-model="model.contactType"
-                dictCode="contact_type"
-                placeholder="请选择联系人类型"
-              />
-            </a-form-model-item>
-          </a-col>
+<!--          <a-col :span="24">-->
+<!--            <a-form-model-item label="联系人类型" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="contactType">-->
+<!--              <j-dict-select-tag-->
+<!--                @input="handleChange"-->
+<!--                type="list"-->
+<!--                v-model="model.contactType"-->
+<!--                dictCode="contact_type"-->
+<!--                placeholder="请选择联系人类型"-->
+<!--              />-->
+<!--            </a-form-model-item>-->
+<!--          </a-col>-->
           <a-col :span="24">
             <a-form-model-item
-              label="关联单位/项目组"
+              label="关联单位"
               :labelCol="labelCol"
               :wrapperCol="wrapperCol"
               prop="relationUnit"
             >
-              <a-select allowClear v-model="model.relationUnit" placeholder="请选择关联单位/项目组">
+              <a-select allowClear v-model="model.relationUnit" placeholder="请选择关联单位">
                 <a-select-option v-for="item in list" :key="item.id" :value="item.id">
                   {{ item.groupName || item.caName }}
                 </a-select-option>
@@ -102,7 +102,7 @@ export default {
   data() {
     return {
       model: {
-        relationUnit: ''
+        relationUnit: undefined
       },
       form: {},
       list: [],
@@ -144,9 +144,10 @@ export default {
     },
     edit(record) {
       this.model = Object.assign({}, record)
-      if (this.model.contactType) {
-        this.getData(this.model.contactType.toString())
-      }
+      this.getData()
+      // if (this.model.contactType) {
+      //   this.getData(this.model.contactType.toString())
+      // }
       this.visible = true
     },
     submitForm() {
@@ -185,28 +186,28 @@ export default {
     },
     getData(key) {
       const that = this
-      switch (key) {
-        case '1':
-          queryGroup().then(res => {
-            if (res.success) {
-              that.list = res.result.records
-            } else {
-              that.$message.warning(res.message)
-            }
-          })
-          break
-        case '3':
-          queryCooperationAgency().then(res => {
-            if (res.success) {
-              that.list = res.result.records
-            } else {
-              that.$message.warning(res.message)
-            }
-          })
-          break
-        default:
-          break
-      }
+      // switch (key) {
+      //   case '1':
+      //     queryGroup().then(res => {
+      //       if (res.success) {
+      //         that.list = res.result.records
+      //       } else {
+      //         that.$message.warning(res.message)
+      //       }
+      //     })
+      //     break
+      //   case '3':
+      queryCooperationAgency().then(res => {
+        if (res.success) {
+          that.list = res.result.records
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+      //     break
+      //   default:
+      //     break
+      // }
     }
   }
 }

@@ -70,13 +70,7 @@
         },
         confirmLoading: false,
         validatorRules: {
-        },
-        url: {
-          add: "/mission/fileInfo/add",
-          edit: "/mission/fileInfo/edit",
-          queryById: "/mission/fileInfo/queryById"
-        },
-        disableEdit: true
+        }
       }
     },
     computed: {
@@ -125,7 +119,7 @@
           }
 
         })
-      },
+      }
     }
   }
 </script>

@@ -1,6 +1,13 @@
 <template>
   <div>
-    <a-form-model style="max-width: 1080px; margin: 40px auto 0" ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form-model
+      style="max-width: 1080px; margin: 40px auto 0;"
+      ref="ruleForm"
+      :model="form"
+      :rules="rules"
+      :label-col="labelCol"
+      :wrapper-col="wrapperCol"
+    >
       <a-form-model-item ref="noTotal" label="病例总量/Total Samples" prop="noTotal">
         <a-input
           placeholder="请输入病例总量"
@@ -44,19 +51,27 @@ import { getProjectSample, addProjectSample } from 'src/api/mission/project'
 export default {
   name: 'Step6',
   data() {
+    const validateWeek = (rule, value, callback) => {
+      if (Number(value) > Number(this.form.noTotal)) {
+        callback(new Error('周预计量必须小于病例总量!'))
+      } else {
+        callback()
+      }
+    }
     return {
       labelCol: { span: 8 },
       wrapperCol: { span: 10 },
       form: {
         noTotal: '',
         noWeek: '',
-        remark: '',
+        remark: ''
       },
       rules: {
         noTotal: [{ required: true, message: '请输入样本总量', trigger: 'blur' }],
-        noWeek: [{ required: true, message: '请输入周预计量', trigger: 'blur' }],
-        remark: [{ required: true, message: '请输入项目说明', trigger: 'blur' }],
-      },
+        noWeek: [{ required: true, message: '请输入周预计量', trigger: 'blur' },
+          { validator: validateWeek, trigger: 'blur' }],
+        remark: [{ required: true, message: '请输入项目说明', trigger: 'blur' }]
+      }
     }
   },
   methods: {
@@ -64,19 +79,13 @@ export default {
       this.$emit('prevStep')
     },
     nextStep() {
-      this.$emit('nextStep')
-      // this.$refs.ruleForm.validate(valid => {
-      //   if (valid) {
-      //     this.$emit('nextStep')
-      //   } else {
-      //     return false
-      //   }
-      // })
+      const cb = ()=> this.$emit('nextStep')
+      this.save(cb)
     },
     loadData() {
       const that = this
       getProjectSample({
-        id: this.projectId,
+        id: this.projectId
       }).then(res => {
         if (res.success) {
           if (res.result[0]) {
@@ -101,44 +110,50 @@ export default {
       }
       return false
     },
-    save() {
+    save(cb) {
       const that = this
-      let postData
-      if (this.id) {
-        postData = {
-          id: this.id,
-          projectId: this.projectId,
-          noTotal: Number(this.form.noTotal),
-          noWeek: Number(this.form.noWeek),
-          remark: this.form.remark,
-        }
-      } else {
-        postData = {
-          projectId: this.projectId,
-          noTotal: Number(this.form.noTotal),
-          noWeek: Number(this.form.noWeek),
-          remark: this.form.remark,
-        }
-      }
-      addProjectSample(postData)
-        .then(res => {
-          console.log(res)
-          if (res.success) {
-            that.$message.success(res.message)
-            that.$emit('ok')
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          let postData
+          if (this.id) {
+            postData = {
+              id: this.id,
+              projectId: this.projectId,
+              noTotal: Number(this.form.noTotal),
+              noWeek: Number(this.form.noWeek),
+              remark: this.form.remark
+            }
           } else {
-            that.$message.warning(res.message)
+            postData = {
+              projectId: this.projectId,
+              noTotal: Number(this.form.noTotal),
+              noWeek: Number(this.form.noWeek),
+              remark: this.form.remark
+            }
           }
-        })
-        .finally(() => {
-          that.confirmLoading = false
-        })
-    },
+          addProjectSample(postData)
+            .then(res => {
+              if (res.success) {
+                that.$message.success(res.message)
+                that.$emit('ok')
+                if (typeof cb === 'function') cb()
+              } else {
+                that.$message.warning(res.message)
+              }
+            })
+            .finally(() => {
+              that.confirmLoading = false
+            })
+        } else {
+          return false
+        }
+      })
+    }
   },
   mounted() {
     this.projectId = this.getParams('id')
     this.loadData()
-  },
+  }
 }
 </script>
 

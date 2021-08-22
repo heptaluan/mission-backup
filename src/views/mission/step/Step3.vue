@@ -1,11 +1,37 @@
 <template>
   <div>
-    <a-form-model style="max-width: 1080px; margin: 40px auto 0" ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form-model
+      style="max-width: 1080px; margin: 40px auto 0;"
+      ref="ruleForm"
+      :model="form"
+      :rules="rules"
+      :label-col="labelCol"
+      :wrapper-col="wrapperCol"
+    >
       <a-form-model-item label="开始时间/start time" prop="startTime">
-        <a-date-picker class="time-select" v-model="form.startTime" :disabled-date="disabledStartDate" show-time format="YYYY-MM-DD" placeholder="开始时间" @openChange="handleStartOpenChange" valueFormat />
+        <a-date-picker
+          class="time-select"
+          v-model="form.startTime"
+          :disabled-date="disabledStartDate"
+          show-time
+          format="YYYY-MM-DD"
+          placeholder="开始时间"
+          @openChange="handleStartOpenChange"
+          valueFormat
+        />
       </a-form-model-item>
       <a-form-model-item label="结束时间/expect end date" prop="endTime">
-        <a-date-picker class="time-select" v-model="form.endTime" :disabled-date="disabledEndDate" show-time format="YYYY-MM-DD" placeholder="结束时间" :open="endOpen" @openChange="handleEndOpenChange" valueFormat />
+        <a-date-picker
+          class="time-select"
+          v-model="form.endTime"
+          :disabled-date="disabledEndDate"
+          show-time
+          format="YYYY-MM-DD"
+          placeholder="结束时间"
+          :open="endOpen"
+          @openChange="handleEndOpenChange"
+          valueFormat
+        />
       </a-form-model-item>
       <a-form-model-item label="周期">
         <a-input class="time-total" placeholder="项目周期" readOnly :value="time" />
@@ -35,13 +61,13 @@ export default {
       time: '',
       form: {
         startTime: '',
-        endTime: '',
+        endTime: ''
       },
       rules: {
         startTime: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
-        endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }],
+        endTime: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
       },
-      endOpen: false,
+      endOpen: false
     }
   },
   methods: {
@@ -49,36 +75,35 @@ export default {
       this.$emit('prevStep')
     },
     nextStep() {
-      this.$emit('nextStep')
-      // this.$refs.ruleForm.validate(valid => {
-      //   if (valid) {
-      //     this.$emit('nextStep')
-      //   } else {
-      //     return false
-      //   }
-      // })
+      const cb = ()=> this.$emit('nextStep')
+      this.save(cb)
     },
-    save() {
+    save(cb) {
       const that = this
       const step = 'Schedule'
-      const postData = {
-        preEndDate: this.form.endTime,
-        startDate: this.form.startTime,
-        cycleTime: this.time,
-        id: this.projectId,
-      }
-      putProjectStep(step, postData)
-        .then(res => {
-          if (res.success) {
-            that.$message.success(res.message)
-            that.$emit('ok')
-          } else {
-            that.$message.warning(res.message)
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          const postData = {
+            preEndDate: this.form.endTime,
+            startDate: this.form.startTime,
+            cycleTime: this.time,
+            id: this.projectId
           }
-        })
-        .finally(() => {
-          that.confirmLoading = false
-        })
+          putProjectStep(step, postData)
+            .then(res => {
+              if (res.success) {
+                that.$message.success(res.message)
+                that.$emit('ok')
+                if (typeof cb === 'function') cb()
+              } else {
+                that.$message.warning(res.message)
+              }
+            })
+            .finally(() => {
+              that.confirmLoading = false
+            })
+        }
+      })
     },
     disabledStartDate(startValue) {
       const endValue = this.form.endTime
@@ -113,7 +138,7 @@ export default {
     loadData() {
       const that = this
       queryById({
-        id: this.projectId,
+        id: this.projectId
       }).then(res => {
         if (res.success) {
           if (res.result.startDate) {
@@ -138,12 +163,12 @@ export default {
         }
       }
       return false
-    },
+    }
   },
   mounted() {
     this.projectId = this.getParams('id')
     this.loadData()
-  },
+  }
 }
 </script>
 

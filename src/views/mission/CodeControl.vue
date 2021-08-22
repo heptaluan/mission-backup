@@ -1,5 +1,22 @@
 <template>
   <a-card :bordered="false">
+    <div class="table-page-search-wrapper">
+      <a-form @keyup.enter.native="searchQuery">
+        <a-row :gutter="24" class="search-group">
+          <div class="group">
+            <div class="title">创建时间：</div>
+            <j-date v-model="queryParam.createTime_begin" :showTime="true" date-format="YYYY-MM-DD HH:mm:ss" style="width:120px" placeholder="请选择开始时间" ></j-date>
+            <span style="width: 10px;">~</span>
+            <j-date v-model="queryParam.createTime_end" :showTime="true" date-format="YYYY-MM-DD HH:mm:ss" style="width:120px" placeholder="请选择结束时间"></j-date>
+          </div>
+          <div class="group">
+            <div class="title">项目：</div>
+            <j-dict-select-tag v-model="queryParam.projectId" dictCode="project_info, project_name, id, logical_state=1" placeholder="请选择项目组" style="width: 180px"></j-dict-select-tag>
+          </div>
+          <a-button @click="searchQuery" type="primary">查询</a-button>
+        </a-row>
+      </a-form>
+    </div>
     <!-- table区域-begin -->
     <a-table
       ref="table"
@@ -11,10 +28,7 @@
       :dataSource="dataSource"
       :pagination="ipagination"
       :loading="loading"
-      :rowSelection="{
-        selectedRowKeys: selectedRowKeys,
-        onChange: onSelectChange,
-      }"
+      :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       class="j-table-force-nowrap"
       @change="handleTableChange"
     >
@@ -22,18 +36,26 @@
         <div v-html="text"></div>
       </template>
       <template slot="imgSlot" slot-scope="text">
-        <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
-        <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width: 80px; font-size: 12px; font-style: italic" />
+        <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
+        <img
+          v-else
+          :src="getImgView(text)"
+          height="25px"
+          alt=""
+          style="max-width:80px;font-size: 12px;font-style: italic;"
+        />
       </template>
       <template slot="fileSlot" slot-scope="text">
-        <span v-if="!text" style="font-size: 12px; font-style: italic">无文件</span>
-        <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)"> 下载 </a-button>
+        <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+        <a-button v-else :ghost="true" type="primary" icon="download" size="small" @click="downloadFile(text)">
+          下载
+        </a-button>
       </template>
 
       <span slot="action" slot-scope="text, record">
         <div class="btn-group">
           <a @click="preview(record)">查看</a>
-          <a @click="downloadCode(record)">下载编号</a>
+          <a @click="downloadCode(record)" v-has="'codeEdit'">下载编号</a>
         </div>
       </span>
     </a-table>
@@ -54,7 +76,7 @@ export default {
   name: 'CodeControl',
   mixins: [JeecgListMixin, mixinDevice],
   components: {
-    CodeControlModal,
+    CodeControlModal
   },
   data() {
     return {
@@ -71,29 +93,34 @@ export default {
           key: 'rowIndex',
           width: 60,
           align: 'center',
-          customRender: function (t, r, index) {
+          customRender: function(t, r, index) {
             return parseInt(index) + 1
-          },
+          }
         },
         {
           title: '出库单编号',
           align: 'center',
-          dataIndex: 'leaveApplyId',
+          dataIndex: 'leaveApplyId'
         },
         {
-          title: '出库时间',
+          title: '项目名称',
           align: 'center',
-          dataIndex: 'time',
+          dataIndex: 'projectId_dictText'
         },
         {
-          title: '对象',
+          title: '机构名称',
           align: 'center',
-          dataIndex: 'target',
+          dataIndex: 'agencyId_dictText'
         },
         {
-          title: '数量',
+          title: '编号数量',
           align: 'center',
-          dataIndex: 'caseAmount',
+          dataIndex: 'codeAmount'
+        },
+        {
+          title: '病例数量',
+          align: 'center',
+          dataIndex: 'caseAmount'
         },
         {
           title: '操作',
@@ -101,18 +128,18 @@ export default {
           align: 'center',
           fixed: 'right',
           width: 147,
-          scopedSlots: { customRender: 'action' },
-        },
+          scopedSlots: { customRender: 'action' }
+        }
       ],
       url: {
-        list: 'mission/codeManagement/list',
-      },
+        list: 'mission/codeManagement/list'
+      }
     }
   },
   computed: {
-    importExcelUrl: function () {
+    importExcelUrl: function() {
       return `${window._CONFIG['domianURL']}/${this.url.importExcelUrl}`
-    },
+    }
   },
   methods: {
     preview(record) {
@@ -126,14 +153,33 @@ export default {
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
-    },
-  },
+    }
+  }
 }
 </script>
-<style scoped>
-@import '~@assets/less/common.less';
-.btn-group {
-  display: flex;
-  justify-content: space-evenly;
-}
+<style scoped lang="less">
+  @import '~@assets/less/common.less';
+  .search-group {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+
+    .group {
+      display: flex;
+      justify-items: center;
+      align-items: center;
+      margin-right: 15px;
+
+      .title {
+        color: rgba(0, 0, 0, 0.85);
+        margin-right: 10px;
+        text-align: right;
+        width: 80px;
+      }
+    }
+  }
+  .btn-group {
+    display: flex;
+    justify-content: space-evenly;
+  }
 </style>

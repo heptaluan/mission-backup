@@ -1,5 +1,14 @@
 <template>
-  <j-modal :title="title" :width="width" :visible="visible" switchFullscreen @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
+  <j-modal
+    :title="title"
+    :width="width"
+    :visible="visible"
+    switchFullscreen
+    @ok="handleOk"
+    :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }"
+    @cancel="handleCancel"
+    cancelText="关闭"
+  >
     <CaseControlForm ref="realForm" @ok="submitCallback" :disabled="disableSubmit" />
   </j-modal>
 </template>
@@ -10,14 +19,14 @@ import CaseControlForm from './CaseControlForm'
 export default {
   name: 'CaseControlModal',
   components: {
-    CaseControlForm,
+    CaseControlForm
   },
   data() {
     return {
-      title: '发起样本入库',
+      title: '编辑',
       width: 800,
       visible: false,
-      disableSubmit: false,
+      disableSubmit: false
     }
   },
   methods: {
@@ -46,7 +55,7 @@ export default {
     },
     handleCancel() {
       this.close()
-    },
-  },
+    }
+  }
 }
 </script>

@@ -10,7 +10,7 @@
     style="overflow: auto;padding-bottom: 53px;">
 
     <a-form>
-      <a-form-item label='所拥有的部门权限'>
+      <a-form-item label='所拥有的机构权限'>
 
         <a-tree
           v-if="treeData.length>0"
@@ -27,7 +27,7 @@
             {{ slotTitle }}<a-icon v-if="ruleFlag" type="align-left" style="margin-left:5px;color: red;"></a-icon>
           </span>
         </a-tree>
-        <div v-else><h3>无可配置部门权限!</h3></div>
+        <div v-else><h3>无可配置机构权限!</h3></div>
       </a-form-item>
     </a-form>
 
@@ -78,7 +78,7 @@
         allTreeKeys:[],
         autoExpandParent: true,
         checkStrictly: true,
-        title:"部门角色权限配置",
+        title:"机构角色权限配置",
         visible: false,
         loading: false,
         selectedKeys:[]

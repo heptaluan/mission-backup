@@ -152,7 +152,7 @@
           deleteBatch: "/mission/projectCompany/deleteBatch",
           exportXlsUrl: "/mission/projectCompany/exportXls",
           importExcelUrl: "mission/projectCompany/importExcel",
-          
+
         },
         dictOptions:{},
         superFieldList:[],
@@ -173,7 +173,7 @@
         let fieldList=[];
         fieldList.push({type:'string',value:'projectId',text:'项目',dictCode:''})
         fieldList.push({type:'string',value:'companyId',text:'合作单位',dictCode:''})
-        fieldList.push({type:'int',value:'corporationType',text:'合作单位类型',dictCode:'company_type'})
+        fieldList.push({type:'int',value:'corporationType',text:'合作单位类型',dictCode:'agency_cooperate_type'})
         this.superFieldList = fieldList
       }
     }

@@ -1,5 +1,14 @@
 <template>
-  <j-modal :title="title" :width="width" :visible="visible" switchFullscreen @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
+  <j-modal
+    :title="title"
+    :width="width"
+    :visible="visible"
+    switchFullscreen
+    @ok="handleOk"
+    :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }"
+    @cancel="handleCancel"
+    cancelText="关闭"
+  >
     <SuppliesPlanEachForm ref="realForm" @ok="submitCallback" :disabled="disableSubmit" />
   </j-modal>
 </template>
@@ -10,14 +19,14 @@ import SuppliesPlanEachForm from './SuppliesPlanEachForm'
 export default {
   name: 'SuppliesPlanEachModal',
   components: {
-    SuppliesPlanEachForm,
+    SuppliesPlanEachForm
   },
   data() {
     return {
       title: '',
       width: 800,
       visible: false,
-      disableSubmit: false,
+      disableSubmit: false
     }
   },
   methods: {
@@ -46,7 +55,7 @@ export default {
     },
     handleCancel() {
       this.close()
-    },
-  },
+    }
+  }
 }
 </script>

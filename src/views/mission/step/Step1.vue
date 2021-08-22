@@ -1,6 +1,13 @@
 <template>
   <div>
-    <a-form-model style="max-width: 1080px; margin: 40px auto 0" ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form-model
+      style="max-width: 1080px; margin: 40px auto 0;"
+      ref="ruleForm"
+      :model="form"
+      :rules="rules"
+      :label-col="labelCol"
+      :wrapper-col="wrapperCol"
+    >
       <a-form-model-item ref="projectName" label="项目名称（中文）" prop="projectName">
         <a-input
           placeholder="请输入项目名称（中文）"
@@ -44,21 +51,31 @@
       <a-form-model-item label="项目研究所处阶段/Project Phase" prop="projectStage">
         <j-dict-select-tag type="list" v-model="form.projectStage" dictCode="study_phase" placeholder="请选择项目研究所处阶段" />
       </a-form-model-item>
+      <a-form-model-item label="研究类别/Research Type" prop="researchType">
+        <j-dict-select-tag type="list" v-model="form.researchType" dictCode="research_type" placeholder="请选择项目研究类别" />
+      </a-form-model-item>
+      <a-form-model-item label="癌种/Cancer Type" prop="cancerType">
+        <j-dict-select-tag type="list" v-model="form.cancerType" dictCode="types_cancer" placeholder="请选择项目癌种" />
+      </a-form-model-item>
       <a-form-model-item label="项目组/Project Group" prop="projectGroupId">
         <a-select v-model="form.projectGroupId" placeholder="请选择项目组">
           <a-select-option v-for="item in groupList" :key="item.id" :value="item.id">
             {{ item.groupName }}
           </a-select-option>
         </a-select>
-        <a-button class="add-btn" type="primary" @click="addProjectGroup"> 新增 </a-button>
+        <a-button class="add-btn" type="primary" @click="addProjectGroup">
+          新增
+        </a-button>
       </a-form-model-item>
       <a-form-model-item label="项目内部负责人/Project Leader" prop="chargePeopleId">
         <a-select v-model="form.chargePeopleId" placeholder="请选择项目内部负责人">
           <a-select-option v-for="item in chargePeople" :key="item.id" :value="item.id">
-            {{ item.fullName }}
+            {{ item.realname }}
           </a-select-option>
         </a-select>
-        <a-button class="add-btn" type="primary" @click="addLeader"> 新增 </a-button>
+        <a-button class="add-btn" type="primary" @click="addLeader">
+          新增
+        </a-button>
       </a-form-model-item>
       <a-form-model-item label="项目目的/Project Goal" prop="projectGoal">
         <a-input placeholder="请输入项目目的" :rows="4" allowClear v-model="form.projectGoal" type="textarea" />
@@ -81,7 +98,7 @@ import api from 'src/api/mission/project'
 import { httpAction, getAction } from '@/api/manage'
 import ProjectGroupModal from 'src/views/mission/modules/ProjectGroupModal'
 import ContactManageModal from 'src/views/mission/modules/ContactManageModal'
-import { queryGroup, queryChargePeople, querypProjectInfo } from 'src/api/mission/project'
+import { queryGroup, getUserList, querypProjectInfo } from 'src/api/mission/project'
 
 export default {
   name: 'Step1',
@@ -96,6 +113,8 @@ export default {
         physicalProperty: undefined,
         projectDesign: undefined,
         projectStage: undefined,
+        researchType: undefined,
+        cancerType: undefined,
         projectGroupId: undefined,
         chargePeopleId: undefined,
         projectGoal: '',
@@ -107,82 +126,71 @@ export default {
         physicalProperty: [{ required: true, message: '请选择项目类型', trigger: 'change' }],
         projectDesign: [{ required: true, message: '请选择项目设计', trigger: 'change' }],
         projectStage: [{ required: true, message: '请选择项目研究所处阶段', trigger: 'change' }],
+        researchType: [{ required: true, message: '请选择项目研究类别', trigger: 'change' }],
+        cancerType: [{ required: true, message: '请选择项目癌种', trigger: 'change' }],
         projectGroupId: [{ required: true, message: '请选择项目组', trigger: 'change' }],
         chargePeopleId: [{ required: true, message: '请选择项目内部负责人', trigger: 'change' }],
-        projectGoal: [{ required: true, message: '请输入项目目的', trigger: 'blur' }],
+        projectGoal: [{ required: true, message: '请输入项目目的', trigger: 'blur' }]
       },
       isSave: false,
       url: {
         add: api.add,
-        edit: api.put,
+        edit: api.put
       },
       groupList: [],
-      chargePeople: [],
+      chargePeople: []
     }
   },
   components: {
     ProjectGroupModal,
-    ContactManageModal,
+    ContactManageModal
   },
   methods: {
     nextStep() {
-      this.$refs.ruleForm.validate(valid => {
-        if (valid) {
-          this.save()
-          this.$emit('nextStep')
-        } else {
-          return false
-        }
-      })
+      const cb = ()=> this.$emit('nextStep')
+      this.save(cb)
     },
-    save() {
+    save(cb) {
       const that = this
       // 触发表单验证
       const id = this.getParams('id')
       let newForm
       if (id) {
-        newForm = Object.assign(
-          {},
-          {
-            id: id,
-          },
-          this.form
-        )
+        newForm = Object.assign({}, {
+          id: id
+        }, this.form)
       } else {
         newForm = Object.assign({}, this.form)
       }
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           that.confirmLoading = true
-          let httpurl = ''
-          let method = ''
-          httpurl += this.url.add
-          method = 'post'
-          httpAction(httpurl, newForm, method)
-            .then(res => {
-              if (res.success) {
-                that.$message.success(res.message)
-                that.$emit('ok')
-                const projectId = res.result.id
-                that.$emit('activeProject', this.form.projectName)
-                window.history.replaceState({}, window.document.title, '?id=' + projectId + '&step=0')
-                this.isSave = true
-              } else {
-                that.$message.warning(res.message)
-              }
-            })
-            .finally(() => {
-              that.confirmLoading = false
-            })
+          let httpurl = this.url.add
+          let method = 'post'
+          httpAction(httpurl, newForm, method).then((res) => {
+            if (res.success) {
+              that.$message.success(res.message)
+              that.$emit('ok')
+              const projectId = res.result.id
+              that.$emit('activeProject', this.form.projectName)
+              window.history.replaceState({}, window.document.title, '?id=' + projectId + '&step=0')
+              this.isSave = true
+              if (typeof cb === 'function') cb()
+            } else {
+              that.$message.warning(res.message)
+            }
+          }).finally(() => {
+            that.confirmLoading = false
+          })
         }
       })
     },
-    addProjectGroup() {
+    addProjectGroup () {
       this.$refs.modalForm.add()
       this.$refs.modalForm.title = '新增'
       this.$refs.modalForm.disableSubmit = false
     },
-    addLeader() {
+    addLeader () {
       this.$refs.manageForm.add()
       this.$refs.manageForm.title = '新增'
       this.$refs.manageForm.disableSubmit = false
@@ -191,10 +199,10 @@ export default {
       // 新增/修改 成功时，重载列表
       this.loadGroupData()
     },
-    manageFormOk() {
+    manageFormOk () {
       this.loadChargePeople()
     },
-    loadGroupData() {
+    loadGroupData () {
       const that = this
       queryGroup().then(res => {
         if (res.success) {
@@ -206,9 +214,9 @@ export default {
     },
     loadChargePeople() {
       const that = this
-      queryChargePeople().then(res => {
+      getUserList().then(res => {
         if (res.success) {
-          that.chargePeople = res.result.records
+          that.chargePeople = res.result
         } else {
           that.$message.warning(res.message)
         }
@@ -230,7 +238,7 @@ export default {
       if (!id) return
       const that = this
       querypProjectInfo({
-        id: id,
+        id: id
       }).then(res => {
         if (res.success) {
           this.form.projectName = res.result.records[0].projectName
@@ -242,18 +250,20 @@ export default {
           this.form.projectGroupId = res.result.records[0].projectGroupId
           this.form.chargePeopleId = res.result.records[0].chargePeopleId
           this.form.projectGoal = res.result.records[0].projectGoal
+          this.form.cancerType = res.result.records[0].cancerType
+          this.form.researchType = res.result.records[0].researchType
         } else {
           that.$message.warning(res.message)
         }
       })
-    },
+    }
   },
-  mounted() {
+  mounted () {
     //备份model原始值
     this.loadGroupData()
     this.loadChargePeople()
     this.loadProjectList()
-  },
+  }
 }
 </script>
 

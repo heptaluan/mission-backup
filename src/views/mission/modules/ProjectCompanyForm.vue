@@ -15,7 +15,7 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="合作单位类型" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="corporationType">
-              <j-dict-select-tag type="list" v-model="model.corporationType" dictCode="company_type" placeholder="请选择合作单位类型" />
+              <j-dict-select-tag type="list" v-model="model.corporationType" dictCode="agency_cooperate_type" placeholder="请选择合作单位类型" />
             </a-form-model-item>
           </a-col>
         </a-row>
@@ -106,7 +106,7 @@
               that.confirmLoading = false;
             })
           }
-         
+
         })
       },
     }

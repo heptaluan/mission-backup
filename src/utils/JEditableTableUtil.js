@@ -11,16 +11,16 @@ const FormTypes = {
   upload: 'upload',
   file: 'file',
   image: 'image',
-  popup: 'popup',
-  list_multi: 'list_multi',
-  sel_search: 'sel_search',
-  radio: 'radio',
-  checkbox_meta: 'checkbox_meta',
-  input_pop: 'input_pop',
+  popup:'popup',
+  list_multi:"list_multi",
+  sel_search:"sel_search",
+  radio:'radio',
+  checkbox_meta:"checkbox_meta",
+  input_pop:'input_pop',
   sel_depart: 'sel_depart',
   sel_user: 'sel_user',
   slot: 'slot',
-  hidden: 'hidden',
+  hidden: 'hidden'
 }
 const VALIDATE_NO_PASSED = Symbol()
 export { FormTypes, VALIDATE_NO_PASSED }
@@ -32,8 +32,8 @@ export { FormTypes, VALIDATE_NO_PASSED }
  * @author sunjianlei
  **/
 export function getRefPromise(vm, name) {
-  return new Promise(resolve => {
-    ;(function next() {
+  return new Promise((resolve) => {
+    (function next() {
       let ref = vm.$refs[name]
       if (ref) {
         resolve(ref)
@@ -54,6 +54,7 @@ export function getRefPromise(vm, name) {
  * @author sunjianlei
  */
 export function validateFormAndTables(form, cases) {
+
   if (!(form && typeof form.validateFields === 'function')) {
     throw `form 参数需要的是一个form对象，而传入的却是${typeof form}`
   }
@@ -64,19 +65,17 @@ export function validateFormAndTables(form, cases) {
     form.validateFields((err, values) => {
       err ? reject({ error: VALIDATE_NO_PASSED }) : resolve(values)
     })
+  }).then(values => {
+    Object.assign(options, { formValue: values })
+    // 验证所有子表的表单
+    return validateTables(cases)
+  }).then(all => {
+    Object.assign(options, { tablesValue: all })
+    return Promise.resolve(options)
+  }).catch(error => {
+    return Promise.reject(error)
   })
-    .then(values => {
-      Object.assign(options, { formValue: values })
-      // 验证所有子表的表单
-      return validateTables(cases)
-    })
-    .then(all => {
-      Object.assign(options, { tablesValue: all })
-      return Promise.resolve(options)
-    })
-    .catch(error => {
-      return Promise.reject(error)
-    })
+
 }
 /**
  * 一次性验证主表单和所有的次表单(新版本)
@@ -85,29 +84,28 @@ export function validateFormAndTables(form, cases) {
  * @returns {Promise<any>}
  * @author sunjianlei
  */
-export function validateFormModelAndTables(form, values, cases) {
+export function validateFormModelAndTables(form,values, cases) {
+
   if (!(form && typeof form.validate === 'function')) {
     throw `form 参数需要的是一个form对象，而传入的却是${typeof form}`
   }
   let options = {}
   return new Promise((resolve, reject) => {
     // 验证主表表单
-    form.validate((valid, obj) => {
-      valid ? resolve(values) : reject({ error: VALIDATE_NO_PASSED })
+    form.validate((valid,obj) => {
+      valid ?resolve(values):reject({ error: VALIDATE_NO_PASSED })
     })
+  }).then(values => {
+    Object.assign(options, { formValue: values })
+    // 验证所有子表的表单
+    return validateTables(cases)
+  }).then(all => {
+    Object.assign(options, { tablesValue: all })
+    return Promise.resolve(options)
+  }).catch(error => {
+    return Promise.reject(error)
   })
-    .then(values => {
-      Object.assign(options, { formValue: values })
-      // 验证所有子表的表单
-      return validateTables(cases)
-    })
-    .then(all => {
-      Object.assign(options, { tablesValue: all })
-      return Promise.resolve(options)
-    })
-    .catch(error => {
-      return Promise.reject(error)
-    })
+
 }
 
 /**
@@ -122,34 +120,33 @@ export function validateTables(cases, deleteTempId) {
   }
   return new Promise((resolve, reject) => {
     let tables = []
-    let index = 0
-    if (!cases || cases.length === 0) {
+    let index = 0;
+    if(!cases || cases.length === 0){
       resolve()
     }
-    ;(function next() {
+    (function next() {
       let vm = cases[index]
-      vm.getAll(true, deleteTempId).then(
-        all => {
-          tables[index] = all
-          // 判断校验是否全部完成，完成返回成功，否则继续进行下一步校验
-          if (++index === cases.length) {
-            resolve(tables)
-          } else next()
-        },
-        error => {
-          // 出现未验证通过的表单，不再进行下一步校验，直接返回失败并跳转到该表格
-          if (error === VALIDATE_NO_PASSED) {
-            // 尝试获取tabKey，如果在ATab组件内即可获取
-            let paneKey
-            let tabPane = getVmParentByName(vm, 'ATabPane')
-            if (tabPane) {
-              paneKey = tabPane.$vnode.key
-            }
-            reject({ error: VALIDATE_NO_PASSED, index, paneKey })
+      vm.getAll(true, deleteTempId).then(all => {
+        tables[index] = all
+        // 判断校验是否全部完成，完成返回成功，否则继续进行下一步校验
+        if (++index === cases.length) {
+          resolve(tables)
+        } else (
+          next()
+        )
+      }, error => {
+        // 出现未验证通过的表单，不再进行下一步校验，直接返回失败并跳转到该表格
+        if (error === VALIDATE_NO_PASSED) {
+          // 尝试获取tabKey，如果在ATab组件内即可获取
+          let paneKey;
+          let tabPane = getVmParentByName(vm, 'ATabPane')
+          if (tabPane) {
+            paneKey = tabPane.$vnode.key
           }
-          reject(error)
+          reject({error: VALIDATE_NO_PASSED, index, paneKey})
         }
-      )
+        reject(error)
+      })
     })()
   })
 }

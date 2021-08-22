@@ -1,16 +1,25 @@
 <template>
-  <a-skeleton active :loading="loading" :paragraph="{ rows: 17 }">
+  <a-skeleton active :loading="loading" :paragraph="{rows: 17}">
     <a-card :bordered="false" class="card-area">
+
       <a-alert type="info" :showIcon="true">
         <div slot="message">
           共追踪到 {{ dataSource.length }} 条近期HTTP请求记录
-          <a-divider type="vertical" />
+          <a-divider type="vertical"/>
           <a @click="handleClickUpdate">立即刷新</a>
         </div>
       </a-alert>
 
       <!-- 表格区域 -->
-      <a-table :columns="columns" :dataSource="dataSource" :pagination="pagination" :loading="tableLoading" :scroll="{ x: 900 }" style="margin-top: 20px" @change="handleTableChange">
+      <a-table
+        :columns="columns"
+        :dataSource="dataSource"
+        :pagination="pagination"
+        :loading="tableLoading"
+        :scroll="{ x: 900 }"
+        style="margin-top: 20px;"
+        @change="handleTableChange">
+
         <template slot="timeTaken" slot-scope="text">
           <a-tag v-if="text < 500" color="green">{{ text }} ms</a-tag>
           <a-tag v-else-if="text < 1000" color="cyan">{{ text }} ms</a-tag>
@@ -34,45 +43,45 @@
           <a-tag v-else-if="text === 'DELETE'" color="#f50">{{ text }}</a-tag>
           <span v-else>{{ text }} ms</span>
         </template>
+
       </a-table>
+
     </a-card>
   </a-skeleton>
 </template>
 
 <script>
-import moment from 'moment'
-import { getAction } from '@/api/manage'
+  import moment from 'moment'
+  import { getAction } from '@/api/manage'
 
-moment.locale('zh-cn')
+  moment.locale('zh-cn')
 
-export default {
-  data() {
-    return {
-      advanced: false,
-      dataSource: [],
-      pagination: {
-        defaultPageSize: 10,
-        defaultCurrent: 1,
-        pageSizeOptions: ['10', '20', '30', '40', '100'],
-        showQuickJumper: true,
-        showSizeChanger: true,
-        showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`,
-      },
-      loading: true,
-      tableLoading: true,
-    }
-  },
-  computed: {
-    columns() {
-      return [
-        {
+  export default {
+    data() {
+      return {
+        advanced: false,
+        dataSource: [],
+        pagination: {
+          defaultPageSize: 10,
+          defaultCurrent: 1,
+          pageSizeOptions: ['10', '20', '30', '40', '100'],
+          showQuickJumper: true,
+          showSizeChanger: true,
+          showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`
+        },
+        loading: true,
+        tableLoading: true
+      }
+    },
+    computed: {
+      columns() {
+        return [{
           title: '请求时间',
           dataIndex: 'timestamp',
           customRender(text) {
             return moment(text).format('YYYY-MM-DD HH:mm:ss')
-          },
-        },
-        {
+          }
+        }, {
           title: '请求方法',
           dataIndex: 'request.method',
           scopedSlots: { customRender: 'requestMethod' },
@@ -80,47 +89,43 @@ export default {
             { text: 'GET', value: 'GET' },
             { text: 'POST', value: 'POST' },
             { text: 'PUT', value: 'PUT' },
-            { text: 'DELETE', value: 'DELETE' },
+            { text: 'DELETE', value: 'DELETE' }
           ],
           filterMultiple: true,
-          onFilter: (value, record) => record.request.method.includes(value),
-        },
-        {
+          onFilter: (value, record) => record.request.method.includes(value)
+        }, {
           title: '请求URL',
           dataIndex: 'request.uri',
           customRender(text) {
             return text.split('?')[0]
-          },
-        },
-        {
+          }
+        }, {
           title: '响应状态',
           dataIndex: 'response.status',
-          scopedSlots: { customRender: 'responseStatus' },
-        },
-        {
+          scopedSlots: { customRender: 'responseStatus' }
+        }, {
           title: '请求耗时',
           dataIndex: 'timeTaken',
-          scopedSlots: { customRender: 'timeTaken' },
-        },
-      ]
+          scopedSlots: { customRender: 'timeTaken' }
+        }]
+      }
     },
-  },
-  mounted() {
-    this.fetch()
-  },
-  methods: {
-    handleClickUpdate() {
+    mounted() {
       this.fetch()
     },
+    methods: {
 
-    handleTableChange() {
-      this.fetch()
-    },
+      handleClickUpdate() {
+        this.fetch()
+      },
 
-    fetch() {
-      this.tableLoading = true
-      getAction('actuator/httptrace')
-        .then(data => {
+      handleTableChange() {
+        this.fetch()
+      },
+
+      fetch() {
+        this.tableLoading = true
+        getAction('actuator/httptrace').then((data) => {
           let filterData = []
           for (let d of data.traces) {
             if (d.request.method !== 'OPTIONS' && d.request.uri.indexOf('httptrace') === -1) {
@@ -128,17 +133,16 @@ export default {
             }
           }
           this.dataSource = filterData
-        })
-        .catch(e => {
+        }).catch((e) => {
           console.error(e)
           this.$message.error('获取HTTP信息失败')
-        })
-        .finally(() => {
+        }).finally(() => {
           this.loading = false
           this.tableLoading = false
         })
-    },
-  },
-}
+      }
+
+    }
+  }
 </script>
 <style></style>
