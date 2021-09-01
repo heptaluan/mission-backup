@@ -3,7 +3,7 @@
  * @Date 2021/4/8
  * @description
  */
-import { getAction, postAction, putAction, uploadAction} from '@/api/manage'
+import { getAction, postAction, putAction, uploadAction } from '@/api/manage'
 const prefix = '/mission/projectInfo'
 
 const api = {
@@ -14,7 +14,7 @@ const api = {
   deleteBatch: prefix + '/deleteBatch',
   delete: prefix + '/delete',
   exportXlsUrl: prefix + '/exportXls',
-  importExcelUrl: prefix + '/importExcelUrl'
+  importExcelUrl: prefix + '/importExcelUrl',
 }
 
 export const queryOwnershipType = (params) => getAction('/mission/fileInfo/list', params)
@@ -130,6 +130,6 @@ export const queryUserByDepId = (params) => getAction('/sys/user/queryUserByDepI
 export const getAuthForQc = () => getAction('/sys/sysDepart/isQCHead')
 
 // 入库审核权限
-export const getAuthForTest = ()=> getAction('/sys/sysDepart/isTestingHead')
+export const getAuthForTest = () => getAction('/sys/sysDepart/isTestingHead')
 
 export default api
