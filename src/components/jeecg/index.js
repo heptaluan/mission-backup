@@ -71,5 +71,5 @@ export default {
     Vue.component('JSelectPosition', JSelectPosition)
     Vue.component('JSelectRole', JSelectRole)
     Vue.component('JSelectUserByDep', JSelectUserByDep)
-  }
+  },
 }
