@@ -11,18 +11,17 @@
 
 <script>
 export default {
-    data() {
-      return {
-        name: '',
-        breadList: [],
-      }
-    },
-  created () {
+  data() {
+    return {
+      name: '',
+      breadList: [],
+    }
+  },
+  created() {
     this.getBreadcrumb()
   },
   methods: {
     getBreadcrumb() {
-
       console.log('this.$route.matched', this.$route.matched)
 
       this.breadList = []
@@ -31,18 +30,16 @@ export default {
       this.name = this.$route.name
       this.$route.matched.forEach((item) => {
         // item.meta.name === 'dashboard' ? item.path = '/dashboard' : this.$route.path === item.path
-          this.breadList.push(item)
+        this.breadList.push(item)
       })
-    }
+    },
   },
   watch: {
     $route() {
       this.getBreadcrumb()
-    }
-  }
+    },
+  },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
