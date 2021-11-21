@@ -57,7 +57,7 @@ import {
   Cascader,
   Slider,
   Transfer,
-  Rate
+  Rate,
 } from 'ant-design-vue'
 import Viser from 'viser-vue'
 

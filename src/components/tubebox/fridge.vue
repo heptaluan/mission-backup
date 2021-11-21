@@ -5,11 +5,11 @@
 <script>
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import Fridge  from 'src/plugin/fridge'
+import Fridge from 'src/plugin/fridge'
 import { RenderPass, EffectComposer, OutlinePass } from 'three-outlinepass'
 export default {
   name: 'model-fridge',
-  data () {
+  data() {
     return {
       camera: undefined,
       scene: undefined,
@@ -24,7 +24,7 @@ export default {
       clock: undefined,
       searchText: '',
       orderList: [],
-      fridge: undefined
+      fridge: undefined,
     }
   },
   props: {
@@ -32,16 +32,16 @@ export default {
       required: true,
       default: () => {
         return window.innerWidth
-      }
+      },
     },
     height: {
       required: true,
       default: () => {
         return window.innerHeight
-      }
-    }
+      },
+    },
   },
-  mounted () {
+  mounted() {
     this.clock = new THREE.Clock()
     this.init()
     this.animate()
@@ -49,21 +49,21 @@ export default {
   methods: {
     //#region
     // 初始化场景
-    initScene () {
+    initScene() {
       this.scene = new THREE.Scene()
       this.scene.fog = new THREE.Fog(this.scene.background, 3000, 5000)
     },
 
     // 初始化相机
-    initCamera () {
+    initCamera() {
       this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000)
       this.camera.position.set(0, 150, 600)
       this.camera.lookAt(new THREE.Vector3(0, 0, 0))
     },
 
     // 初始化灯光
-    initLight () {
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3)//模拟远处类似太阳的光源
+    initLight() {
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3) //模拟远处类似太阳的光源
       directionalLight.color.setHSL(0.1, 1, 0.95)
       directionalLight.position.set(0, 200, 0).normalize()
       this.scene.add(directionalLight)
@@ -74,10 +74,10 @@ export default {
     },
 
     // 初始化渲染器
-    initRenderer () {
+    initRenderer() {
       this.renderer = new THREE.WebGLRenderer({
         antialias: true,
-        alpha: true
+        alpha: true,
       })
       this.renderer.setSize(this.width, this.height)
       this.renderer.setClearColor(0x222222, 1.0)
@@ -86,10 +86,10 @@ export default {
     },
 
     //创建地板
-    createFloor () {
+    createFloor() {
       const loader = new THREE.TextureLoader()
       const _this = this
-      loader.load('/static/model/floor.jpg', function(texture) {
+      loader.load('/static/model/floor.jpg', function (texture) {
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping
         texture.repeat.set(10, 10)
         const floorGeometry = new THREE.BoxGeometry(2600, 1400, 1)
@@ -103,12 +103,12 @@ export default {
     },
 
     // 初始化模型
-    initContent () {
+    initContent() {
       this.createFloor()
     },
 
     // 初始化轨迹球控件
-    initControls () {
+    initControls() {
       this.controls = new OrbitControls(this.camera, this.renderer.domElement)
       this.controls.enableDamping = true
       this.controls.dampingFactor = 0.5
@@ -121,12 +121,12 @@ export default {
     },
 
     // 更新控件
-    update (delta) {
+    update(delta) {
       // this.stats.update(delta)
       this.controls.update(delta)
     },
     // 渲染
-    animate () {
+    animate() {
       const delta = this.clock.getDelta()
       requestAnimationFrame(this.animate)
       if (this.renderer) this.renderer.render(this.scene, this.camera)
@@ -137,7 +137,7 @@ export default {
     },
     //#endregion
     // 初始化
-    init () {
+    init() {
       this.initScene()
       this.initCamera()
       this.initRenderer()
@@ -149,7 +149,7 @@ export default {
     },
 
     // 窗口变动触发的方法
-    onWindowResize () {
+    onWindowResize() {
       this.camera.aspect = window.innerWidth / window.innerHeight
       this.camera.updateProjectionMatrix()
       this.width = 600
@@ -158,7 +158,7 @@ export default {
     },
 
     // 鼠标双击触发的方法
-    onMouseDblclick (event) {
+    onMouseDblclick(event) {
       // 获取 raycaster 和所有模型相交的数组，其中的元素按照距离排序，越近的越靠前
       const intersects = this.getIntersects(event)
       // 获取选中最近的 Mesh 对象
@@ -170,7 +170,7 @@ export default {
       }
     },
     // 获取与射线相交的对象数组
-    getIntersects (event) {
+    getIntersects(event) {
       event.preventDefault()
 
       // 声明 raycaster 和 mouse 变量
@@ -193,7 +193,7 @@ export default {
       return intersects
     },
     //高亮显示模型（呼吸灯）
-    highlightObject (selectedObjects) {
+    highlightObject(selectedObjects) {
       const { scene, camera, renderer } = this
       // 创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
       // this.composer = new EffectComposer(this.renderer)
@@ -212,7 +212,7 @@ export default {
         edgeGlow: 1,
         edgeThickness: 1.0,
         pulsePeriod: 0,
-        usePatternTexture: false
+        usePatternTexture: false,
       }
       outlinePass.edgeStrength = params.edgeStrength
       outlinePass.edgeGlow = params.edgeGlow
@@ -235,14 +235,14 @@ export default {
       const name = this.fridge.getMeshNameByPosition(floor, grid, drawer)
       const object = _fridge.findTray(name)
       if (object) this.highlightObject([object])
-    }
+    },
   },
-  beforeDestroy () {
+  beforeDestroy() {
     if (this.renderer) {
       this.renderer.forceContextLoss()
       this.renderer = undefined
     }
     this.animate = () => {}
-  }
+  },
 }
 </script>

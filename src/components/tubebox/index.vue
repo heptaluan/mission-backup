@@ -1,5 +1,5 @@
 <template>
- <div ref="tubeBox"></div>
+  <div ref="tubeBox"></div>
 </template>
 
 <script>
@@ -7,10 +7,10 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { RenderPass, EffectComposer, OutlinePass, ShaderPass } from 'three-outlinepass'
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader'
-import Tray  from 'src/plugin/fridge/tray'
+import Tray from 'src/plugin/fridge/tray'
 export default {
   name: 'c-tube-box',
-  data () {
+  data() {
     return {
       camera: undefined,
       scene: undefined,
@@ -23,7 +23,7 @@ export default {
       outlinePass: null,
       renderPass: null,
       clock: undefined,
-      tray: undefined
+      tray: undefined,
     }
   },
   props: {
@@ -31,16 +31,16 @@ export default {
       required: true,
       default: () => {
         return window.innerWidth
-      }
+      },
     },
     height: {
       required: true,
       default: () => {
         return window.innerHeight
-      }
-    }
+      },
+    },
   },
-  mounted () {
+  mounted() {
     // this.stats = this.initStats()
     this.clock = new THREE.Clock()
     this.init()
@@ -48,21 +48,21 @@ export default {
   },
   methods: {
     // 初始化场景
-    initScene () {
+    initScene() {
       this.scene = new THREE.Scene()
       this.scene.fog = new THREE.Fog(this.scene.background, 300, 500)
     },
 
     // 初始化相机
-    initCamera () {
+    initCamera() {
       this.camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000)
       this.camera.position.set(0, 15, 0)
       this.camera.lookAt(new THREE.Vector3(0, 0, 0))
     },
 
     // 初始化灯光
-    initLight () {
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3)//模拟远处类似太阳的光源
+    initLight() {
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3) //模拟远处类似太阳的光源
       directionalLight.color.setHSL(0.1, 1, 0.95)
       directionalLight.position.set(0, 150, 0).normalize()
       this.scene.add(directionalLight)
@@ -73,7 +73,7 @@ export default {
     },
 
     // 初始化性能插件
-    initStats () {
+    initStats() {
       // const stats = new Stats()
       //
       // stats.domElement.style.position = 'absolute'
@@ -85,10 +85,10 @@ export default {
     },
 
     // 初始化渲染器
-    initRenderer () {
+    initRenderer() {
       this.renderer = new THREE.WebGLRenderer({
-        antialias:true,
-        alpha:true
+        antialias: true,
+        alpha: true,
       })
       this.renderer.setSize(this.width, this.height)
       this.renderer.setClearColor(0x222222, 1.0)
@@ -97,14 +97,14 @@ export default {
     },
 
     //创建地板
-    createFloor () {
+    createFloor() {
       const loader = new THREE.TextureLoader()
       const _this = this
       loader.load('/static/model/floor.jpg', function (texture) {
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping
         texture.repeat.set(10, 10)
         const floorGeometry = new THREE.BoxGeometry(260, 140, 1)
-        const floorMaterial = new THREE.MeshBasicMaterial({map: texture, side: THREE.DoubleSide})
+        const floorMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide })
         const floor = new THREE.Mesh(floorGeometry, floorMaterial)
         floor.position.y = -0.5
         floor.rotation.x = Math.PI / 2
@@ -115,24 +115,24 @@ export default {
 
     addModel() {
       const option = {
-        trayId: '$T1'
+        trayId: '$T1',
       }
       this.tray = new Tray(option)
       this.tray.render(this.scene)
     },
-    findTube (record) {
-     const {col, row} = record
-     const object = this.tray.findTube(col, row)
-     if (object) this.highlightObject([object])
+    findTube(record) {
+      const { col, row } = record
+      const object = this.tray.findTube(col, row)
+      if (object) this.highlightObject([object])
     },
     // 初始化模型
-    initContent () {
+    initContent() {
       this.createFloor()
       this.addModel()
     },
 
     // 初始化轨迹球控件
-    initControls () {
+    initControls() {
       this.controls = new OrbitControls(this.camera, this.renderer.domElement)
       this.controls.enableDamping = true
       this.controls.dampingFactor = 0.5
@@ -145,12 +145,12 @@ export default {
     },
 
     // 更新控件
-    update (delta) {
+    update(delta) {
       this.controls.update(delta)
     },
 
     // 初始化
-    init () {
+    init() {
       this.initScene()
       this.initCamera()
       this.initRenderer()
@@ -161,15 +161,15 @@ export default {
     },
 
     // 窗口变动触发的方法
-    onWindowResize () {
+    onWindowResize() {
       this.camera.aspect = window.innerWidth / window.innerHeight
       this.camera.updateProjectionMatrix()
       this.renderer.setSize(this.width, this.height)
     },
 
     //高亮显示模型（呼吸灯）
-    highlightObject (selectedObjects) {
-      const {scene, camera, renderer} = this
+    highlightObject(selectedObjects) {
+      const { scene, camera, renderer } = this
       // 创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
       // this.composer = new EffectComposer(this.renderer)
       // // 新建一个场景通道  为了覆盖到原理来的场景上
@@ -187,7 +187,7 @@ export default {
         edgeGlow: 1,
         edgeThickness: 1.0,
         pulsePeriod: 0,
-        usePatternTexture: false
+        usePatternTexture: false,
       }
       outlinePass.edgeStrength = params.edgeStrength
       outlinePass.edgeGlow = params.edgeGlow
@@ -203,7 +203,7 @@ export default {
       effectFXAA.renderToScreen = true
       this.composer.addPass(effectFXAA)
     },
-    animate () {
+    animate() {
       const delta = this.clock.getDelta()
       requestAnimationFrame(this.animate)
       if (this.renderer) this.renderer.render(this.scene, this.camera)
@@ -211,14 +211,14 @@ export default {
         this.composer.render(delta)
       }
       this.update(delta)
-    }
+    },
   },
-  beforeDestroy () {
+  beforeDestroy() {
     if (this.renderer) {
       this.renderer.forceContextLoss()
       this.renderer = undefined
     }
     this.animate = () => {}
-  }
+  },
 }
 </script>
