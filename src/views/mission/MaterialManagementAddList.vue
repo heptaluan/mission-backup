@@ -108,7 +108,7 @@
 import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
-import MaterialManagementModal from './modules/MaterialManagementModal'
+import MaterialManagementModal from '@views/mission/modules/MaterialManagementModal'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 
 export default {

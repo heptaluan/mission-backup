@@ -69,11 +69,6 @@ export default {
           }
         },
         {
-          title: '机构',
-          align: 'center',
-          dataIndex: 'agencyId_dictText'
-        },
-        {
           title: '病例编号',
           align: 'center',
           dataIndex: 'codeMedicalCase'
@@ -89,11 +84,6 @@ export default {
           dataIndex: 'cancerType_dictText'
         },
         {
-          title: '研究类别',
-          align: 'center',
-          dataIndex: 'researchType_dictText'
-        },
-        {
           title: '样本类别',
           align: 'center',
           dataIndex: 'sampleType_dictText'
@@ -105,8 +95,16 @@ export default {
         }
       ],
       url: {
-        list: 'unload'
-      }
+        list: ''
+      },
+      ipagination: {
+        current: 1,
+        pageSize: 10,
+        pageSizeOptions: ['10', '20', '30'],
+        showQuickJumper: true,
+        showSizeChanger: true,
+        total: 0
+      },
     }
   },
   methods: {
@@ -114,7 +112,7 @@ export default {
       this.record = record
       this.visible = true
       this.$nextTick(() => {
-        this.loadListData()
+        this.loadData()
       })
     },
     handleCancel() {
@@ -124,17 +122,24 @@ export default {
       this.$emit('ok')
       this.visible = false
     },
-    loadListData() {
+    loadData() {
       const that = this
       getCodeManagementList({
-        codeManageId: that.record.id
+        codeManageId: that.record.id,
+        pageNo: that.ipagination.current,
+        pageSize: that.ipagination.pageSize
       }).then(res => {
         if (res.success) {
+          that.ipagination.total = res.result.total
           that.dataSource = res.result.records
         } else {
           that.$message.warning(res.message)
         }
       })
+    },
+    handleTableChange(pagination) {
+      this.ipagination = pagination
+      this.loadData()
     }
   }
 }

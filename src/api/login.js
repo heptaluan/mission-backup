@@ -16,7 +16,7 @@ export function login(parameter) {
   return axios({
     url: '/sys/login',
     method: 'post',
-    data: parameter,
+    data: parameter
   })
 }
 
@@ -24,7 +24,7 @@ export function phoneLogin(parameter) {
   return axios({
     url: '/sys/phoneLogin',
     method: 'post',
-    data: parameter,
+    data: parameter
   })
 }
 
@@ -32,7 +32,7 @@ export function getSmsCaptcha(parameter) {
   return axios({
     url: api.SendSms,
     method: 'post',
-    data: parameter,
+    data: parameter
   })
 }
 
@@ -52,8 +52,8 @@ export function logout(logoutToken) {
     method: 'post',
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
-      'X-Access-Token': logoutToken,
-    },
+      'X-Access-Token':  logoutToken
+    }
   })
 }
 
@@ -63,12 +63,25 @@ export function logout(logoutToken) {
  * @param thirdType
  * @returns {*}
  */
-export function thirdLogin(token, thirdType) {
+export function thirdLogin(token,thirdType) {
   return axios({
     url: `/sys/thirdLogin/getLoginUser/${token}/${thirdType}`,
     method: 'get',
     headers: {
-      'Content-Type': 'application/json;charset=UTF-8',
-    },
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
+  })
+}
+
+/**
+ * 强退其他账号
+ * @param token
+ * @returns {*}
+ */
+export function forceLogout(parameter) {
+  return axios({
+    url: '/sys/online/forceLogout',
+    method: 'post',
+    data: parameter
   })
 }

@@ -2,36 +2,30 @@
   <a-card :bordered="false">
     <div class="search-group">
       <div class="group">
-        <div class="title">批次号</div>
-        <a-input allowClear v-model="batchNo" placeholder="请输入批次号"></a-input>
+        <div class="title">批次号：</div>
+        <a-input allowClear v-model="queryParam.batchNo" placeholder="请输入批次号"></a-input>
       </div>
       <div class="group">
-        <div class="title">所处阶段</div>
+        <div class="title">状 态：</div>
         <j-dict-select-tag
           allowClear
           style="width:150px;"
           type="list"
-          dictCode="case_sample_apply_circuit"
-          placeholder="请选择所处阶段"
-          v-model="currentCircuit"
+          dictCode="sample_quality_status"
+          placeholder="请选择样本状态"
+          v-model="queryParam.status"
         />
       </div>
       <div class="group">
-        <div class="title">质控责任人</div>
-        <a-select
-          allowClear
-          style="width:200px;"
-          v-model="qcContactId"
-          placeholder="请选择质控责任人"
-          @change="handleSelectChange"
-        >
+        <div class="title">质控责任人：</div>
+        <a-select allowClear style="width:200px;" v-model="queryParam.qcContactId" placeholder="请选择质控责任人">
           <a-select-option v-for="item in userList" :key="item.id" :value="item.id">
             {{ item.realname }}
           </a-select-option>
         </a-select>
       </div>
-
-      <a-button @click="handleSearch" type="primary">筛选</a-button>
+      <a-button @click="resetQuery" type="primary">重置</a-button>
+      <a-button @click="searchQuery" type="primary">查询</a-button>
     </div>
 
     <!-- 操作按钮区域 -->
@@ -48,7 +42,7 @@
         bordered
         rowKey="id"
         :columns="columns"
-        :dataSource="dataList"
+        :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
         :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
@@ -76,9 +70,10 @@
         </template>
 
         <span slot="action" slot-scope="text, record">
-          <div class="btn-group">
-            <a v-if="record.unQualifyAmount === 0 && record.currentCircuit !== 1 && isRcLeader" @click="showDetail(record)">质控</a>
-            <a v-if="record.unQualifyAmount !== 0 && record.currentCircuit !== 1 && isTestLeader" @click="handleChecked(record)">检查</a>
+          <div class="btn-group" v-if="record.status !== 6">
+            <a @click="showDetail(record)">{{
+              record.status === 5 ? '查看' : record.status === 4 || record.status === 2 || record.status === 3 ? '质控' : ''
+            }}</a>
           </div>
         </span>
       </a-table>
@@ -93,7 +88,7 @@ import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import SampleManagementModal from '../modules/sample/SampleManagementModal'
-import { getStockApplyList, getUserList, getAuthForQc, getAuthForTest } from 'src/api/mission/project'
+import { getUserList, getAuthForQc, getAuthForTest } from 'src/api/mission/project'
 
 export default {
   name: 'Sample',
@@ -104,11 +99,7 @@ export default {
   data() {
     return {
       description: '样本管理页面',
-      batchNo: '',
-      qcContactId: undefined,
-      dataList: [],
       userList: [],
-      currentCircuit: undefined,
       // 表头
       columns: [
         {
@@ -127,19 +118,19 @@ export default {
           dataIndex: 'batchNo'
         },
         {
-          title: '项目名',
+          title: '质控责任人',
           align: 'center',
-          dataIndex: 'projectId_dictText'
+          dataIndex: 'qcContactId_dictText',
         },
         {
-          title: '责任人',
+          title: '记录总数',
           align: 'center',
-          dataIndex: 'qcContactId_dictText'
+          dataIndex: 'totalAmount'
         },
         {
-          title: '数量',
+          title: '合格数',
           align: 'center',
-          dataIndex: 'totalRecordAmount'
+          dataIndex: 'qualifyAmount'
         },
         {
           title: '不合格数',
@@ -159,17 +150,7 @@ export default {
         {
           title: '阶段状态',
           align: 'center',
-          dataIndex: 'currentCircuit_dictText'
-        },
-        {
-          title: '短信通知状态',
-          align: 'center',
-          dataIndex: 'esSendStatus_dictText'
-        },
-        {
-          title: '短信通知次数',
-          align: 'center',
-          dataIndex: 'esSendNum'
+          dataIndex: 'status_dictText'
         },
         {
           title: '操作',
@@ -181,44 +162,25 @@ export default {
         }
       ],
       url: {
-        list: 'unload'
+        list: '/mission/caseSample/stockApply/list'
       },
       isTestLeader: false,
-      isRcLeader: false
+      isRcLeader: false,
     }
   },
   methods: {
-    loadData() {
-      const that = this
-      const query = {
-        batchNo: this.batchNo,
-        qcContactId: this.qcContactId,
-        currentCircuit: this.currentCircuit
-      }
-      getStockApplyList(query).then(res => {
-        if (res.success) {
-          that.dataList = res.result.records
-        } else {
-          that.$message.warning(res.message)
-        }
-      })
-    },
     handleStockIn() {
       this.$refs.modalForm.add()
       this.$refs.modalForm.title = '样本入库'
       this.$refs.modalForm.disableSubmit = false
     },
-    handleSearch() {
+    resetQuery() {
+      this.queryParam = {}
       this.loadData()
     },
+
     showDetail(record) {
-      this.$router.push(`/mission/sample/sampleResult?id=${record.id}`)
-    },
-    handleChecked(record) {
-      this.$router.push(`/mission/sample/sampleChecked?id=${record.id}`)
-    },
-    handleSelectChange(value) {
-      this.qcContactId = value
+      this.$router.push(`/mission/sample/batch-quality?id=${record.id}`)
     },
     getUserList() {
       const that = this
@@ -254,18 +216,23 @@ export default {
 
 .search-group {
   display: flex;
-  justify-content: space-between;
   margin-bottom: 20px;
 
   .group {
     display: flex;
     align-items: center;
+    margin-right: 15px;
 
     .title {
       min-width: 45px;
       color: rgba(0, 0, 0, 0.85);
       margin-right: 10px;
+      text-align: right;
+      flex: 0 0 90px;
     }
+  }
+  .ant-btn {
+    margin-right: 15px;
   }
 }
 

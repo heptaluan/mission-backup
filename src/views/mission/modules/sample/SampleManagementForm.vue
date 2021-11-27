@@ -4,16 +4,6 @@
       <a-form-model ref="form" :model="form" :rules="rules" slot="detail">
         <a-row>
           <a-col :span="24">
-            <a-form-model-item label="项目" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="projectId">
-              <j-dict-select-tag
-                type="list"
-                v-model="form.projectId"
-                dictCode="project_info, project_name, id, logical_state=1"
-                placeholder="请选择项目"
-              />
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="24">
             <a-form-model-item
               label="批次号"
               :labelCol="labelCol"
@@ -22,6 +12,7 @@
               prop="batchNo"
             >
               <a-input
+                disabled
                 v-model="form.batchNo"
                 placeholder="请输入批次号"
                 @blur="
@@ -34,7 +25,7 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="质控责任人" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="qcContactId">
-              <a-select v-model="form.qcContactId" placeholder="质控负责人" @change="handleSelectChange">
+              <a-select v-model="form.qcContactId" placeholder="请选择质控负责人" @change="handleSelectChange">
                 <a-select-option v-for="item in userList" :key="item.id" :value="item.id">
                   {{ item.realname }}
                 </a-select-option>
@@ -42,16 +33,18 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-          <div class="btn-group">
-            <a-button type="primary" icon="download" @click="downloadTpl()" :disabled="!tplUrl">下载模板</a-button>
-            <a-upload
-              name="file"
-              v-has="'sampleTpl'"
-              :customRequest="handleUploadfile" :beforeUpload="beforeTplUpload"
-            >
-              <a-button><a-icon type="upload" /> 上传模板</a-button>
-            </a-upload>
-          </div>
+            <div class="btn-group">
+              <a-button type="primary" icon="download" @click="downloadTpl()" :disabled="!tplUrl">下载模板</a-button>
+              <a-upload
+                name="file"
+                v-has="'sampleTpl'"
+                :show-file-list="false"
+                :customRequest="handleUploadfile"
+                :beforeUpload="beforeTplUpload"
+              >
+                <a-button><a-icon type="upload" /> 上传模板</a-button>
+              </a-upload>
+            </div>
           </a-col>
           <a-col :span="24">
             <a-upload-dragger
@@ -79,8 +72,10 @@
 <script>
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { putAction } from '@api/manage'
+import { addStockApply, getUserList, queryFileList, uploadFile } from 'src/api/mission/project'
 
-import { caseSampleUploadFile, getUserList, queryFileList, uploadFile } from 'src/api/mission/project'
+const ruleBaseURL = '/sys/fillRule/executeRuleByCode/'
 
 export default {
   name: 'SampleManagementForm',
@@ -106,12 +101,10 @@ export default {
       },
       confirmLoading: false,
       form: {
-        projectId: undefined,
         batchNo: '',
         qcContactId: undefined
       },
       rules: {
-        projectId: [{ required: true, message: '请选择项目', trigger: 'change' }],
         batchNo: [{ required: true, message: '请输入批次号', trigger: 'blur' }],
         qcContactId: [{ required: true, message: '质控负责人', trigger: 'change' }]
       },
@@ -133,6 +126,13 @@ export default {
   },
   methods: {
     add() {},
+    getBatchNo() {
+      putAction('/sys/fillRule/executeRuleByCode/' + 'sample_archive_code_rule', { prefix: 'SA' }).then(res => {
+        if (res.success) {
+          this.form.batchNo = res.result
+        }
+      })
+    },
     handleChange(info) {
       let fileList = [...info.fileList]
       fileList = fileList.slice(-1)
@@ -176,12 +176,11 @@ export default {
           const formData = new FormData()
           formData.append('file', that.file)
           const apply = {
-            projectId: that.form.projectId,
             qcContactId: that.form.qcContactId,
             batchNo: that.form.batchNo
           }
           formData.append('apply', JSON.stringify(apply))
-          caseSampleUploadFile(formData)
+          addStockApply(formData)
             .then(res => {
               if (res.success) {
                 that.fileList = []
@@ -194,8 +193,9 @@ export default {
             .catch(e => {
               that.$message.error('上传失败，请重新尝试！')
               that.confirmLoading = false
-            }).finally(() => {
-              that.confirmLoading = false;
+            })
+            .finally(() => {
+              that.confirmLoading = false
             })
         }
       })
@@ -206,7 +206,9 @@ export default {
         ownerId: '0',
         ownershipType: 3,
         page: 1,
-        size: 20
+        size: 20,
+        column: 'createTime',
+        order: 'dsc'
       }
       queryFileList(params).then(res => {
         if (res.success) {
@@ -236,7 +238,7 @@ export default {
       this.tplFile = file
       return true
     },
-    handleUploadfile() {
+    handleUploadfile(file) {
       const { tplFile } = this
       const formData = new FormData()
       formData.append('file', tplFile)
@@ -247,23 +249,26 @@ export default {
         fileName: tplFile.name
       }
       formData.append('info', JSON.stringify(info))
-      uploadFile(formData).then(res => {
-        if (res.success) {
-          this.tplFile = undefined
-          this.$message.success('文件上传成功！')
-        } else {
-          this.$message.success(res.message)
-          this.uploading = false
-        }
-      })
+      uploadFile(formData)
+        .then(res => {
+          if (res.success) {
+            this.tplFile = undefined
+            this.$message.success('文件上传成功！')
+            file.onSuccess();
+          } else {
+            this.$message.error(res.message)
+            file.onError();
+          }
+        })
         .catch(e => {
           this.uploading = false
         })
-    },
+    }
   },
   mounted() {
     this.getTpl()
     this.getUserList()
+    this.getBatchNo()
   }
 }
 </script>
@@ -274,14 +279,14 @@ export default {
   padding-left: 120px;
 
   button {
-    margin-right: 20px;
+    margin-right: 5px;
+    margin-left: 15px;
   }
 }
 
 .upload-btn {
   position: absolute;
   top: -63px;
-  // left: 150px;
   left: 0;
 }
 </style>

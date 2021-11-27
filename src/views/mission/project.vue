@@ -210,7 +210,7 @@ export default {
     toCreateProject(record) {
       if (record.id) {
         this.$router.push({
-          path: `/createProject?id=${record.id}&step=${record.editStep}`
+          path: `createProject?id=${record.id}&step=${record.editStep}`
         })
       } else {
         this.$router.push({

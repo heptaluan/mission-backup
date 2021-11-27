@@ -7,13 +7,13 @@
       switchFullscreen
       :okButtonProps="{ class: { 'jee-hidden': dis } }"
       cancelText="关闭"
-      :footer ='footer'
+      :footer="footer"
       @ok="handleOk"
       @cancel="handleCancel"
     >
       <div class="form-state">
         <a-tag v-if="state === 2" color="#108ee9">待审核</a-tag>
-        <a-tag v-if="state === 3" color="#87d068">待入库</a-tag>
+        <a-tag v-if="state === 3" color="#87d068">通过</a-tag>
         <a-tag v-if="state === 4" color="#f50">已退回</a-tag>
       </div>
       <a-form-model
@@ -26,7 +26,7 @@
       >
         <a-form-model-item ref="code" label="批次号" prop="code">
           <a-input
-            :disabled="dis"
+            :disabled="true"
             placeholder="请输入批次号"
             v-model="form.code"
             @blur="
@@ -46,8 +46,12 @@
             placeholder="请选择入库仓库"
           />
         </a-form-model-item>
-        <div class="tool-bar" style="text-align: right">
-        </div>
+
+        <a-form-model-item ref="code" label="入库时间">
+          <div>{{ currentTime }}</div>
+        </a-form-model-item>
+
+        <div class="tool-bar" style="text-align: right"></div>
 
         <!-- table区域-begin -->
         <a-table
@@ -71,18 +75,36 @@
       </a-form-model>
       <div style="margin-top: 60px"></div>
       <div class="footer-bar">
-        <a-button class="add-btn" @click="handleAddMaterial" type="primary" icon="plus" v-if="!dis" v-has="'stockInAdd'">新增</a-button>
-        <span v-if="state === 1 && dis " v-has="'stockInAdd'">
-            <a-button class="add-btn" @click="handleCommitMaterial" type="primary">提交审核</a-button>
-            <a-button class="add-btn" @click="handleRetractMaterial" type="primary">撤回</a-button>
-          </span>
-        <span v-if="state === 2" v-has="'stockInCheck'">
-            <a-button class="add-btn" @click="handlePassMaterial" type="primary" v-if="dis">通过</a-button>
-            <a-button class="add-btn" @click="handleRetractMaterial" type="primary" v-if="dis">退回</a-button>
+        <a-button class="add-btn" @click="handleAddMaterial" type="primary" icon="plus" v-if="!dis" v-has="'stockInAdd'"
+          >新增</a-button
+        >
+        <span v-has="'stockInAdd'">
+          <a-button class="add-btn" @click="handleCommitMaterial" type="primary" v-if="state === 1 && dis"
+            >提交审核</a-button
+          >
+          <a-button class="add-btn" @click="handleRetractMaterial" type="primary" v-if="state === 1 && dis"
+            >撤回</a-button
+          >
+        </span>
+        <!-- <span v-has="'stockInCheck'"> -->
+        <span v-has="'stockInSuper'">
+          <a-button class="add-btn" @click="handlePassMaterial" type="primary" v-if="state === 2 && dis">通过</a-button>
+          <a-button class="add-btn" @click="handleRetractMaterial" type="primary" v-if="state === 2 && dis"
+            >退回</a-button
+          >
         </span>
         <span class="flex-1"></span>
-        <a-button key="submit" type="primary" :loading="loading" @click="handleOk">保存</a-button>
-        <a-button key="submitAndCheck" type="primary" :loading="loading" @click="handleOkAndCommitCheck">保存并提交审核</a-button>
+        <template v-if="state !== 3 && state !== 2 && state !== 1">
+          <!-- <a-button key="submit" type="primary" :loading="loading" @click="handleOk">保存</a-button> -->
+          <a-button
+            key="submitAndCheck"
+            :disabled="commitButtonState"
+            type="primary"
+            :loading="loading"
+            @click="handleOkAndCommitCheck"
+            >保存并提交审核</a-button
+          >
+        </template>
         <a-button key="back" @click="handleCancel">取消</a-button>
       </div>
     </j-modal>
@@ -96,7 +118,8 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
 import MaterialFilterModal from './MaterialFilterModal'
 import EditableCell from './editCell'
-import { stockComeApply, queryByIdStockIn, approve, getAuthForQc } from 'src/api/mission/project'
+import { stockComeApply, queryByIdStockIn, approve, submit } from 'src/api/mission/project'
+import { putAction } from '@api/manage'
 
 export default {
   name: 'StockInModal',
@@ -136,14 +159,22 @@ export default {
           }
         },
         {
-          title: '耗材编码',
+          title: '耗材包名称',
           align: 'center',
-          dataIndex: 'materialCode',
+          dataIndex: 'planName',
+          customRender: function(t, r, index) {
+            return r.planName ? r.planName : r.packageId_dictText
+          }
         },
         {
-          title: '耗材名称',
+          title: '创建人',
           align: 'center',
-          dataIndex: 'materialName'
+          dataIndex: 'createBy'
+        },
+        {
+          title: '创建时间',
+          align: 'center',
+          dataIndex: 'createTime'
         },
         {
           title: '耗材数量',
@@ -159,19 +190,31 @@ export default {
       list: [],
       pId: undefined,
       state: null,
-      isLeading: undefined
+      isLeading: undefined,
+      currentTime: '',
+      commitButtonState: false
     }
   },
   methods: {
+    getBatchNo() {
+      const that = this
+      putAction('/sys/fillRule/executeRuleByCode/' + 'sample_archive_code_rule', { prefix: 'MA' }).then(res => {
+        if (res.success) {
+          that.form.code = res.result
+        }
+      })
+    },
     show(record) {
       if (record && record.id) {
         this.pId = record.id
         this.loadData(record.id)
         this.dis = true
       } else {
-        this.form = {}
+        this.getBatchNo()
+        this.form.type = undefined
         this.dataSource = []
         this.dis = false
+        this.state = -1
       }
       this.visible = true
     },
@@ -187,6 +230,7 @@ export default {
     handleCancel() {
       console.log(`取消`)
       this.visible = false
+      this.title = '入库单'
     },
     handleOk() {
       this.submitSave()
@@ -197,17 +241,19 @@ export default {
     submitSave(commit) {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
+          this.commitButtonState = true
           const postData = {
             batchNo: this.form.code,
             comeStocks: [],
             warehouseId: this.form.type,
-            isAutoSubmitApprove: commit ? 1 : 0
+            isAutoSubmitApprove: commit ? 1 : 0,
+            id: this.pId ? this.pId : null
           }
           this.dataSource.forEach(row => {
             if (parseInt(row.amount) > 0) {
               postData.comeStocks.push({
                 amount: parseInt(row.amount),
-                materialId: row.id
+                packageId: row.id
               })
             }
           })
@@ -217,8 +263,11 @@ export default {
                 this.$message.success(res.message)
                 this.visible = false
                 this.$emit('ok')
+                this.commitButtonState = false
+                this.title = '入库单'
               } else {
                 this.$message.error(res.message)
+                this.commitButtonState = false
               }
             })
             .finally(() => {
@@ -247,13 +296,10 @@ export default {
         }
       })
     },
-    handlePassMaterial () {
-      this.commitState(3)
-    },
-    handleBackMaterial () {
+    handlePassMaterial() {
       this.commitState(1)
     },
-    commitState (status) {
+    commitState(status) {
       const that = this
       const query = {
         applyId: this.pId,
@@ -275,7 +321,7 @@ export default {
       const query = {
         applyId: this.pId,
         applyType: 1,
-        status: 1
+        status: 0
       }
       approve(query).then(res => {
         if (res.success) {
@@ -308,6 +354,7 @@ export default {
         queryByIdStockIn(query).then(res => {
           if (res.success) {
             that.dataSource = res.result.applyDetail.records
+            that.dataSource[0].planName = that.dataSource[0].packageId_dictText
             that.form.code = res.result.batchNo
             that.form.type = res.result.warehouseId
             that.state = res.result.status
@@ -317,16 +364,18 @@ export default {
         })
       }
     },
-    getAuth() {
-      // getAuthForQc().then(res => {
-      //   if (res.success) {
-      //     this.isLeading = res.result
-      //   }
-      // })
+    getCurrentTime() {
+      let yy = new Date().getFullYear()
+      let mm = new Date().getMonth() + 1
+      let dd = new Date().getDate()
+      let hh = new Date().getHours()
+      let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()
+      let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds() : new Date().getSeconds()
+      this.currentTime = yy + '-' + mm + '-' + dd + ' ' + hh + ':' + mf + ':' + ss
     }
   },
-  mounted () {
-    this.getAuth()
+  mounted() {
+    this.getCurrentTime()
   }
 }
 </script>
@@ -352,12 +401,12 @@ export default {
   bottom: 0;
   width: 100%;
   display: flex;
-  align-items: center
+  align-items: center;
 }
-  .footer-bar .ant-btn {
-    margin-right: 15px;
-  }
-  .footer-bar .flex-1 {
-    flex: 1;
-  }
+.footer-bar .ant-btn {
+  margin-right: 15px;
+}
+.footer-bar .flex-1 {
+  flex: 1;
+}
 </style>

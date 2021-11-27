@@ -13,29 +13,29 @@
       <!-- 查询区域 -->
       <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
-          <a-row :gutter="24"> </a-row>
+          <a-row :gutter="24" class="search-group">
+            <div class="group">
+              <div class="title">耗材包名称：</div>
+              <a-input allowClear v-model="queryParam.planName" placeholder="耗材包名称"></a-input>
+            </div>
+            <div class="group">
+              <div class="title">所属产品：</div>
+              <a-input allowClear v-model="queryParam.productRecognition" placeholder="请输入所属产品"></a-input>
+            </div>
+            <a-button @click="resetQuery" type="primary">重置</a-button>
+            <a-button @click="searchQuery" type="primary">查询</a-button>
+          </a-row>
         </a-form>
-      </div>
-      <!-- 查询区域-END -->
-
-      <!-- 操作按钮区域 -->
-      <div class="table-operator">
-        <!-- 高级查询区域 -->
-        <j-super-query
-          :fieldList="superFieldList"
-          ref="superQueryModal"
-          @handleSuperQuery="handleSuperQuery"
-        ></j-super-query>
       </div>
 
       <!-- table区域-begin -->
       <div>
-        <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
+        <!-- <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
           <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择
           <a style="font-weight: 600">{{ selectedRowKeys.length }}</a
           >项
           <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-        </div>
+        </div> -->
 
         <a-table
           ref="table"
@@ -131,24 +131,34 @@ export default {
           }
         },
         {
-          title: '耗材编码',
+          title: '耗材包名称',
           align: 'center',
-          dataIndex: 'materialCode'
+          dataIndex: 'planName'
         },
         {
-          title: '耗材名称',
+          title: '所属产品',
           align: 'center',
-          dataIndex: 'materialName'
+          dataIndex: 'productRecognition_dictText'
         },
         {
-          title: '耗材数量',
+          title: '耗材包状态',
           align: 'center',
-          dataIndex: 'materialTotal'
+          dataIndex: 'state'
+        },
+        {
+          title: '创建人',
+          align: 'center',
+          dataIndex: 'createBy'
+        },
+        {
+          title: '创建时间',
+          align: 'center',
+          dataIndex: 'createTime'
         }
       ],
       superFieldList: [],
       url: {
-        list: '/mission/materialManagement/list',
+        list: '/mission/customMaterialPlan/list',
         delete: '/mission/materialManagement/delete',
         deleteBatch: '/mission/materialManagement/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportXls',
@@ -160,6 +170,10 @@ export default {
     this.getSuperFieldList()
   },
   methods: {
+    resetQuery() {
+      this.queryParam = {}
+      this.loadData()
+    },
     show() {
       this.visible = true
     },
@@ -192,5 +206,40 @@ export default {
 <style lang="less" scoped>
 .add-btn {
   margin-bottom: 20px;
+}
+
+.search-group {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 30px;
+  margin-top: 25px;
+  margin-left: 0 !important;
+
+  .group {
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    margin-right: 15px;
+
+    .title {
+      color: rgba(0, 0, 0, 0.85);
+      margin-right: 10px;
+      text-align: right;
+      width: 80px;
+      flex: 0 0 85px;
+    }
+
+    .search-label {
+      color: rgba(0, 0, 0, 0.85);
+      margin-right: 10px;
+      text-align: right;
+      min-width: 45px;
+    }
+  }
+
+  .ant-btn {
+    margin-right: 15px;
+  }
 }
 </style>

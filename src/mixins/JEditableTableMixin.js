@@ -4,7 +4,7 @@ import { httpAction, getAction } from '@/api/manage'
 
 export const JEditableTableMixin = {
   components: {
-    JEditableTable,
+    JEditableTable
   },
   data() {
     return {
@@ -15,12 +15,12 @@ export const JEditableTableMixin = {
       model: {},
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 6 },
+        sm: { span: 6 }
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 18 },
-      },
+        sm: { span: 18 }
+      }
     }
   },
   methods: {
@@ -29,14 +29,14 @@ export const JEditableTableMixin = {
       if (!(this.refKeys instanceof Array)) {
         throw this.throwNotArray('refKeys')
       }
-      let values = this.refKeys.map((key) => getRefPromise(this, key))
+      let values = this.refKeys.map(key => getRefPromise(this, key))
       return Promise.all(values)
     },
 
     /** 遍历所有的JEditableTable实例 */
     eachAllTable(callback) {
       // 开始遍历
-      this.getAllTable().then((tables) => {
+      this.getAllTable().then(tables => {
         tables.forEach((item, index) => {
           if (typeof callback === 'function') {
             callback(item, index)
@@ -48,10 +48,11 @@ export const JEditableTableMixin = {
     /** 当点击新增按钮时调用此方法 */
     add() {
       //update-begin-author:lvdandan date:20201113 for:LOWCOD-1049 JEditaTable,子表默认添加一条数据，addDefaultRowNum设置无效 #1930
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         this.tableReset()
         resolve()
       }).then(() => {
+        if (typeof this.addBefore === 'function') this.addBefore()
         // 默认新增空数据
         let rowNum = this.addDefaultRowNum
         if (typeof rowNum !== 'number') {
@@ -60,7 +61,7 @@ export const JEditableTableMixin = {
             '由于你没有在 data 中定义 addDefaultRowNum 或 addDefaultRowNum 不是数字，所以默认添加一条空数据，如果不想默认添加空数据，请将定义 addDefaultRowNum 为 0'
           )
         }
-        this.eachAllTable((item) => {
+        this.eachAllTable(item => {
           item.add(rowNum)
         })
         if (typeof this.addAfter === 'function') this.addAfter(this.model)
@@ -87,7 +88,7 @@ export const JEditableTableMixin = {
     },
     //清空子表table的数据
     tableReset() {
-      this.eachAllTable((item) => {
+      this.eachAllTable(item => {
         item.clearRow()
       })
     },
@@ -95,7 +96,7 @@ export const JEditableTableMixin = {
     requestSubTableData(url, params, tab, success) {
       tab.loading = true
       getAction(url, params)
-        .then((res) => {
+        .then(res => {
           let { result } = res
           let dataSource = []
           if (result) {
@@ -122,7 +123,7 @@ export const JEditableTableMixin = {
       }
       this.confirmLoading = true
       httpAction(url, formData, method)
-        .then((res) => {
+        .then(res => {
           if (res.success) {
             this.$message.success(res.message)
             this.$emit('ok')
@@ -141,7 +142,7 @@ export const JEditableTableMixin = {
     /** ATab 选项卡切换事件 */
     handleChangeTabs(key) {
       // 自动重置scrollTop状态，防止出现白屏
-      getRefPromise(this, key).then((editableTable) => {
+      getRefPromise(this, key).then(editableTable => {
         editableTable.resetScrollTop()
       })
     },
@@ -153,11 +154,11 @@ export const JEditableTableMixin = {
     handleOk() {
       /** 触发表单验证 */
       this.getAllTable()
-        .then((tables) => {
+        .then(tables => {
           /** 一次性验证主表和所有的次表 */
           return validateFormAndTables(this.form, tables)
         })
-        .then((allValues) => {
+        .then(allValues => {
           if (typeof this.classifyIntoFormData !== 'function') {
             throw this.throwNotFunction('classifyIntoFormData')
           }
@@ -165,7 +166,7 @@ export const JEditableTableMixin = {
           // 发起请求
           return this.request(formData)
         })
-        .catch((e) => {
+        .catch(e => {
           if (e.error === VALIDATE_NO_PASSED) {
             // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
             this.activeKey = e.index == null ? this.activeKey : this.refKeys[e.index]
@@ -185,6 +186,6 @@ export const JEditableTableMixin = {
     /** not a array */
     throwNotArray(name) {
       return `${name} 未定义或不是一个数组`
-    },
-  },
+    }
+  }
 }

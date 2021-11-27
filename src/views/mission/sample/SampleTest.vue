@@ -15,7 +15,7 @@
         </div>
         <div class="group">
           <div class="title">样本编号</div>
-          <a-input v-model="searchData.caseSampleIdentity" allowClear style="width: 150px" placeholder="请输入样本编号" />
+          <a-input v-model="searchData.sampleIdentity" allowClear style="width: 150px" placeholder="请输入样本编号" />
         </div>
         <div class="group">
           <div class="title">批次号</div>
@@ -115,7 +115,7 @@ export default {
       wrapperCol: { span: 10 },
       searchData: {
         project: undefined,
-        caseSampleIdentity: '',
+        sampleIdentity: '',
         batchNo: '',
         qcContactId: undefined
       },
@@ -152,7 +152,10 @@ export default {
         {
           title: '样本编号',
           align: 'center',
-          dataIndex: 'caseSampleIdentity'
+          dataIndex: 'sampleIdentity',
+          customRender: function(t, r, index) {
+            return `${r.caseIdentity}-${r.sampleIdentity}`
+          }
         },
         {
           title: '样本类型',
@@ -200,7 +203,7 @@ export default {
       const query = {
         currentCircuit: 4,
         project: this.searchData.batchNo,
-        sampleIdentity: this.searchData.caseSampleIdentity,
+        sampleIdentity: this.searchData.sampleIdentity,
         batchNo: this.searchData.batchNo,
         qcContactId: this.searchData.qcContactId
       }

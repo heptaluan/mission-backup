@@ -3,7 +3,7 @@
     <a-col :md="8" :sm="24">
       <a-card :bordered="false">
         <div style="background: #fff;padding-left:16px;height: 100%; margin-top: 5px">
-          <a-input-search @search="onSearch" style="width:100%;margin-top: 10px" placeholder="请输入机构名称"/>
+          <a-input-search @search="onSearch" style="width:100%;margin-top: 10px" placeholder="请输入部门名称"/>
           <!-- 树-->
 
           <template v-if="userIdentity === '2' && departTree.length>0">
@@ -23,9 +23,9 @@
 
           </template>
           <div style="margin-top: 24px;" v-else-if="userIdentity === '2' && departTree.length==0">
-            <h3><span>您的机构下暂无有效机构信息</span></h3>
+            <h3><span>您的部门下暂无有效部门信息</span></h3>
           </div>
-          <div style="margin-top: 24px;" v-else><h3>普通员工暂此权限</h3></div>
+          <div style="margin-top: 24px;" v-else><h3>普通员工暂无此权限</h3></div>
         </div>
       </a-card>
     </a-col>
@@ -38,7 +38,7 @@
           <a-tab-pane tab="用户信息" key="2">
             <Dept-User-Info ref="DeptUserInfo" @clearSelectedDepartKeys="clearSelectedDepartKeys"></Dept-User-Info>
           </a-tab-pane>
-          <a-tab-pane tab="机构角色" key="3" forceRender>
+          <a-tab-pane tab="部门角色" key="3" forceRender>
             <dept-role-info ref="DeptRoleInfo" @clearSelectedDepartKeys="clearSelectedDepartKeys"/>
           </a-tab-pane>
         </a-tabs>
@@ -49,8 +49,8 @@
 <script>
   import DeptBaseInfo from './modules/DeptBaseInfo'
   import DeptUserInfo from './modules/DeptUserInfo'
-  import {queryMyDepartTreeList, searchByKeywords} from '@/api/api'
-  import {JeecgListMixin} from '@/mixins/JeecgListMixin'
+  import { queryMyDepartTreeList, searchByKeywords } from '@/api/api'
+  import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import DeptRoleInfo from './modules/DeptRoleInfo'
 
   export default {

@@ -71,7 +71,7 @@
             </a>
             <a-menu slot="overlay">
                 <a-menu-item>
-                <a href="javascript:;" @click="handleDeptRole(record)">机构角色</a>
+                <a href="javascript:;" @click="handleDeptRole(record)">部门角色</a>
               </a-menu-item>
 
               <a-menu-item>
@@ -79,7 +79,7 @@
               </a-menu-item>
 
               <a-menu-item>
-                <a-popconfirm title="确定取消与选中机构关联吗?" @confirm="() => handleDelete(record.id)">
+                <a-popconfirm title="确定取消与选中部门关联吗?" @confirm="() => handleDelete(record.id)">
                   <a>取消关联</a>
                 </a-popconfirm>
               </a-menu-item>
@@ -131,7 +131,7 @@
             dataIndex: 'realname'
           },
           {
-            title: '机构',
+            title: '部门',
             align: "center",
             dataIndex: 'orgCode'
           },
@@ -194,7 +194,7 @@
           return
         }
         if (!this.currentDeptId) {
-          this.$message.error("未选中任何机构，无法取消机构与用户的关联!")
+          this.$message.error("未选中任何部门，无法取消部门与用户的关联!")
           return
         }
 
@@ -210,11 +210,11 @@
           console.log(this.currentDeptId);
           this.$confirm({
             title: "确认取消",
-            content: "是否取消用户与选中机构的关联?",
+            content: "是否取消用户与选中部门的关联?",
             onOk: function () {
               deleteAction(that.url.deleteBatch, {depId: that.currentDeptId, userIds: ids}).then((res) => {
                 if (res.success) {
-                  that.$message.success("删除用户与选中机构关系成功！");
+                  that.$message.success("删除用户与选中部门关系成功！");
                   that.loadData();
                   that.onClearSelected();
                 } else {
@@ -231,14 +231,14 @@
           return
         }
         if (!this.currentDeptId) {
-          this.$message.error("未选中任何机构，无法取消机构与用户的关联!")
+          this.$message.error("未选中任何部门，无法取消部门与用户的关联!")
           return
         }
 
         var that = this;
         deleteAction(that.url.delete, {depId: this.currentDeptId, userId: id}).then((res) => {
           if (res.success) {
-            that.$message.success("删除用户与选中机构关系成功！");
+            that.$message.success("删除用户与选中部门关系成功！");
             if (this.selectedRowKeys.length>0){
                for(let i =0; i<this.selectedRowKeys.length;i++){
                    if (this.selectedRowKeys[i] == id){
@@ -265,14 +265,14 @@
       },
       hasSelectDept() {
         if (this.currentDeptId == '') {
-          this.$message.error("请选择一个机构!")
+          this.$message.error("请选择一个部门!")
           return false;
         }
         return true;
       },
       handleAddUserDepart() {
         if (this.currentDeptId == '' ) {
-          this.$message.error("请选择一个机构!")
+          this.$message.error("请选择一个部门!")
         } else {
           this.$refs.selectUserModal.visible = true;
         }
@@ -285,10 +285,10 @@
       },
       handleAdd: function () {
         if (this.currentDeptId == '') {
-          this.$message.error("请选择一个机构!")
+          this.$message.error("请选择一个部门!")
         } else {
           this.$refs.modalForm.departDisabled = true;
-          //初始化负责机构
+          //初始化负责部门
           this.$refs.modalForm.nextDepartOptions=[{value:this.currentDept.key,label:this.currentDept.title}]
           this.$refs.modalForm.title = "新增";
           this.$refs.modalForm.edit({activitiSync:'1',userIdentity:1,selecteddeparts:this.currentDeptId})
@@ -314,9 +314,9 @@
       handleDeptRole(record){
         if(this.currentDeptId != ''){
           this.$refs.deptRoleUser.add(record,this.currentDeptId);
-          this.$refs.deptRoleUser.title = "机构角色分配";
+          this.$refs.deptRoleUser.title = "部门角色分配";
         }else{
-          this.$message.warning("请先选择一个机构!");
+          this.$message.warning("请先选择一个部门!");
         }
       }
     }

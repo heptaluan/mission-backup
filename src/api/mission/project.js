@@ -3,7 +3,7 @@
  * @Date 2021/4/8
  * @description
  */
-import { getAction, postAction, putAction, uploadAction } from '@/api/manage'
+import { getAction, postAction, putAction, uploadAction} from '@/api/manage'
 const prefix = '/mission/projectInfo'
 
 const api = {
@@ -14,7 +14,7 @@ const api = {
   deleteBatch: prefix + '/deleteBatch',
   delete: prefix + '/delete',
   exportXlsUrl: prefix + '/exportXls',
-  importExcelUrl: prefix + '/importExcelUrl',
+  importExcelUrl: prefix + '/importExcelUrl'
 }
 
 export const queryOwnershipType = (params) => getAction('/mission/fileInfo/list', params)
@@ -72,13 +72,16 @@ export const stockComeApply = (params) => postAction('/mission/materialManagemen
 // 耗材出入库-出入库申请表审批
 export const approve = (params) => postAction('/mission/materialManagement/stock/apply/approve', params)
 
+// 审核
+export const submit = (params) => postAction('/mission/materialManagement/stock/apply/submit', params)
+
 // ================================================= 样本管理
 
 // 文件管理-分页列表查询
 export const getFileInfoList = (params) => getAction('/mission/fileInfo/list', params)
 
 // 病例样本入库-新增样本入库（文件上传）
-export const caseSampleUploadFile = (params) => uploadAction('/mission/caseSample/stockApply/add', params)
+export const addStockApply = (params) => uploadAction('/tailai-system/mission/caseSample/stockApply/add', params)
 
 // 病例样本检测-上传检测报告（文件上传）
 export const caseSampleDetect = (params) => postAction('/mission/caseSample/detect', params)
@@ -107,6 +110,18 @@ export const getCaseSampleOrigin = (params) => getAction('/mission/caseSample/or
 // 病例样本信息-查询原始数据
 export const putCaseSampleEdit = (params) => putAction('/mission/caseSample/edit', params)
 
+
+// ======================= 新增
+
+// 样本管理-查看质控报告
+export const qcBrief = (params) => getAction(`/tailai-system/mission/caseSample/stockApply/qcBrief/${params}`)
+
+// 病例样本信息-分页列表查询
+export const getCaseSampleListById = (params) => getAction(`/tailai-system/mission/caseSample/list`, params)
+
+// 反馈质控结果
+export const stockApplyFeedback = (params) => putAction('/tailai-system/mission/caseSample/stockApply/feedback', params)
+
 // ================================================= 编号管理
 
 // 样本编号详情管理-分页列表查询
@@ -128,8 +143,7 @@ export const queryUserByDepId = (params) => getAction('/sys/user/queryUserByDepI
 
 // 质检
 export const getAuthForQc = () => getAction('/sys/sysDepart/isQCHead')
-
 // 入库审核权限
-export const getAuthForTest = () => getAction('/sys/sysDepart/isTestingHead')
+export const getAuthForTest = ()=> getAction('/sys/sysDepart/isTestingHead')
 
 export default api

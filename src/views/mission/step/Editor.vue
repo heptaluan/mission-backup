@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import E from 'wangeditor'
+// import E from 'wangeditor'
 export default {
   name: 'editor',
   props: {
@@ -34,10 +34,10 @@ export default {
   },
   methods: {
     createEditor() {
-      let editor = new E(this.$refs.editor)
-      this.editor = editor
-      this._syncContent()
-      editor.create()
+      // let editor = new E(this.$refs.editor)
+      // this.editor = editor
+      // this._syncContent()
+      // editor.create()
     },
     _syncContent() {
       this.editor.config.onchange = html => {

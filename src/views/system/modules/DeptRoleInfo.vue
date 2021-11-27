@@ -6,8 +6,8 @@
       <a-form layout="inline">
         <a-row :gutter="10">
           <a-col :md="10" :sm="12">
-            <a-form-item label="机构角色名称" style="margin-left:8px">
-              <a-input placeholder="请输入机构角色" v-model="queryParam.roleName"></a-input>
+            <a-form-item label="部门角色名称" style="margin-left:8px">
+              <a-input placeholder="请输入部门角色" v-model="queryParam.roleName"></a-input>
             </a-form-item>
           </a-col>
           <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
@@ -21,7 +21,7 @@
     </div>
     <!-- 操作按钮区域 -->
     <div class="table-operator" :md="24" :sm="24">
-      <a-button @click="handleAdd" type="primary" icon="plus">新建机构角色</a-button>
+      <a-button @click="handleAdd" type="primary" icon="plus">新建部门角色</a-button>
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
           <a-menu-item key="1" @click="batchDel"><a-icon type="delete"/>删除</a-menu-item>
@@ -87,21 +87,21 @@
     mixins: [JeecgListMixin],
     data() {
       return {
-        description: '机构角色信息',
+        description: '部门角色信息',
         currentDeptId: '',
         // 表头
         columns: [{
-          title: '机构角色名称',
+          title: '部门角色名称',
           align: "center",
           dataIndex: 'roleName'
         },
         {
-          title: '机构角色编码',
+          title: '部门角色编码',
           align: "center",
           dataIndex: 'roleCode'
         },
         {
-          title: '机构',
+          title: '部门',
           align: "center",
           dataIndex: 'departId_dictText'
         },
@@ -159,7 +159,7 @@
       },
       hasSelectDept() {
         if (this.currentDeptId == '') {
-          this.$message.error("请选择一个机构!")
+          this.$message.error("请选择一个部门!")
           return false;
         }
         return true;
@@ -172,7 +172,7 @@
       },
       handleAdd: function () {
         if (this.currentDeptId == '') {
-          this.$message.error("请选择一个机构!")
+          this.$message.error("请选择一个部门!")
         } else {
           this.$refs.modalForm.departDisabled = true;
           this.$refs.modalForm.add(this.currentDeptId);

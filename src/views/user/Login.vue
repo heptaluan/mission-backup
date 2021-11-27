@@ -178,6 +178,9 @@
       //this.getEncrypte();
       // update-end- --- author:scott ------ date:20190805 ---- for:密码加密逻辑暂时注释掉，有点问题
     },
+    mounted() {
+      this.form.setFieldsValue({inputCode: ''});
+    },
     methods: {
       ...mapActions(['Login', 'Logout', 'PhoneLogin']),
       // handler
@@ -291,7 +294,6 @@
         })
       },
       handleChangeCheckCode(){
-        this.form.setFieldsValue({inputCode: ''});
         this.currdatetime = new Date().getTime();
         getAction(`/sys/randomImage/${this.currdatetime}`).then(res=>{
           if(res.success){

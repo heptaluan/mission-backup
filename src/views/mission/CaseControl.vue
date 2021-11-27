@@ -2,7 +2,7 @@
   <a-card :bordered="false">
     <a-form-model style="margin-bottom: 40px;" ref="ruleForm" :label-col="labelCol" :wrapper-col="wrapperCol">
       <!-- 查询区域 -->
-       <div class="table-page-search-wrapper">
+      <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24" class="search-group">
             <div class="group">
@@ -13,6 +13,7 @@
               <div class="title">姓名：</div>
               <j-input allowClear v-model="queryParam.caseName" placeholder="请输入姓名"></j-input>
             </div>
+            <a-button @click="resetQuery" type="primary" style="margin-right:10px;">重置</a-button>
             <a-button @click="searchQuery" type="primary">查询</a-button>
           </a-row>
         </a-form>
@@ -20,19 +21,19 @@
       <!-- 查询区域-END -->
 
       <!-- 高级查询区域 -->
-       <div class="table-operator" style="margin-bottom:20px;">
-
+      <!-- <div class="table-operator" style="margin-bottom:20px;">
         <j-super-query
           :fieldList="superFieldList"
           ref="superQueryModal"
-          @handleSuperQuery="handleSuperQuery"></j-super-query>
+          @handleSuperQuery="handleSuperQuery"
+        ></j-super-query>
         <a-dropdown v-if="selectedRowKeys.length > 0" v-has="'caseEdit'">
           <a-menu slot="overlay">
             <a-menu-item key="1" @click="batchDel"><a-icon type="delete" />删除</a-menu-item>
           </a-menu>
           <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down"/></a-button>
         </a-dropdown>
-      </div>
+      </div> -->
 
       <!-- table区域-begin -->
       <a-table
@@ -150,9 +151,14 @@ export default {
           dataIndex: 'age'
         },
         {
+          title: '手机号',
+          align: 'center',
+          dataIndex: 'phoneNumber'
+        },
+        {
           title: '身份证号',
           align: 'center',
-          dataIndex: 'caseIdentity'
+          dataIndex: 'identityNumber'
         },
         {
           title: '创建时间',
@@ -169,8 +175,8 @@ export default {
         }
       ],
       url: {
-        list: 'mission/medicalCase/list',
-        delete: 'mission/medicalCase/delete'
+        list: 'multiomics//medicalCase/list',
+        delete: 'multiomics/medicalCase/delete'
       },
       dictOptions: {},
       superFieldList: []
@@ -185,6 +191,10 @@ export default {
     }
   },
   methods: {
+    resetQuery() {
+      this.queryParam = {}
+      this.loadData()
+    },
     initDictConfig() {},
     search() {},
     getSuperFieldList() {
@@ -205,6 +215,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   margin-bottom: 20px;
+  margin-left: 0 !important;
 
   .group {
     display: flex;
@@ -216,8 +227,13 @@ export default {
       color: rgba(0, 0, 0, 0.85);
       margin-right: 10px;
       text-align: right;
-      width: 80px;
+      flex: 0 0 60px;
     }
   }
+}
+
+.btn-group {
+  margin-top: 20px;
+  text-align: right;
 }
 </style>

@@ -30,7 +30,7 @@
             <a-icon type="inbox" />
           </p>
           <p class="ant-upload-text">
-            单击或拖动文件到该区域进行上传
+            单击或拖动文件到该区域进行上传1
           </p>
         </a-upload-dragger>
       </div>

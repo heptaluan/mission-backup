@@ -391,7 +391,7 @@
       tableChange1(pagination){
         this.ipagination1.current = pagination.current
         this.ipagination1.pageSize = pagination.pageSize
-        this.queryTimeoutInfo()
+        // this.queryTimeoutInfo()
       },
       tableChange2(pagination){
         this.ipagination2.current = pagination.current

@@ -1,4 +1,5 @@
 import { asyncRouterMap, constantRouterMap } from "@/config/router.config"
+import OrderDetail from 'src/views/order/OrderMetaDetail.vue'
 
 /**
  * 过滤账户是否拥有某一个权限，并将菜单从加载列表移除
@@ -58,6 +59,19 @@ const permission = {
   },
   mutations: {
     SET_ROUTERS: (state, data) => {
+      if (data[0].children) {
+        data[0].children = data[0].children.map((o) => {
+          if (o.name === 'order-orderList') {
+            o.children.push({
+              name: 'orderDetail',
+              path: '/order/orderList/orderDetail/:id',
+              meta: { title: '订单详情' },
+              component: OrderDetail
+            })
+          }
+          return o
+        })
+      }
       state.addRouters = data
       state.routers = constantRouterMap.concat(data)
       //console.log('-----mutations---SET_ROUTERS----', data)
