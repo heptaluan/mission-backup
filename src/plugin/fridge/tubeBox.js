@@ -4,7 +4,7 @@
  * @description 试管盒子相关类
  */
 class TubeBox {
-  constructor (option) {
+  constructor(option) {
     // 盒子唯一标识id
     this.tId = option.tubeBoxId
     // 所在冰箱Id
@@ -22,17 +22,15 @@ class TubeBox {
     // 在冰箱对应位置
     this.floor = option.floor
     this.store = {
-      row : option.row,
+      row: option.row,
       col: option.col,
-      floor: option.boxFloor
+      floor: option.boxFloor,
     }
   }
   // 试剂盒渲染函数
-  render () {
-
-  }
+  render() {}
   // 试剂盒弹出
-  openDoor () {
+  openDoor() {
     // todo
   }
 }

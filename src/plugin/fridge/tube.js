@@ -4,7 +4,7 @@
  * @description
  */
 class Tube {
-  constructor (option) {
+  constructor(option) {
     // 试剂唯一标识id, 对应条码信息
     this.tId = option.tubeId
     // 所在试剂盒id
@@ -26,14 +26,12 @@ class Tube {
     //  对应试剂盒 行列
     this.store = {
       row: option.row,
-      col: option.col
+      col: option.col,
     }
   }
   // 试剂渲染函数
-  render () {
-
-  }
-  UpdateStore (row, col) {
+  render() {}
+  UpdateStore(row, col) {
     this.store.row = row
     this.store.col = col
   }

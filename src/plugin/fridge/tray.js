@@ -7,7 +7,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 // import { Color } from 'three'
 import { COL_ARRAY } from './data'
 class Tray {
-  constructor (option) {
+  constructor(option) {
     // 试剂唯一标识id, 对应条码信息
     this.trayId = option.trayId
     // 所在试剂盒id
@@ -31,7 +31,7 @@ class Tray {
     this.baseY = undefined
   }
   // 初始化材质
-  initMaterial () {
+  initMaterial() {
     // // 加载托盘盒模型
     // const gltfLoader = new GLTFLoader()
     // gltfLoader.load('/static/model/tray.glb', (gltf) => {
@@ -55,37 +55,42 @@ class Tray {
     // })
   }
   // 试剂渲染函数
-  render (scene) {
+  render(scene) {
     // 加载托盘盒模型
     const fbxLoader = new FBXLoader()
     // const blue = new Color('#2798ff')
     // const red = new Color('#13ff3c')
     // const yellow = new Color('rgba(255,222,13,0.65)')
     // const color = [blue, red, yellow]
-    fbxLoader.load('/static/model/tray.fbx', (object) => {
-      object.children.forEach((child) => {
-        if (child.type === 'Mesh' && child.name.indexOf('Sphere-') > -1) {
-          // child.castShadow = true
-          // child.receiveShadow = true
-          // let random = Math.floor(Math.random() * 100) % 4
-          // child.material = child.material.clone()
-          // if (random !== 3 ) child.material.color = color[random]
-          // child.material.emissive = child.material.color
-          // child.material.emissiveMap = child.material.map
-          this.children.push(child)
-        }
-      })
-      object.position.set(this.positionX, this.positionY + 5, this.positionZ)
-      scene.add(object)
-      // this.renderTubeBox(scene)
-    }, undefined, (error) => {
-      console.log(error)
-    })
+    fbxLoader.load(
+      '/static/model/tray.fbx',
+      (object) => {
+        object.children.forEach((child) => {
+          if (child.type === 'Mesh' && child.name.indexOf('Sphere-') > -1) {
+            // child.castShadow = true
+            // child.receiveShadow = true
+            // let random = Math.floor(Math.random() * 100) % 4
+            // child.material = child.material.clone()
+            // if (random !== 3 ) child.material.color = color[random]
+            // child.material.emissive = child.material.color
+            // child.material.emissiveMap = child.material.map
+            this.children.push(child)
+          }
+        })
+        object.position.set(this.positionX, this.positionY + 5, this.positionZ)
+        scene.add(object)
+        // this.renderTubeBox(scene)
+      },
+      undefined,
+      (error) => {
+        console.log(error)
+      }
+    )
   }
-  renderTubeBox () {
+  renderTubeBox() {
     // todu
   }
-  findTube (col, row) {
+  findTube(col, row) {
     const _col = parseInt(col) - 1
     let position = COL_ARRAY[_col] + row
     let name = 'Sphere-' + position

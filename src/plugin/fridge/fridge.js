@@ -8,7 +8,7 @@ import { Color } from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 // import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 class Fridge {
-  constructor (option) {
+  constructor(option) {
     // 冰箱唯一标识id
     this.fId = option.fridgeId
     // 名称
@@ -58,31 +58,36 @@ class Fridge {
   //     console.log(error)
   //   })
   // }
-  render (scene) {
+  render(scene) {
     // 加载托盘盒模型
     const fbxLoader = new FBXLoader()
-    fbxLoader.load('/static/model/fridge.fbx', (object) => {
-      const _color = new Color(1, 1, 1)
-      const baseColor = new Color('#2a2a2a')
-      object.children.forEach((o) => {
-        if (o.type === 'Mesh') {
-          o.castShadow = true
-          o.receiveShadow = true
-          // if (o.material.color.getHexString() === _color.getHexString())  o.material.color = baseColor
-          // o.material.emissive = o.material.color
-          o.material.emissiveMap = o.material.map
-          this.children.push(o)
-        }
-      })
-      object.position.set(this.positionX, this.positionY + 5, this.positionZ)
-      scene.add(object)
-      // this.renderTubeBox(scene)
-    }, undefined, (error) => {
-      console.log(error)
-    })
+    fbxLoader.load(
+      '/static/model/fridge.fbx',
+      (object) => {
+        const _color = new Color(1, 1, 1)
+        const baseColor = new Color('#2a2a2a')
+        object.children.forEach((o) => {
+          if (o.type === 'Mesh') {
+            o.castShadow = true
+            o.receiveShadow = true
+            // if (o.material.color.getHexString() === _color.getHexString())  o.material.color = baseColor
+            // o.material.emissive = o.material.color
+            o.material.emissiveMap = o.material.map
+            this.children.push(o)
+          }
+        })
+        object.position.set(this.positionX, this.positionY + 5, this.positionZ)
+        scene.add(object)
+        // this.renderTubeBox(scene)
+      },
+      undefined,
+      (error) => {
+        console.log(error)
+      }
+    )
   }
 
-  findTray (name) {
+  findTray(name) {
     const tray = this.children.find((child) => {
       return child.name === name
     })

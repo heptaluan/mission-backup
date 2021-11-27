@@ -4,15 +4,10 @@
  * @description
  */
 import Fridge from './fridge'
-import {
-  GET_FRIDAGE_LIST,
-  FRIDGE_WIDTH,
-  FRIDGE_HEIGHT,
-  FRIDGE_LENGTH,
-} from './data'
+import { GET_FRIDAGE_LIST, FRIDGE_WIDTH, FRIDGE_HEIGHT, FRIDGE_LENGTH } from './data'
 
 class storage {
-  constructor (scene) {
+  constructor(scene) {
     this.scene = scene
     // 缓存所有冰箱
     this.fridgeStore = []
@@ -20,12 +15,10 @@ class storage {
     this.addFridge()
   }
   // 初始化材质
-  initMaterial () {
-
-  }
+  initMaterial() {}
   // add fridge
   // 添加冰箱
-  addFridge () {
+  addFridge() {
     const fridgeList = GET_FRIDAGE_LIST()
     let width = FRIDGE_WIDTH
     let height = FRIDGE_HEIGHT
@@ -40,7 +33,7 @@ class storage {
         positionZ: fridgeItem.z,
         width,
         height,
-        length
+        length,
       }
       let fridge = new Fridge(option)
       fridge.render(this.scene)
@@ -54,9 +47,9 @@ class storage {
   // 第四层 从右往左 对象527 - 对象 561
 
   // floor -- 第几层 grid --第几格 drawer 第几个抽屉
-  getMeshNameByPosition (floor, grid, drawer) {
+  getMeshNameByPosition(floor, grid, drawer) {
     // floor grid drawer 均从1开始
-    const direction = floor % 2 ? false: true
+    const direction = floor % 2 ? false : true
     const prefix = floor > 2 ? '对象' : ''
     const drawerMax = 5
     let name = ''
@@ -76,6 +69,5 @@ class storage {
     }
     return name.toString()
   }
-
 }
 export default storage
