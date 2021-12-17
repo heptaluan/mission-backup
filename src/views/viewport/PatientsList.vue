@@ -4,26 +4,29 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24" class="search-group patients-list">
-          <div class="group">
-            <div class="title">归档编号：</div>
-            <a-input
-              style="width:250px;"
-              allowClear
-              v-model="queryParam.archiveJobId"
-              placeholder="请输入归档编号"
-            ></a-input>
-          </div>
-          <div class="group">
-            <div class="title">姓名：</div>
-            <a-input
-              style="width:250px;"
-              allowClear
-              v-model="queryParam.patientName"
-              placeholder="请输入归档编号"
-            ></a-input>
-          </div>
-          <a-button @click="resetQuery" type="primary">重置</a-button>
-          <a-button @click="searchQuery" type="primary">搜索</a-button>
+          <a-col class="group">
+            <a-form-item label="归档编号" :labelCol="{ span: 5 }">
+              <a-input
+                style="width:250px;"
+                v-model="queryParam.archiveJobId"
+                placeholder="请输入归档编号"
+              ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group">
+            <a-form-item label="姓名" :labelCol="{ span: 5 }">
+              <a-input
+                style="width:250px;"
+                allowClear
+                v-model="queryParam.patientName"
+                placeholder="请输入归档编号"
+              ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group btn">
+            <a-button @click="searchQuery" type="primary">搜索</a-button>
+            <a-button @click="resetQuery">重置</a-button>
+          </a-col>
         </a-row>
       </a-form>
     </div>

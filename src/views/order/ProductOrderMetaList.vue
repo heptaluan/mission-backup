@@ -4,45 +4,98 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24" class="search-group order-list">
-          <div class="group">
-            <div class="title">病例编号：</div>
-            <a-input allowClear v-model="queryParam.medicalCaseCode" placeholder="请输入病例编号"></a-input>
-          </div>
-          <div class="group">
-            <div class="title">产品名称：</div>
-            <a-select style="width:200px;" v-model="queryParam.productRecognition" placeholder="请选择产品">
-              <a-select-option v-for="item in productInfoList" :key="item.id" :value="item.productRecognition">
-                {{ item.productName }}
-              </a-select-option>
-            </a-select>
-          </div>
-          <div class="group">
-            <div class="title">病人姓名：</div>
-            <a-input allowClear v-model="queryParam.caseName" placeholder="请输入病人姓名"></a-input>
-          </div>
-          <div class="group">
-            <div class="title">身份证号：</div>
-            <a-input allowClear v-model="queryParam.identityNumber" placeholder="请输入身份证号"></a-input>
-          </div>
-          <!-- <div class="group">
-            <div class="title">性别：</div>
-            <a-input allowClear v-model="queryParam.sex" placeholder="请选择性别"></a-input>
-          </div>
-          <div class="group">
-            <div class="title">销售：</div>
-            <a-input allowClear v-model="queryParam.sale" placeholder="请选择销售"></a-input>
-          </div>
-          <div class="group">
-            <div class="title">产品：</div>
-            <a-input allowClear v-model="queryParam.production" placeholder="请选择产品"></a-input>
-          </div>
-          <div class="group">
-            <div class="title">医院：</div>
-            <a-input allowClear v-model="queryParam.hos" placeholder="请选择医院"></a-input>
-          </div> -->
-          <a-button @click="resetQuery" type="primary">重置</a-button>
-          <a-button @click="searchQuery" type="primary">搜索</a-button>
-          <!--          <a-button @click="handleDetail" type="primary">详情</a-button>-->
+<!--          <div class="group">-->
+<!--            <div class="title">批量任务编号：</div>-->
+<!--            <a-input v-model="queryParam.importTaskId" placeholder="请输入批量任务编号"></a-input>-->
+<!--          </div>-->
+<!--          <div class="group">-->
+<!--            <div class="title">病例编号：</div>-->
+<!--            <a-input allowClear v-model="queryParam.medicalCaseCode" placeholder="请输入病例编号"></a-input>-->
+<!--          </div>-->
+          <a-col class="group sm">
+            <a-form-item label="姓名:" :labelCol="{ span: 6 }">
+              <a-input allowClear v-model="queryParam.caseName" placeholder="请输入姓名"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group tiny">
+            <a-form-item label="性别:" :labelCol="{ span: 6 }">
+              <a-select v-model="queryParam.gender" placeholder="请选择性别">
+                <a-select-option v-for="item in genderOption" :key="item.value" :value="item.value">
+                  {{ item.label }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col class="group md">
+            <a-form-item label="销售:" :labelCol="{ span: 6 }">
+              <a-select
+                show-search
+                :value="sellValue"
+                placeholder="输入关联销售进行检索"
+                :default-active-first-option="false"
+                :show-arrow="false"
+                :filter-option="false"
+                :not-found-content="null"
+                @search="handleSellSearch"
+                @change="handleSellChange"
+              >
+                <a-select-option v-for="item in sellData" :key="item.id" :value="item.username">
+                  {{ item.realname }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col class="group sm">
+            <a-form-item label="产品:" :labelCol="{ span: 6 }">
+              <a-select v-model="queryParam.choseProduct" placeholder="请选择产品">
+                <a-select-option v-for="item in productInfoList" :key="item.id" :value="item.productRecognition">
+                  {{ item.productName }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col class="group md">
+            <a-form-item label="医院:" :labelCol="{ span: 6 }">
+              <a-select v-model="queryParam.sendHospital" placeholder="请选择医院">
+                <a-select-option v-for="item in hospitalList" :key="item.id" :value="item.hospitalName">
+                  {{ item.hospitalName }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+
+          <a-col class="group md">
+            <a-form-item label="状态:" :labelCol="{ span: 6 }">
+              <j-dict-select-tag
+                allowClear
+                type="list"
+                dictCode="product_order_state_enum"
+                placeholder="请选择状态"
+                v-model="queryParam.orderState"
+              />
+            </a-form-item>
+          </a-col>
+          <a-col class="group md">
+            <a-form-item label="订单创建时间" :labelCol="{ span: 5 }" >
+              <j-date
+                v-model="queryParam.createTime_begin"
+                :showTime="true"
+                date-format="YYYY-MM-DD"
+                placeholder="请选择开始时间"
+              ></j-date>
+              <span style="width: 20px;"> - </span>
+              <j-date
+                v-model="queryParam.createTime_end"
+                :showTime="true"
+                date-format="YYYY-MM-DD"
+                placeholder="请选择结束时间"
+              ></j-date>
+            </a-form-item>
+          </a-col>
+          <a-col class="group btn">
+            <a-button @click="searchQuery" type="primary">搜索</a-button>
+            <a-button @click="resetQuery">重置</a-button>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -51,8 +104,10 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="addNewOrder" type="primary" icon="plus">创建订单</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls()">导出Excel</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls()">导出基因Excel</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls(`导出订单列表${currentTime}`)"
+        >导出Excel</a-button
+      >
+      <!-- <a-button type="primary" icon="download" @click="handleExportXls(`导出基因订单列表${currentTime}`)">导出基因Excel</a-button> -->
       <!-- <a-upload
         name="file"
         :showUploadList="false"
@@ -89,7 +144,7 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="index"
+        rowKey="id"
         class="j-table-force-nowrap"
         :scroll="{ x: true }"
         :columns="columns"
@@ -154,7 +209,46 @@
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import '@/assets/less/TableExpand.less'
 import { deleteTempleOrder } from 'src/api/order/index'
-import { getProductInfoList } from '../../api/product/index'
+import { getHospitalList, getProductInfoList } from '../../api/product/index'
+import { queryRoleUsers } from '../../api/material'
+
+function sellFetch(value, callback) {
+  let timeout
+  let currentValue
+
+  if (timeout) {
+    clearTimeout(timeout)
+    timeout = null
+  }
+  currentValue = value
+
+  function fake() {
+    queryRoleUsers({
+      role: 'sales_omics',
+      name: value
+    }).then(res => {
+      if (res.success) {
+        if (currentValue === value) {
+          const result = res.result
+          const data = []
+          result.forEach(r => {
+            data.push({
+              key: r.id,
+              realname: r.realname,
+              username: r.username,
+              id: r.id
+            })
+          })
+          callback(data)
+        }
+      } else {
+        console.log(res.message)
+      }
+    })
+  }
+
+  timeout = setTimeout(fake, 300)
+}
 
 export default {
   name: 'ProductOrderMetaList',
@@ -237,9 +331,20 @@ export default {
           dataIndex: 'sendDoctor'
         },
         {
+          title: '创建时间',
+          align: 'center',
+          dataIndex: 'createTime'
+        },
+        {
+          title: '完成时间',
+          align: 'center',
+          dataIndex: 'completeTime'
+        },
+        {
           title: '订单状态',
           align: 'center',
-          dataIndex: 'orderState_dictText'
+          dataIndex: 'orderState_dictText',
+          customCell: this.statusBackground
         },
         {
           title: '操作',
@@ -256,7 +361,17 @@ export default {
       },
       dictOptions: {},
       superFieldList: [],
-      productInfoList: []
+      productInfoList: [],
+      hospitalList: [],
+      user: null,
+      sellData: [],
+      sellValue: undefined,
+      orderStateList: [
+        {key: '临时订单', value: 1000},
+        {key: '未知订单', value: 2000},
+        {key: '正式订单', value: 3000},
+      ],
+      currentTime: ''
     }
   },
   created() {
@@ -288,6 +403,7 @@ export default {
     },
     resetQuery() {
       this.queryParam = {}
+      this.sellValue = null;
       this.loadData()
     },
     modalFormClose() {
@@ -326,16 +442,79 @@ export default {
           that.$message.warning(res.message)
         }
       })
+    },
+    loadHospitalList() {
+      getHospitalList().then(res => {
+        if (res.success) {
+          this.hospitalList = res.result.records
+          console.log(this.hospitalList)
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    handleUploadList() {
+      console.log(`批量上传`)
+    },
+    getCurrentTime() {
+      let yy = new Date().getFullYear()
+      let mm = new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() + 1 : new Date().getMonth() + 1
+      let dd = new Date().getDate() < 10 ? '0' + new Date().getDate() : new Date().getDate()
+      let hh = new Date().getHours() < 10 ? '0' + new Date().getHours() : new Date().getHours()
+      let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()
+      let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds() : new Date().getSeconds()
+      yy = yy.toString()
+      mm = mm.toString()
+      dd = dd.toString()
+      hh = hh.toString()
+      mf = mf.toString()
+      ss = ss.toString()
+      this.currentTime = yy + mm + dd + hh + mf + ss
+    },
+    handleSellSearch(value) {
+      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+        sellFetch(value, data => (this.sellData = data))
+      }
+    },
+    handleSellChange(value) {
+      this.sellValue = value
+      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+        sellFetch(value, data => (this.sellData = data))
+      }
+      this.$set(this.queryParam, 'sendAccess', undefined) // clean the previous data if the sellUser or sellUserId changed
+      if (value) {
+        this.queryParam.seller = value
+      }
+    },
+    statusBackground(record) {
+      return {
+        style: record.orderState_dictText === '报告完结' ? {
+          'background-color': 'green',
+          'color': 'white'
+        } : {}
+      }
     }
   },
   mounted() {
-    this.loadProductInfoList()
+    this.user = this.$store.state.user.info;
+    this.loadHospitalList();
+    this.loadProductInfoList();
+    this.getCurrentTime();
+    if (this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics')) {
+      this.sellData = [this.user]
+    }
   },
   watch: {
     $route: {
       immediate: true,
       handler: function(val, oldVal) {
-        this.loadData()
+        if (this.$route.query.importTaskId) {
+          this.queryParam.importTaskId = this.$route.query.importTaskId
+          this.searchQuery()
+          history.pushState({}, '', '/order/orderList')
+        } else {
+          this.loadData()
+        }
       }
     }
   }
@@ -346,7 +525,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 0;
 
   .group {
     display: flex;
@@ -359,7 +538,7 @@ export default {
       margin-right: 10px;
       text-align: right;
       width: 80px;
-      flex: 0 0 75px;
+      flex: 0 0 100px;
     }
 
     .search-label {

@@ -32,7 +32,7 @@
           :disabled="dis"
           type="list"
           v-model="form.warehouseId"
-          dictCode="warehouse_manage, name, id"
+          dictCode="mms_warehouse_manage, name, id"
           placeholder="请选择出库仓库"
           change="onChange"
         />
@@ -480,7 +480,7 @@ export default {
       console.log(value)
       this.value = value
       const that = this;
-      this.$set(this.form, 'leaveAgency', ''); // clean the previous data if the sellUser or sellUserId changed
+      this.$set(this.form, 'leaveAgency', undefined); // clean the previous data if the sellUser or sellUserId changed
       fetch(value, data => {
           that.data = data;
           that.loadCooperatorData(value);

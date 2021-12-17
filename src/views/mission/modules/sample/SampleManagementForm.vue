@@ -25,8 +25,8 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="质控责任人" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="qcContactId">
-              <a-select v-model="form.qcContactId" placeholder="请选择质控负责人" @change="handleSelectChange">
-                <a-select-option v-for="item in userList" :key="item.id" :value="item.id">
+              <a-select v-model="form.qcContactUser" placeholder="请选择质控负责人" @change="handleSelectChange">
+                <a-select-option v-for="item in userList" :key="item.id" :value="item.username">
                   {{ item.realname }}
                 </a-select-option>
               </a-select>
@@ -34,8 +34,8 @@
           </a-col>
           <a-col :span="24">
             <div class="btn-group">
-              <a-button type="primary" icon="download" @click="downloadTpl()" :disabled="!tplUrl">下载模板</a-button>
-              <a-upload
+              <a-button type="primary" icon="download" @click="downloadTpl()">下载模板</a-button>
+              <!-- <a-upload
                 name="file"
                 v-has="'sampleTpl'"
                 :show-file-list="false"
@@ -43,7 +43,7 @@
                 :beforeUpload="beforeTplUpload"
               >
                 <a-button><a-icon type="upload" /> 上传模板</a-button>
-              </a-upload>
+              </a-upload> -->
             </div>
           </a-col>
           <a-col :span="24">
@@ -53,7 +53,7 @@
               :remove="handleRemove"
               :before-upload="beforeUpload"
             >
-              <a-button class="upload-btn" type="primary" icon="import">导入excel</a-button>
+              <a-button class="upload-btn" type="primary" icon="import">导入Excel</a-button>
 
               <p class="ant-upload-drag-icon">
                 <a-icon type="inbox" />
@@ -74,6 +74,7 @@ import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { putAction } from '@api/manage'
 import { addStockApply, getUserList, queryFileList, uploadFile } from 'src/api/mission/project'
+import { CommonSingleUpload } from '../../../../api/order/index'
 
 const ruleBaseURL = '/sys/fillRule/executeRuleByCode/'
 
@@ -117,7 +118,8 @@ export default {
       file: undefined,
       userList: [],
       tplUrl: '',
-      tplFile: undefined
+      tplFile: undefined,
+      fileInfoId: ''
     }
   },
   created() {
@@ -137,12 +139,31 @@ export default {
       let fileList = [...info.fileList]
       fileList = fileList.slice(-1)
       this.fileList = fileList
+      if (this.fileList.length > 0) {
+        const that = this
+        const formData = new FormData()
+        formData.append('file', info.file)
+        formData.append('code', '1000')
+        CommonSingleUpload(formData)
+          .then(res => {
+            if (res.success) {
+              that.$message.success(res.message)
+              that.fileInfoId = res.result.id
+            } else {
+              that.$message.error(res.message)
+            }
+          })
+          .catch(e => {
+            console.log(e)
+          })
+      }
     },
     handleRemove(file) {
       const index = this.fileList.indexOf(file)
       const newFileList = this.fileList.slice()
       newFileList.splice(index, 1)
       this.fileList = newFileList
+      this.fileInfoId = ''
     },
     beforeUpload(file) {
       this.fileList = [...this.fileList, file]
@@ -173,25 +194,23 @@ export default {
             that.confirmLoading = false
             return false
           }
-          const formData = new FormData()
-          formData.append('file', that.file)
           const apply = {
-            qcContactId: that.form.qcContactId,
-            batchNo: that.form.batchNo
+            qcContactUser: that.form.qcContactUser,
+            batchNo: that.form.batchNo,
+            fileInfoId: this.fileInfoId
           }
-          formData.append('apply', JSON.stringify(apply))
-          addStockApply(formData)
+          addStockApply(apply)
             .then(res => {
               if (res.success) {
                 that.fileList = []
-                that.$message.success('文件上传成功！')
+                that.$message.success(res.message)
                 that.$emit('ok')
               } else {
                 that.$message.error(res.message)
               }
             })
             .catch(e => {
-              that.$message.error('上传失败，请重新尝试！')
+              that.$message.error(res.message)
               that.confirmLoading = false
             })
             .finally(() => {
@@ -224,46 +243,40 @@ export default {
       })
     },
     downloadTpl() {
-      const tpl = this.tplUrl
-      if (!tpl) return false
-      const token = Vue.ls.get(ACCESS_TOKEN)
-      let link = document.createElement('a')
-      link.style.display = 'none'
-      link.href = `${Vue.prototype.API_BASE_URL}/mission/fileInfo/download?id=${tpl}&token=${token}`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      const token = this.$ls.get(ACCESS_TOKEN)
+      const url = `${window._CONFIG['domianURL']}/tailai-system/mission/fileInfo/downloadImportTemplate?token=${token}&type=${1}`
+      window.open(url, '_blank')
     },
     beforeTplUpload(file) {
       this.tplFile = file
       return true
     },
-    handleUploadfile(file) {
-      const { tplFile } = this
-      const formData = new FormData()
-      formData.append('file', tplFile)
-      const info = {
-        semanticType: 1,
-        ownershipType: 3,
-        ownerId: '0',
-        fileName: tplFile.name
-      }
-      formData.append('info', JSON.stringify(info))
-      uploadFile(formData)
-        .then(res => {
-          if (res.success) {
-            this.tplFile = undefined
-            this.$message.success('文件上传成功！')
-            file.onSuccess();
-          } else {
-            this.$message.error(res.message)
-            file.onError();
-          }
-        })
-        .catch(e => {
-          this.uploading = false
-        })
-    }
+    // handleUploadfile(file) {
+    //   const { tplFile } = this
+    //   const formData = new FormData()
+    //   formData.append('file', tplFile)
+    //   const info = {
+    //     semanticType: 1,
+    //     ownershipType: 3,
+    //     ownerId: '0',
+    //     fileName: tplFile.name
+    //   }
+    //   formData.append('info', JSON.stringify(info))
+    //   uploadFile(formData)
+    //     .then(res => {
+    //       if (res.success) {
+    //         this.tplFile = undefined
+    //         this.$message.success('文件上传成功！')
+    //         file.onSuccess();
+    //       } else {
+    //         this.$message.error(res.message)
+    //         file.onError();
+    //       }
+    //     })
+    //     .catch(e => {
+    //       this.uploading = false
+    //     })
+    // }
   },
   mounted() {
     this.getTpl()

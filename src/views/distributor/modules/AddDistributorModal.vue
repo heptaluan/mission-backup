@@ -169,7 +169,7 @@ export default {
   mixins: [mixinDevice],
   data() {
     return {
-      title: '创建渠道商',
+      title: '查看',
       width: 1200,
       visible: false,
       disableSubmit: false,
@@ -308,7 +308,7 @@ export default {
     edit(record) {
       if (record.id) {
         this.form = Object.assign({}, record)
-        this.loadHospitalList(record.id)
+         this.loadHospitalList(record.shortName)
         const address = []
         this.formDisabled = true
         address.push(record.provinceCode)
@@ -387,6 +387,7 @@ export default {
       const that = this
       const formData = new FormData()
       formData.append('file', file.file)
+      formData.append('code', '3000')
       uploadLogo(formData)
         .then(res => {
           if (res.success) {
@@ -403,6 +404,7 @@ export default {
           } else {
             that.$message.error(res.message)
             that.uploading = false
+            that.fileList = []
           }
         })
         .catch(e => {

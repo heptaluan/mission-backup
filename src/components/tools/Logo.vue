@@ -21,7 +21,7 @@
     props: {
       title: {
         type: String,
-        default: '多组学商检系统',
+        default: '泰莱生物商检系统',
         required: false
       },
       showTitle: {
@@ -48,6 +48,8 @@
       line-height: @height !important;
       box-shadow: none !important;
       transition: background 300ms;
+      padding-left: 0px;
+      text-align: center;
 
       a {
         color: white;

@@ -10,13 +10,13 @@
     @cancel="handleCancel"
   >
     <a-form-model ref="ruleForm" :model="form" :rules="validatorRules" style="width: 300px; margin: 20px auto 0;">
-      <a-form-model-item label="批次号" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="batchId">
+      <a-form-model-item label="批次号" prop="batchId">
         <a-input v-model="form.batchId" />
       </a-form-model-item>
-      <a-form-model-item label="用户名" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="userName">
+      <a-form-model-item label="用户名" prop="userName">
         <a-input v-model="form.userName" />
       </a-form-model-item>
-      <a-form-model-item label="密码" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="password">
+      <a-form-model-item label="密码" prop="password">
         <a-input v-model="form.password" />
       </a-form-model-item>
     </a-form-model>

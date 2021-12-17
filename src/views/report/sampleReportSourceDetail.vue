@@ -1,5 +1,15 @@
 <template>
   <a-card :bordered="false" class="report-detail">
+    <div class="edit-toolbar">
+      <a-dropdown-button>
+        报告结果版本
+        <a-menu slot="overlay" @click="handleMenuClick">
+          <a-menu-item key="1"> <a-icon type="appstore" /> 点内报告结果 </a-menu-item>
+          <a-menu-item key="2"> <a-icon type="appstore" /> 医院报告结果 </a-menu-item>
+          <a-menu-item key="3"> <a-icon type="appstore" /> 内部报告结果 </a-menu-item>
+        </a-menu>
+      </a-dropdown-button>
+    </div>
     <a-descriptions title="用户信息">
       <a-descriptions-item label="用户姓名">{{patientInfo.name}}</a-descriptions-item>
       <a-descriptions-item label="年龄">{{patientInfo.age}}</a-descriptions-item>
@@ -104,188 +114,197 @@
 </template>
 
 <script>
-export default {
-  name: 'sampleReportDetail',
-  components: {
-    // STable
-  },
-  data () {
-    return {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 6 },
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 16 },
-      },
-      imageColumns: [
-        {
-          title: '结节编号',
-          dataIndex: 'index',
-          key: 'index'
+  export default {
+    name: 'sampleReportDetail',
+    components: {
+      // STable
+    },
+    data () {
+      return {
+        labelCol: {
+          xs: { span: 24 },
+          sm: { span: 6 },
         },
-        {
-          title: '影像编号',
-          dataIndex: 'iamgeNumber',
-          key: 'iamgeNumber'
+        wrapperCol: {
+          xs: { span: 24 },
+          sm: { span: 16 },
         },
-        {
-          title: '结节形状',
-          dataIndex: 'shape',
-          key: 'shape'
+        imageColumns: [
+          {
+            title: '结节编号',
+            dataIndex: 'index',
+            key: 'index'
+          },
+          {
+            title: '影像编号',
+            dataIndex: 'iamgeNumber',
+            key: 'iamgeNumber'
+          },
+          {
+            title: '结节形状',
+            dataIndex: 'shape',
+            key: 'shape'
+          },
+          {
+            title: '结节大小',
+            dataIndex: 'size',
+            key: 'size'
+          },
+          {
+            title: '位置',
+            dataIndex: 'lung',
+            key: 'lung'
+          },
+          {
+            title: '直径',
+            dataIndex: 'diameter',
+            key: 'diameter'
+          },
+          {
+            title: '平均密度',
+            dataIndex: 'avgDensity',
+            key: 'avgDensity'
+          }
+        ],
+        patientInfo: {
+          name: '曹湧',
+          age: '52',
+          sampleCode: 'P02LA336',
+          sex: '女',
+          patientId: 'PCT0002145',
+          sendDoctor: '张伞',
+          clinical: '肺结节',
+          sendAgency: '山东省胸科医院',
+          sendDate: '20210915',
+          detectionMethod: '血液蛋白组学/代谢组学，以及医学影像等多组学技术'
         },
-        {
-          title: '结节大小',
-          dataIndex: 'size',
-          key: 'size'
+        singature: {
+          Inspector: '杨清婷',
+          Reviewer: '夏文军',
+          reportDate: '2021年9月22日'
         },
-        {
-          title: '位置',
-          dataIndex: 'lung',
-          key: 'lung'
+        dicomResult: {
+          total: 11,
+          imageList: []
         },
-        {
-          title: '直径',
-          dataIndex: 'diameter',
-          key: 'diameter'
+        report: {
+          reportDate: '2021-11-03',
+          ananpan:{
+            LC: '57.6',
+          }
         },
-        {
-          title: '平均密度',
-          dataIndex: 'avgDensity',
-          key: 'avgDensity'
-        }
-      ],
-      patientInfo: {
-        name: '曹湧',
-        age: '52',
-        sampleCode: 'P02LA336',
-        sex: '女',
-        patientId: 'PCT0002145',
-        sendDoctor: '张伞',
-        clinical: '肺结节',
-        sendAgency: '山东省胸科医院',
-        sendDate: '20210915',
-        detectionMethod: '血液蛋白组学/代谢组学，以及医学影像等多组学技术'
-      },
-      singature: {
-        Inspector: '杨清婷',
-        Reviewer: '夏文军',
-        reportDate: '2021年9月22日'
-      },
-      dicomResult: {
-        total: 11,
-        imageList: []
-      },
-      report: {
-        reportDate: '2021-11-03',
-        ananpan:{
-          LC: '57.6',
-        }
-      },
-      ModifyVisible: false,
-      mForm: {
+        ModifyVisible: false,
+        mForm: {
 
-      },
-      url: {
-        edit: '/report/sampleReportHistory/edit',
-        queryById: '/report/sampleReportSource/queryById'
-      },
-      validatorRules: {
-        lung: [{ required: true, message: '请选择肺!' }],
-        lungLobe: [{ required: true, message: '请输入肺叶!' }],
-        size: [{ required: true, message: '请输入大小!' }],
-        volume: [
-          { required: true, message: '请输入体积!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ],
-        shape: [{ required: true, message: '请选择形态类型!' }],
-        risk: [{ required: true, message: '请输入风险!' }],
-        diameter: [
-          { required: true, message: '请输入直径!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ],
-        centerDensity: [
-          { required: true, message: '请输入中心密度!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ],
-        avgDensity: [
-          { required: true, message: '请输入平均密度!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ],
-        maxDensity: [
-          { required: true, message: '请输入最大密度!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ],
-        minDensity: [
-          { required: true, message: '请输入最小密度!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ]
-      },
-      currImage: null,
-      confirmLoading: false
-    }
-  },
-  filters: {
-    statusFilter (status) {
-      const statusMap = {
-        'processing': '进行中',
-        'success': '完成',
-        'failed': '失败'
+        },
+        url: {
+          edit: '/report/sampleReportHistory/edit',
+          queryById: '/report/sampleReportSource/queryById'
+        },
+        validatorRules: {
+          lung: [{ required: true, message: '请选择肺!' }],
+          lungLobe: [{ required: true, message: '请输入肺叶!' }],
+          size: [{ required: true, message: '请输入大小!' }],
+          volume: [
+            { required: true, message: '请输入体积!' },
+            { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+          ],
+          shape: [{ required: true, message: '请选择形态类型!' }],
+          risk: [{ required: true, message: '请输入风险!' }],
+          diameter: [
+            { required: true, message: '请输入直径!' },
+            { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+          ],
+          centerDensity: [
+            { required: true, message: '请输入中心密度!' },
+            { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+          ],
+          avgDensity: [
+            { required: true, message: '请输入平均密度!' },
+            { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+          ],
+          maxDensity: [
+            { required: true, message: '请输入最大密度!' },
+            { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+          ],
+          minDensity: [
+            { required: true, message: '请输入最小密度!' },
+            { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+          ]
+        },
+        currImage: null,
+        confirmLoading: false
       }
-      return statusMap[status]
-    }
-  },
-  computed: {
-    title () {
-      return this.$route.meta.title
-    }
-  },
-  mounted () {
-    this.init()
-  },
-  methods: {
-    init () {
-      this.dicomResult.imageList = []
-      const random = (max) =>{
-        return Math.floor(Math.random() * max)
-      }
-      const randomFix = (max, min = 0) =>{
-        const _random = Math.floor(Math.random() * max * 100 + min * 100) / 100
-        return _random
-      }
-      const getShape = ()=> {
-        const shapeArr = ['胸膜钙化', '磨玻璃', '肺内实性']
-        const index = Math.floor(Math.random() * 3)
-        return shapeArr[index]
-      }
-      for (let i = 0; i < this.dicomResult.total; i++) {
-        const _random = random(50) + 20
-        const pn = _random % 2 === 0 ? 1 : -1
-        const result = {
-          index: i + 1,
-          iamgeNumber: _random + i,
-          risk: _random,
-          url: require('/src/views/report/template/resource/result.jpg'),
-          diameter: random(1000) / 100,
-          minDensity: pn *(randomFix(100, 100)),
-          maxDensity: pn *(randomFix(300,700)),
-          avgDensity: pn *(randomFix(200, 500)),
-          centerDensity: pn *(randomFix(100, 500)),
-          shape: getShape(),
-          size:  randomFix(10, 0) + 'mm*' + randomFix(10, 0) + 'mm',
-          lung: pn > 0 ? '左肺' : '右肺',
-          lungLobe: pn > 0 ? '上肺叶' : '下肺叶',
-          volume: randomFix(10, 0)
+    },
+    filters: {
+      statusFilter (status) {
+        const statusMap = {
+          'processing': '进行中',
+          'success': '完成',
+          'failed': '失败'
         }
-        this.dicomResult.imageList.push(result)
+        return statusMap[status]
+      }
+    },
+    computed: {
+      title () {
+        return this.$route.meta.title
+      }
+    },
+    mounted () {
+      this.init()
+    },
+    methods: {
+      init () {
+        this.dicomResult.imageList = []
+        const random = (max) =>{
+          return Math.floor(Math.random() * max)
+        }
+        const randomFix = (max, min = 0) =>{
+          const _random = Math.floor(Math.random() * max * 100 + min * 100) / 100
+          return _random
+        }
+        const getShape = ()=> {
+          const shapeArr = ['胸膜钙化', '磨玻璃', '肺内实性']
+          const index = Math.floor(Math.random() * 3)
+          return shapeArr[index]
+        }
+        for (let i = 0; i < this.dicomResult.total; i++) {
+          const _random = random(50) + 20
+          const pn = _random % 2 === 0 ? 1 : -1
+          const result = {
+            index: i + 1,
+            iamgeNumber: _random + i,
+            risk: _random,
+            url: require('/src/views/report/template/resource/result.jpg'),
+            diameter: random(1000) / 100,
+            minDensity: pn *(randomFix(100, 100)),
+            maxDensity: pn *(randomFix(300,700)),
+            avgDensity: pn *(randomFix(200, 500)),
+            centerDensity: pn *(randomFix(100, 500)),
+            shape: getShape(),
+            size:  randomFix(10, 0) + 'mm*' + randomFix(10, 0) + 'mm',
+            lung: pn > 0 ? '左肺' : '右肺',
+            lungLobe: pn > 0 ? '上肺叶' : '下肺叶',
+            volume: randomFix(10, 0)
+          }
+          this.dicomResult.imageList.push(result)
+        }
+      },
+      handleMenuClick(e) {
+        console.log('click', e)
       }
     }
   }
-}
 </script>
 <style lang="less">
   .report-detail {
+    position: relative;
+    .edit-toolbar {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+    }
     .title {
       color: rgba(0, 0, 0, .85);
       font-size: 16px;
@@ -372,13 +391,6 @@ export default {
       .item-content-info {
         flex: 1;
         padding: 15px;
-      }
-
-      .edit-toolbar {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        display: none;
       }
     }
 

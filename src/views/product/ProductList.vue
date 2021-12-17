@@ -4,21 +4,23 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24" class="search-group">
-          <div class="group">
-            <div class="title">产品名称：</div>
-            <a-input allowClear v-model="queryParam.productName" placeholder="请输入产品名称"></a-input>
-          </div>
-          <div class="group">
-            <label class="search-label">产品组：</label>
-            <j-dict-select-tag
-              allowClear
-              style="width:150px;"
-              type="list"
-              dictCode="product_group_type"
-              placeholder="请选择产品组"
-              v-model="queryParam.productGroup"
-            />
-          </div>
+          <a-col class="group">
+            <a-form-item label="产品名称" :labelCol="{ span: 4 }">
+              <a-input allowClear v-model="queryParam.productName" placeholder="请输入产品名称"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group">
+            <a-form-item label="产品组" :labelCol="{ span: 4 }">
+              <j-dict-select-tag
+                allowClear
+                style="width:150px;"
+                type="list"
+                dictCode="product_group_type"
+                placeholder="请选择产品组"
+                v-model="queryParam.productGroup"
+              />
+            </a-form-item>
+          </a-col>
           <!-- <div class="group">
             <label class="search-label">样本：</label>
             <j-dict-select-tag
@@ -30,8 +32,10 @@
               v-model="queryParam.includeSample"
             />
           </div> -->
-          <a-button @click="resetQuery" type="primary" style="margin-right:10px;">重置</a-button>
-          <a-button @click="searchQuery" type="primary">搜索</a-button>
+          <a-col class="group btn">
+            <a-button @click="searchQuery" type="primary">搜索</a-button>
+            <a-button @click="resetQuery" style="margin-left:10px;">重置</a-button>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -284,7 +288,6 @@ export default {
 </script>
 
 <style scoped lang="less" scoped>
-@import '~@assets/less/common.less';
 .search-group {
   display: flex;
   justify-content: flex-start;

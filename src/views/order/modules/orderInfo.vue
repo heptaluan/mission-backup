@@ -15,23 +15,6 @@
             </a-radio>
           </a-radio-group>
         </a-form-model-item>
-        <!-- <a-form-model-item label="二代测序（NGS）" prop="caseName">
-          <a-radio-group>
-            <a-radio value="1">非小细胞肺癌22基因（组织）</a-radio>
-            <a-radio value="1">非小细胞肺癌22基因（血液）</a-radio>
-            <a-radio value="1">非小细胞肺癌80基因（组织）</a-radio>
-            <a-radio value="1">非小细胞肺癌80基因（血液）</a-radio>
-            <a-radio value="1">实体瘤160基因（组织）</a-radio>
-            <a-radio value="1">实体瘤160基因（血液）</a-radio>
-            <a-radio value="1">实体瘤600基因（组织+血液）</a-radio>
-            <a-radio value="1">实体瘤600基因（血液）</a-radio>
-          </a-radio-group>
-        </a-form-model-item>
-        <a-form-model-item label="免疫组化（IHC）" prop="caseName">
-          <a-radio-group>
-            <a-radio value="1">DP-L1（DAKO22C3或28-8）</a-radio>
-          </a-radio-group>
-        </a-form-model-item> -->
       </div>
 
       <h3 class="order-title">样本信息</h3>
@@ -71,7 +54,7 @@
                 @change="handleListContentChange(key)"
                 v-model="item.amount"
                 v-if="item.inputOne"
-                :min="0"
+                :min="min"
                 placeholder="请输入管数"
               />
               <span v-if="item.inputOne" class="item-text">{{ item.inputOne }}</span>
@@ -225,7 +208,8 @@ export default {
       detectId: '',
       addressList: [],
       data: [],
-      value: undefined
+      value: undefined,
+      min: 0
     }
   },
   props: {
@@ -293,31 +277,34 @@ export default {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           for (let i = 0; i < this.sampleTypeList.length; i++) {
-            if (this.sampleTypeList[i].checked && !this.sampleTypeList[i].amount) {
-              this.$message.warning(`请输入正确的样本数量！`)
-              return
-            } else if (this.sampleTypeList[i].checked && !/^[1-9]\d*$/.test(this.sampleTypeList[i].amount)) {
-              this.$message.warning(`请输入正确的样本数量！`)
+            if (!this.sampleTypeList[i].checked) {
+              continue
+            }
+            if (!this.sampleTypeList[i].amount) {
+              this.$message.warning(`请输入样本数量`)
               return
             }
 
-            if (this.sampleTypeList[i].checked && !this.sampleTypeList[i].collectTime) {
-              this.$message.warning(`请选择样本采集时间！`)
+            if (!this.sampleTypeList[i].collectTime) {
+              this.$message.warning(`请选择样本采集时间`)
               return
             }
 
-            if (this.sampleTypeList[i].checked && !this.sampleTypeList[i].createTime) {
-              this.$message.warning(`请选择样本寄送时间！`)
+            if (!this.sampleTypeList[i].createTime) {
+              this.$message.warning(`请选择样本寄送时间`)
+              return
+            }
+            if (this.sampleTypeList[i].collectTime > this.sampleTypeList[i].createTime) {
+              this.$message.warning(`样本寄送时间不能早于采集时间`)
+              return
+            }
+            if (!this.sampleTypeList[i].emsCompany) {
+              this.$message.warning(`请选择快递公司`)
               return
             }
 
-            if (this.sampleTypeList[i].checked && !this.sampleTypeList[i].emsCompany) {
-              this.$message.warning(`请选择快递公司！`)
-              return
-            }
-
-            if (this.sampleTypeList[i].checked && !this.sampleTypeList[i].emsNumber) {
-              this.$message.warning(`请输入快递单号！`)
+            if (!this.sampleTypeList[i].emsNumber) {
+              this.$message.warning(`请输入快递单号`)
               return
             }
           }

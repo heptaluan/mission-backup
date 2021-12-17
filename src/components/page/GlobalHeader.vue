@@ -17,7 +17,7 @@
         :type="collapsed ? 'menu-unfold' : 'menu-fold'"
         @click="toggle"/>
 
-      <span v-if="device === 'desktop'">欢迎进入泰莱生物多组学管理系统</span>
+      <span v-if="device === 'desktop'">欢迎进入泰莱生物商检系统</span>
       <span v-else>Jeecg-Boot</span>
 
       <user-menu :theme="theme"/>

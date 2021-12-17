@@ -1,13 +1,13 @@
 <template>
   <a-card :bordered="false">
     <a-form layout="inline" @keyup.enter.native="searchQuery">
-      <div class="search-group">
-        <div class="group">
+      <a-row class="search-group">
+        <a-col class="group md">
           <a-form-item label="入库时间">
             <j-date
               v-model="queryParam.createTime_begin"
               :showTime="true"
-              date-format="YYYY-MM-DD HH:mm:ss"
+              date-format="YYYY-MM-DD"
               style="width:45%"
               placeholder="请选择开始时间"
             ></j-date>
@@ -15,15 +15,28 @@
             <j-date
               v-model="queryParam.createTime_end"
               :showTime="true"
-              date-format="YYYY-MM-DD HH:mm:ss"
+              date-format="YYYY-MM-DD"
               style="width:45%"
               placeholder="请选择结束时间"
             ></j-date>
           </a-form-item>
-        </div>
-        <a-button @click="resetQuery" type="primary">重置</a-button>
-        <a-button @click="searchQuery" type="primary">查询</a-button>
-      </div>
+        </a-col>
+        <a-col class="group md">
+          <a-form-item label="状态" :labelCol="{ span: 4 }">
+            <j-dict-select-tag
+              allowClear
+              type="list"
+              dictCode="sample_qc_status"
+              placeholder="请选择样本状态"
+              v-model="queryParam.status"
+            />
+          </a-form-item>
+        </a-col>
+        <a-col class="group">
+          <a-button @click="searchQuery" type="primary">查询</a-button>
+          <a-button @click="resetQuery" >重置</a-button>
+        </a-col>
+      </a-row>
     </a-form>
 
     <!-- 操作按钮区域 -->
@@ -245,11 +258,11 @@ export default {
 </script>
 <style scoped lang="less">
 .btn-group {
-  display: flex;
-  justify-content: space-evenly;
+display: flex;
+justify-content: space-evenly;
 }
 
 .ant-radio-group {
-  padding-left: 15px;
+padding-left: 15px;
 }
 </style>

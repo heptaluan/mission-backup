@@ -54,7 +54,7 @@
         <div class="progress-item" v-for="(list, index) in childOrder" :key="index">
           <div class="progress-item-title">
             <label class="text-weight">{{ list.title }}</label>
-            <span>订单号：{{ list.orderId }}</span>
+            <span> 订单号：{{ list.orderId }}</span>
             <label class="responsible">责任人：</label>
             <span>{{ list.responsible }}</span>
           </div>
@@ -184,6 +184,7 @@ export default {
     },
     formatInstance(res) {
       const instanceHistoryStates = res.result.instance.historyStates
+      this.orderProgressValue = (instanceHistoryStates.length / 4) * 100
       for (let i = 0; i < instanceHistoryStates.length; i++) {
         this.orderProgressList[i].title = instanceHistoryStates[i].productMilestone_dictText
         this.orderProgressList[i].text = instanceHistoryStates[i].stateResult_dictText
@@ -247,7 +248,7 @@ export default {
       Promise.all([stepOne, stepTwo]).then(values => {
         if (values[0].code === 200 && values[1].code === 200) {
           const baseInfoList = values[0].result
-          const orderInfoList = values[1].result[0]
+          const orderInfoList = values[1].result
           that.baseInfo = {
             name: baseInfoList.caseName,
             sex: baseInfoList.gender === 0 ? '女' : '男',

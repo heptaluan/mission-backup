@@ -4,14 +4,16 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24" class="search-group">
-          <div class="group">
-            <div class="title">地址名称：</div>
-            <a-input allowClear v-model="queryParam.addressName" placeholder="请输入名称"></a-input>
-          </div>
-          <div class="group">
-            <div class="title">地址详情：</div>
-            <a-input allowClear v-model="queryParam.address" placeholder="请选择性别"></a-input>
-          </div>
+          <a-col class="group">
+            <a-form-item label="地址名称">
+              <a-input allowClear v-model="queryParam.addressName" placeholder="请输入名称"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group">
+            <a-form-item label="地址详情">
+              <a-input allowClear v-model="queryParam.address" placeholder="请输入地址详情"></a-input>
+            </a-form-item>
+          </a-col>
           <!-- <div class="group">
             <label class="search-label">地区</label>
             <j-dict-select-tag
@@ -23,8 +25,10 @@
               v-model="queryParam.status"
             />
           </div> -->
-          <a-button @click="resetQuery" type="primary">重置</a-button>
-          <a-button @click="searchQuery" type="primary">搜索</a-button>
+          <a-col class="group btn">
+            <a-button @click="searchQuery" type="primary">搜索</a-button>
+            <a-button @click="resetQuery">重置</a-button>
+          </a-col>
         </a-row>
       </a-form>
     </div>

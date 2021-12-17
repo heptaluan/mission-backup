@@ -228,7 +228,7 @@
         fieldList.push({type:'string',value:'emsNo',text:'快递单号',dictCode:''})
         fieldList.push({type:'string',value:'signInId',text:'签收人',dictCode:''})
         fieldList.push({type:'int',value:'maNumbers',text:'入库数量',dictCode:''})
-        fieldList.push({type:'string',value:'warehouseId',text:'仓库',dictCode:'warehouse_manage,name,id'})
+        fieldList.push({type:'string',value:'warehouseId',text:'仓库',dictCode:'mms_warehouse_manage,name,id'})
         fieldList.push({type:'date',value:'putinTime',text:'入库时间'})
         fieldList.push({type:'int',value:'piStatus',text:'入库状态',dictCode:''})
         fieldList.push({type:'date',value:'auditTime',text:'审核时间'})

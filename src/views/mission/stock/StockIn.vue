@@ -4,37 +4,46 @@
     <div class="table-page-search-wrapper">
       <!-- 搜索区域 -->
       <a-form layout="inline" @keyup.enter.native="searchQuery">
-        <a-row :gutter="24">
-          <a-col :md="8" :sm="8">
-            <a-form-item label="批次号" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
-              <a-input placeholder="请输入批次号" v-model="queryParam.batchNo"></a-input>
+        <a-row :gutter="24" class="search-group">
+          <a-col class="group sm">
+            <a-form-item label="入库单号" :labelCol="{ span: 8 }">
+              <a-input placeholder="请输入入库单号" v-model="queryParam.batchNo"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="8" :sm="12">
-            <a-form-item label="入库时间" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+          <a-col class="group md">
+            <a-form-item label="入库时间" :labelCol="{ span: 5 }">
               <j-date
                 v-model="queryParam.createTime_begin"
                 :showTime="true"
-                date-format="YYYY-MM-DD HH:mm:ss"
-                style="width:45%"
+                date-format="YYYY-MM-DD"
                 placeholder="请选择开始时间"
               ></j-date>
-              <span style="width: 10px;">~</span>
+              <span style="width: 10px;"> - </span>
               <j-date
                 v-model="queryParam.createTime_end"
                 :showTime="true"
-                date-format="YYYY-MM-DD HH:mm:ss"
-                style="width:45%"
+                date-format="YYYY-MM-DD"
                 placeholder="请选择结束时间"
               ></j-date>
             </a-form-item>
           </a-col>
-          <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-            <a-col :md="12" :sm="24">
-              <a-button type="primary" @click="searchQuery" icon="search" style="margin-left: 21px">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-            </a-col>
-          </span>
+          <a-col class="group sm" >
+            <a-form-item label="状态" :labelCol="{ span: 5 }">
+              <a-select v-model="queryParam.status" placeholder="请选择产品状态">
+                <a-select-option
+                  v-for="item in productStatus"
+                  :key="item.key"
+                  :value="item.key"
+                >
+                  {{ item.value }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col class="group btn">
+            <a-button type="primary" @click="searchQuery">查询</a-button>
+            <a-button @click="searchReset">重置</a-button>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -124,7 +133,7 @@ export default {
           }
         },
         {
-          title: '批次号/入库单号',
+          title: '入库单号',
           align: 'center',
           dataIndex: 'batchNo'
         },
@@ -163,7 +172,14 @@ export default {
         deleteBatch: '/mission/materialManagement/stock/comeApply/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/stock/comeApply/exportXls',
         importExcelUrl: 'mission/materialManagement/stock/comeApply/importExcel'
-      }
+      },
+      productStatus: [
+        // {key: 0, value: '启用'},
+        {key: 1, value: '已创建'},
+        {key: 2, value: '待审核'},
+        {key: 3, value: '通过'},
+        {key: 4, value: '退回'},
+      ]
     }
   },
   computed: {

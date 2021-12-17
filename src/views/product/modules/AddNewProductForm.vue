@@ -109,6 +109,7 @@
 </template>
 
 <script>
+
 import { uploadLogo, addProductInfoList, updateProductInfoList, bindSample } from '../../../api/product/index'
 import { httpAction } from '@/api/manage'
 import Vue from 'vue'
@@ -301,6 +302,7 @@ export default {
       const that = this
       const formData = new FormData()
       formData.append('file', file.file)
+      formData.append('code', '3000')
       uploadLogo(formData)
         .then(res => {
           if (res.success) {

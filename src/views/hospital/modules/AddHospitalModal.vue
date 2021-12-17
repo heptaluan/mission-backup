@@ -14,6 +14,9 @@
         <a-form-model-item label="医院名称" prop="hospitalName">
           <a-input :disabled="formDisabled" placeholder="请输入医院名称" v-model="form.hospitalName" />
         </a-form-model-item>
+        <a-form-model-item label="医院简称" prop="shortName">
+          <a-input :disabled="formDisabled" placeholder="请输入医院简称" v-model="form.shortName" />
+        </a-form-model-item>
         <a-form-model-item label="科室" prop="department">
           <a-input :disabled="formDisabled" placeholder="请输入科室" v-model="form.department" />
         </a-form-model-item>
@@ -89,7 +92,6 @@
 import { uploadLogo, addBusinessAccess, getDistributorList, addBusinessHospital } from '../../../api/product/index'
 import { mixinDevice } from '@/utils/mixin'
 import options from '../../../../src/mixins/cities'
-import { queryRoleUsers } from '../../../api/material/index'
 
 function getBase64(file) {
   return new Promise((resolve, reject) => {
@@ -118,6 +120,7 @@ export default {
       form: {},
       rules: {
         hospitalName: [{ required: true, message: '请输入医院名称', trigger: 'blur' }],
+        shortName: [{ required: true, message: '请输入医院简称', trigger: 'blur' }],
         department: [{ required: true, message: '请输入科室', trigger: 'blur' }],
         contactDoctor: [{ required: true, message: '请输入联系医生', trigger: 'blur' }],
         contactPhone: [
@@ -231,6 +234,7 @@ export default {
       const that = this
       const formData = new FormData()
       formData.append('file', file.file)
+      formData.append('code', '3000')
       uploadLogo(formData)
         .then(res => {
           if (res.success) {
@@ -247,6 +251,7 @@ export default {
           } else {
             that.$message.error(res.message)
             that.uploading = false
+            that.fileList = []
           }
         })
         .catch(e => {

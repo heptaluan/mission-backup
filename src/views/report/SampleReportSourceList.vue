@@ -100,8 +100,8 @@
 
         <span slot="action" slot-scope="text, record">
           <a @click="handleDetail(record)">详情</a>
-           <a-divider type="vertical" />
-          <a @click="handleDetail(record)">详情</a>
+<!--           <a-divider type="vertical" />-->
+<!--          <a @click="handleDetail(record)">详情</a>-->
 
           <!--
           <a-dropdown>

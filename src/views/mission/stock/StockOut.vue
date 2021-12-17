@@ -4,42 +4,85 @@
     <div class="table-page-search-wrapper">
       <!-- 搜索区域 -->
       <a-form layout="inline" @keyup.enter.native="searchQuery">
-        <a-row :gutter="24">
-          <a-col :md="8" :sm="12">
-            <a-form-item label="创建时间" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+        <a-row :gutter="24" class="search-group">
+          <a-col class="group">
+            <a-form-item label="创建人">
+              <a-input allowClear v-model="queryParam.createBy" placeholder="请输入创建人名称"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group md">
+            <a-form-item label="销售:" :labelCol="{ span: 6 }">
+              <a-select
+                show-search
+                allow-clear
+                :value="sellUserId"
+                placeholder="输入关联销售进行检索"
+                :default-active-first-option="false"
+                :show-arrow="false"
+                :filter-option="false"
+                :not-found-content="null"
+                @search="handleSellSearch"
+                @change="handleSellChange"
+              >
+                <a-select-option v-for="item in sellData" :key="item.id" :value="item.username">
+                  {{ item.realname }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col class="group sm">
+            <a-form-model-item label="订单客户" prop="leaveAgency" class="order-label"  :labelCol="{ span: 6 }">
+              <a-select v-model="queryParam.leaveAgency" placeholder="请选择订单客户">
+                <a-select-option v-for="item in cooperationList" :key="item.id" :value="item.shortName">
+                  {{ item.accessName }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col class="group sm">
+            <a-form-model-item label="出库仓库" prop="warehouseId" :labelCol="{ span: 6 }">
+              <j-dict-select-tag
+                type="list"
+                v-model="queryParam.warehouseId"
+                dictCode="warehouse_manage, name, id"
+                placeholder="请选择出库仓库"
+                change="onChange"
+              />
+            </a-form-model-item>
+          </a-col>
+          <a-col class="group sm">
+            <a-form-item label="订单时间" :labelCol="{ span: 5 }">
               <j-date
                 v-model="queryParam.createTime_begin"
                 :showTime="true"
-                date-format="YYYY-MM-DD HH:mm:ss"
-                style="width:45%"
+                date-format="YYYY-MM-DD"
                 placeholder="请选择开始时间"
               ></j-date>
               <span style="margin: 0 10px;">~</span>
               <j-date
                 v-model="queryParam.createTime_end"
                 :showTime="true"
-                date-format="YYYY-MM-DD HH:mm:ss"
-                style="width:45%"
+                date-format="YYYY-MM-DD"
                 placeholder="请选择结束时间"
               ></j-date>
             </a-form-item>
           </a-col>
-          <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-            <a-col :md="12" :sm="24">
-              <a-button type="primary" @click="searchQuery" icon="search" style="margin-left: 21px">查询</a-button>
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-            </a-col>
-          </span>
+          <a-col class="group btn">
+            <a-button type="primary" @click="searchQuery">查询</a-button>
+            <a-button @click="resetQuery">重置</a-button>
+          </a-col>
         </a-row>
       </a-form>
     </div>
     <!-- 操作按钮区域 -->
     <div class="table-operator" style="margin: 5px 0 10px 2px">
-      <a-button @click="handleStockOut" type="primary" icon="download" v-has="'stockOut'">创建出库订单</a-button>
+      <a-button @click="handleStockOut" type="primary" icon="download" v-has="'stockOut'">创建耗材订单</a-button>
       <!--      <a-upload name="file" :showUploadList="false" :multiple="false" :headers="tokenHeader" :action="importExcelUrl" @change="handleImportExcel">-->
       <!--        <a-button type="primary" icon="import">导入</a-button>-->
       <!--      </a-upload>-->
-      <a-button type="primary" icon="download" @click="handleExportXls('出库管理')">导出Excel</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls(`导出耗材订单${currentTime}`)"
+        >导出Excel</a-button
+      >
     </div>
     <!-- table区域-begin -->
     <a-table
@@ -93,6 +136,46 @@ import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { filterMultiDictText } from '@/components/dict/JDictSelectUtil'
 import StockOutModal from 'src/views/mission/materialManagement/StockOutModal'
+import { getDistributorList } from '../../../api/product'
+import { queryRoleUsers } from '../../../api/material'
+
+function sellFetch(value, callback) {
+  let timeout
+  let currentValue
+
+  if (timeout) {
+    clearTimeout(timeout)
+    timeout = null
+  }
+  currentValue = value
+
+  function fake() {
+    queryRoleUsers({
+      role: 'sales_omics',
+      name: value
+    }).then(res => {
+      if (res.success) {
+        if (currentValue === value) {
+          const result = res.result
+          const data = []
+          result.forEach(r => {
+            data.push({
+              key: r.id,
+              realname: r.realname,
+              username: r.username,
+              id: r.id
+            })
+          })
+          callback(data)
+        }
+      } else {
+        console.log(res.message)
+      }
+    })
+  }
+
+  timeout = setTimeout(fake, 300)
+}
 
 export default {
   name: 'StockOut',
@@ -179,7 +262,12 @@ export default {
         delete: '/mission/materialManagement/stock/leaveApply/delete',
         deleteBatch: '/mission/materialManagement/stock/leaveApply/deleteBatch',
         exportXlsUrl: '/mission/materialManagement/exportLeaveApply',
-      }
+      },
+      cooperationList: null,
+      currentTime: '',
+      sellData: [],
+      user: null,
+      sellUserId: undefined,
     }
   },
   computed: {
@@ -199,6 +287,60 @@ export default {
     },
     handleStockOut() {
       this.$refs.stockOutModal.show()
+    },
+    handleSellSearch(value) {
+      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+        sellFetch(value, data => (this.sellData = data))
+      }
+    },
+    handleSellChange(value) {
+      this.sellUserId = value
+      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+        sellFetch(value, data => (this.sellData = data))
+      }
+      this.$set(this.queryParam, 'leaveAgency', undefined)
+      if (value) {
+        this.queryParam.sellUserId = value
+        this.loadDistributorList(value)
+      }
+    },
+    loadDistributorList() {
+      const that = this
+      getDistributorList().then(res => {
+        if (res.success) {
+          that.cooperationList = res.result.records
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+    getCurrentTime() {
+      let yy = new Date().getFullYear()
+      let mm = new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() + 1 : new Date().getMonth() + 1
+      let dd = new Date().getDate() < 10 ? '0' + new Date().getDate() : new Date().getDate()
+      let hh = new Date().getHours() < 10 ? '0' + new Date().getHours() : new Date().getHours()
+      let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()
+      let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds() : new Date().getSeconds()
+      yy = yy.toString()
+      mm = mm.toString()
+      dd = dd.toString()
+      hh = hh.toString()
+      mf = mf.toString()
+      ss = ss.toString()
+      this.currentTime = yy + mm + dd + hh + mf + ss
+    },
+    resetQuery() {
+      this.queryParam = {}
+      this.sellUserId = null;
+      this.loadData()
+    }
+  },
+  mounted() {
+    this.getCurrentTime();
+    this.user = this.$store.state.user.info;
+    this.loadDistributorList();
+    if (this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics')) {
+      this.sellData = [this.user]
     }
   }
 }

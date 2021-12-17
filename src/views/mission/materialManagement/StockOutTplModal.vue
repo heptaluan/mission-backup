@@ -234,12 +234,12 @@ export default {
       })
     },
     editCallback(record, index) {
-      const sampleTypeList = this.getDictItemsFromCache('sample_type')
+      // const sampleTypeList = this.getDictItemsFromCache('sample_type')
+      // newDataSource[index].sampleTypeName = sampleTypeList[record.sampleType].text
+      // newDataSource[index].materialId = newDataSource[index].id
+      // newDataSource[index].id = null
       const newDataSource = [...this.dataSource]
       newDataSource[index] = record
-      // newDataSource[index].sampleTypeName = sampleTypeList[record.sampleType].text
-      newDataSource[index].materialId = newDataSource[index].id
-      newDataSource[index].id = null
       this.dataSource = newDataSource
     },
     handleDelete(index) {
@@ -296,16 +296,16 @@ export default {
 
             if (this.id) {
               postData.materialPlanItemList.push({
-                ...this.dataSource[i]
+                ...this.dataSource[i],
+                planId: this.id,
+                materialId: this.dataSource[i].materialId,
+                planType: 1
               })
-              postData.materialPlanItemList.planId = this.id
-              postData.materialPlanItemList.materialId = this.dataSource[i].materialId
-              postData.materialPlanItemList.planType = 1
             } else {
               postData.materialPlanItemList.push({
-                ...this.dataSource[i]
+                ...this.dataSource[i],
+                materialId: this.dataSource[i].materialId
               })
-              postData.materialPlanItemList.materialId = this.dataSource[i].materialId
             }
           }
 

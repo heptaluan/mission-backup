@@ -42,7 +42,7 @@
             :disabled="dis"
             type="list"
             v-model="form.type"
-            dictCode="warehouse_manage, name, id"
+            dictCode="mms_warehouse_manage, name, id"
             placeholder="请选择入库仓库"
           />
         </a-form-model-item>

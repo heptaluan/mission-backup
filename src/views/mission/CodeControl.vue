@@ -1,14 +1,67 @@
 <template>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper">
-      <a-form @keyup.enter.native="searchQuery">
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24" class="search-group">
-          <div class="group">
-            <div class="title">出库单编号：</div>
-            <a-input allowClear v-model="queryParam.leaveApplyId" placeholder="请输入出库单编号" @change="onChange"></a-input>
-          </div>
-          <a-button @click="resetQuery" type="primary">重置</a-button>
-          <a-button @click="searchQuery" type="primary">查询</a-button>
+          <a-col class="group md">
+            <a-form-item label="耗材订单编号" >
+              <a-input
+                allowClear
+                v-model="queryParam.leaveApplyId"
+                placeholder="请输入耗材订单编号"
+                @change="onChange"
+              ></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group md">
+            <a-form-item label="创建时间">
+              <j-date
+                v-model="queryParam.updateTime_begin"
+                :showTime="true"
+                date-format="YYYY-MM-DD"
+                placeholder="请选择开始时间"
+              ></j-date>
+              <span style="width: 10px;"> - </span>
+              <j-date
+                v-model="queryParam.updateTime_end"
+                :showTime="true"
+                c
+                placeholder="请选择结束时间"
+              ></j-date>
+            </a-form-item>
+          </a-col>
+          <a-col class="group md">
+            <a-form-item label="销售:" :labelCol="{ span: 6 }">
+              <a-select
+                show-search
+                :value="sellValue"
+                placeholder="输入关联销售进行检索"
+                :default-active-first-option="false"
+                :show-arrow="false"
+                :filter-option="false"
+                :not-found-content="null"
+                @search="handleSellSearch"
+                @change="handleSellChange"
+              >
+                <a-select-option v-for="item in sellData" :key="item.id" :value="item.username">
+                  {{ item.realname }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col class="group md">
+            <a-form-item label="客户" prop="sendAccess" class="order-label">
+              <a-select style="width:200px;" v-model="queryParam.agencyId" placeholder="请选择客户">
+                <a-select-option v-for="item in distributorList" :key="item.id" :value="item.shortName">
+                  {{ item.accessName }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col class="group btn">
+            <a-button @click="searchQuery" type="primary">查询</a-button>
+            <a-button @click="resetQuery">重置</a-button>
+          </a-col>
           <!-- <div class="group">
             <div class="title">项目：</div>
             <j-dict-select-tag v-model="queryParam.projectId" dictCode="project_info, project_name, id, logical_state=1" placeholder="请选择项目组" style="width: 180px"></j-dict-select-tag>
@@ -70,6 +123,47 @@ import { JeecgListMixin } from '@/mixins/JeecgListMixinForMount'
 import CodeControlModal from './modules/sample/CodeControlModal'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { queryRoleUsers } from '../../api/material'
+import { getDistributorList } from '../../api/product/index'
+
+function sellFetch(value, callback) {
+  let timeout
+  let currentValue
+
+  if (timeout) {
+    clearTimeout(timeout)
+    timeout = null
+  }
+  currentValue = value
+
+  function fake() {
+    queryRoleUsers({
+      role: 'sales_omics',
+      name: value
+    }).then(res => {
+      if (res.success) {
+        if (currentValue === value) {
+          const result = res.result
+          const data = []
+          result.forEach(r => {
+            data.push({
+              key: r.id,
+              realname: r.realname,
+              username: r.username,
+              id: r.id
+            })
+          })
+          callback(data)
+        }
+      } else {
+        console.log(res.message)
+      }
+    })
+  }
+
+  timeout = setTimeout(fake, 300)
+}
+
 
 export default {
   name: 'CodeControl',
@@ -97,12 +191,12 @@ export default {
           }
         },
         {
-          title: '出库单编号',
+          title: '耗材订单编号',
           align: 'center',
           dataIndex: 'leaveApplyId'
         },
         {
-          title: '机构名称',
+          title: '客户',
           align: 'center',
           dataIndex: 'agencyId_dictText'
         },
@@ -131,9 +225,9 @@ export default {
           }
         },
         {
-          title: '更新时间',
+          title: '创建时间',
           align: 'center',
-          dataIndex: 'updateTime'
+          dataIndex: 'createTime'
         },
         {
           title: '状态',
@@ -158,7 +252,12 @@ export default {
       ],
       url: {
         list: `mission/codeManagement/list`
-      }
+      },
+      distributorList: [],
+      sellData: [],
+      user: null,
+      hospitalList: [],
+      sellValue: undefined,
     }
   },
   computed: {
@@ -181,12 +280,52 @@ export default {
     },
     resetQuery() {
       this.queryParam = {}
+      this.sellValue = null;
       this.loadData()
     },
     onChange(e) {
       if (e.target.value === '') {
         this.loadData()
       }
+    },
+    handleShowViewportUploadModal() {
+      this.$refs.viewportUploadModal.show()
+    },
+    handleSellSearch(value) {
+      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+        sellFetch(value, data => (this.sellData = data))
+      }
+    },
+    handleSellChange(value) {
+      this.sellValue = value
+      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+        sellFetch(value, data => (this.sellData = data))
+      }
+      this.$set(this.queryParam, 'agencyId', undefined) // clean the previous data if the sellUser or sellUserId changed
+      if (value) {
+        // this.showSendAccess = true
+        this.queryParam.seller = value
+        this.loadDistributorList(value)
+      }
+    },
+    loadDistributorList(value) {
+      const that = this
+      getDistributorList({
+        sellUser: value
+      }).then(res => {
+        if (res.success) {
+          that.distributorList = res.result.records
+        } else {
+          that.$message.warning(res.message)
+        }
+      })
+    },
+  },
+  mounted() {
+    this.user = this.$store.state.user.info;
+    this.loadDistributorList();
+    if (this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics')) {
+      this.sellData = [this.user]
     }
   },
   watch: {

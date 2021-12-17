@@ -5,16 +5,20 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24" class="search-group">
-            <div class="group">
-              <div class="title">病例号：</div>
-              <a-input allowClear v-model="queryParam.identifyCode" placeholder="请输入病例号"></a-input>
-            </div>
-            <div class="group">
-              <div class="title">姓名：</div>
-              <j-input allowClear v-model="queryParam.caseName" placeholder="请输入姓名"></j-input>
-            </div>
-            <a-button @click="resetQuery" type="primary" style="margin-right:10px;">重置</a-button>
-            <a-button @click="searchQuery" type="primary">查询</a-button>
+            <a-col class="group">
+              <a-form-item label="姓名">
+                <a-input allowClear v-model="queryParam.caseName" placeholder="请输入姓名"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col class="group">
+              <a-form-item label="病例号">
+                <a-input allowClear v-model="queryParam.identifyCode" placeholder="请输入病例号"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col class="group btn">
+              <a-button @click="searchQuery" type="primary">查询</a-button>
+              <a-button @click="resetQuery" style="margin-left:10px;">重置</a-button>
+            </a-col>
           </a-row>
         </a-form>
       </div>
@@ -210,7 +214,7 @@ export default {
 }
 </script>
 <style scoped lang="less">
-@import '~@assets/less/common.less';
+/*@import '~@assets/less/common.less';*/
 .search-group {
   display: flex;
   justify-content: flex-start;

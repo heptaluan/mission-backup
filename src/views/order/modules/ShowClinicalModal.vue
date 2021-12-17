@@ -297,16 +297,16 @@ export default {
           that.form = res.result
 
           that.form.diagnosisResult = res.result.diagnosisResult ? res.result.diagnosisResult.split(',') : null
-          that.form.smokingHistory = res.result.smokingHistory.toString()
-          that.form.weekCure = res.result.weekCure.toString()
-          that.form.weekBlood = res.result.weekBlood.toString()
+          that.form.smokingHistory = res.result.smokingHistory ? res.result.smokingHistory.toString() : null
+          that.form.weekCure = res.result.weekCure ? res.result.weekCure.toString() : null
+          that.form.weekBlood = res.result.weekBlood ? res.result.weekBlood.toString() : null
 
           const medicalHistory = res.result.medicalHistory ? res.result.medicalHistory.split(',') : []
           for (let i = 0; i < medicalHistory.length; i++) {
             that.checkboxList[medicalHistory[i]].checked = true
           }
 
-          if (that.form.diagnosisResult.find(item => item === '3')) {
+          if (that.form.diagnosisResult && that.form.diagnosisResult.find(item => item === '3')) {
             that.showOtherOne = true
           }
 

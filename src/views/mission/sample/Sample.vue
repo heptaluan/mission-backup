@@ -1,31 +1,41 @@
 <template>
   <a-card :bordered="false">
-    <div class="search-group">
-      <div class="group">
-        <div class="title">批次号：</div>
-        <a-input allowClear v-model="queryParam.batchNo" placeholder="请输入批次号"></a-input>
-      </div>
-      <div class="group">
-        <div class="title">状 态：</div>
-        <j-dict-select-tag
-          allowClear
-          style="width:150px;"
-          type="list"
-          dictCode="sample_quality_status"
-          placeholder="请选择样本状态"
-          v-model="queryParam.status"
-        />
-      </div>
-      <div class="group">
-        <div class="title">质控责任人：</div>
-        <a-select allowClear style="width:200px;" v-model="queryParam.qcContactId" placeholder="请选择质控责任人">
-          <a-select-option v-for="item in userList" :key="item.id" :value="item.id">
-            {{ item.realname }}
-          </a-select-option>
-        </a-select>
-      </div>
-      <a-button @click="resetQuery" type="primary">重置</a-button>
-      <a-button @click="searchQuery" type="primary">查询</a-button>
+    <div class="table-page-search-wrapper">
+
+      <a-form layout="inline" @keyup.enter.native="searchQuery">
+      <a-row :gutter="24" class="search-group">
+        <a-col class="group">
+          <a-form-item label="批次号" :labelCol="{ span: 5 }">
+            <a-input allowClear v-model="queryParam.batchNo" placeholder="请输入批次号"></a-input>
+          </a-form-item>
+        </a-col>
+        <a-col class="group md">
+          <a-form-item label="状态" :labelCol="{ span: 4 }">
+            <j-dict-select-tag
+              allowClear
+              type="list"
+              dictCode="sample_apply_status"
+              placeholder="请选择样本状态"
+              v-model="queryParam.status"
+            />
+          </a-form-item>
+        </a-col>
+        <a-col class="group md">
+          <a-form-item label="质控责任人" :labelCol="{ span: 7 }">
+            <a-select allowClear v-model="queryParam.qcContactId" placeholder="请选择质控责任人">
+              <a-select-option v-for="item in userList" :key="item.id" :value="item.username">
+                {{ item.realname }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col class="group btn">
+          <a-button @click="searchQuery" type="primary">查询</a-button>
+          <a-button @click="resetQuery">重置</a-button>
+        </a-col>
+      </a-row>
+
+    </a-form>
     </div>
 
     <!-- 操作按钮区域 -->
@@ -69,11 +79,20 @@
           </a-button>
         </template>
 
-        <span slot="action" slot-scope="text, record">
+        <span slot="action" slot-scope="text, record" style="display: flex;justify-content: space-evenly;">
           <div class="btn-group" v-if="record.status !== 6">
             <a @click="showDetail(record)">{{
-              record.status === 5 ? '查看' : record.status === 4 || record.status === 2 || record.status === 3 ? '质控' : ''
+              record.status === 5
+                ? '查看'
+                : record.status === 4 || record.status === 2 || record.status === 3
+                ? '质控'
+                : ''
             }}</a>
+          </div>
+          <div v-if="record.status === 6">
+            <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+              <a>删除</a>
+            </a-popconfirm>
           </div>
         </span>
       </a-table>
@@ -118,9 +137,14 @@ export default {
           dataIndex: 'batchNo'
         },
         {
+          title: '文件名称',
+          align: 'center',
+          dataIndex: 'fileName'
+        },
+        {
           title: '质控责任人',
           align: 'center',
-          dataIndex: 'qcContactId_dictText',
+          dataIndex: 'qcContactUser_dictText'
         },
         {
           title: '记录总数',
@@ -140,7 +164,7 @@ export default {
         {
           title: '入库人',
           align: 'center',
-          dataIndex: 'createBy'
+          dataIndex: 'createBy_dictText'
         },
         {
           title: '入库时间',
@@ -162,10 +186,11 @@ export default {
         }
       ],
       url: {
-        list: '/mission/caseSample/stockApply/list'
+        list: '/mission/caseSample/stockApply/list',
+        delete: '/tailai-system/mission/caseSample/stockApply/delete'
       },
       isTestLeader: false,
-      isRcLeader: false,
+      isRcLeader: false
     }
   },
   methods: {
@@ -212,11 +237,10 @@ export default {
 }
 </script>
 <style scoped lang="less">
-@import '~@assets/less/common.less';
+/*@import '~@assets/less/common.less';*/
 
 .search-group {
   display: flex;
-  margin-bottom: 20px;
 
   .group {
     display: flex;

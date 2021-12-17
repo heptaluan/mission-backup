@@ -4,25 +4,21 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24" class="search-group">
-          <div class="group">
-            <div class="title">渠道商名称：</div>
-            <a-input allowClear v-model="queryParam.accessName" placeholder="请输入渠道商名称"></a-input>
-          </div>
-          <div class="group">
-            <div class="title">联系人电话：</div>
-            <a-input allowClear v-model="queryParam.contactPhone" placeholder="请输入联系人电话"></a-input>
-          </div>
-          <!-- <div class="group">
-            <div class="title">省份：</div>
-            <j-dict-select-tag
-              allowClear
-              style="width:200px;"
-              type="list"
-              dictCode="sample_quality_status"
-              placeholder="请选择省份"
-              v-model="queryParam.status"
-            />
-          </div> -->
+          <a-col class="group">
+            <a-form-item label="渠道商名称">
+              <a-input allowClear v-model="queryParam.accessName" placeholder="请输入渠道商名称"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group">
+            <a-form-item label="联系人电话">
+              <a-input allowClear v-model="queryParam.contactPhone" placeholder="请输入联系人电话"></a-input>
+            </a-form-item>
+          </a-col>
+<!--          <div class="group">-->
+<!--            <a-form-model-item label="地区" prop="address">-->
+<!--              <a-cascader :options="options" placeholder="请选择地区" v-model="queryParam.provinceCode" />-->
+<!--            </a-form-model-item>-->
+<!--          </div>-->
           <!-- <div class="group">
             <div class="title">销售：</div>
             <a-select
@@ -43,15 +39,17 @@
               </a-select-option>
             </a-select>
           </div> -->
-          <a-button @click="resetQuery" type="primary">重置</a-button>
-          <a-button @click="searchQuery" type="primary">搜索</a-button>
+          <a-col class="group btn">
+            <a-button @click="searchQuery" type="primary">搜索</a-button>
+            <a-button @click="resetQuery">重置</a-button>
+          </a-col>
         </a-row>
       </a-form>
     </div>
 
     <!-- 操作按钮区域 -->
     <div class="table-operator">
-      <a-button @click="handleShowDistributorModal" type="primary" icon="plus">创建渠道商</a-button>
+      <a-button @click="handleShowDistributorModal" type="primary" icon="plus" v-has="'channelCreate'">创建渠道商</a-button>
       <!-- <a-button type="primary" icon="download" @click="handleExportXls('型号管理')">导出</a-button>
       <a-upload
         name="file"
@@ -122,7 +120,7 @@
 
         <span slot="action" slot-scope="text, record" style="display: flex;justify-content: space-evenly;">
           <a @click="handleShowDistributorModal(record)">查看详情</a>
-          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+          <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)" v-has="'channelCreate'">
             <a>删除</a>
           </a-popconfirm>
 
@@ -154,6 +152,7 @@ import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import AddDistributorModal from './modules/AddDistributorModal'
 import { queryRoleUsers } from '../../api/material/index'
+import options from '../../../src/mixins/cities'
 
 function fetch(value, callback) {
   let timeout
@@ -278,7 +277,8 @@ export default {
       superFieldList: [],
       queryParam: {},
       data: [],
-      value: undefined
+      value: undefined,
+      options: options
     }
   },
   created() {
@@ -303,7 +303,9 @@ export default {
     },
     handleShowDistributorModal(record) {
       this.$refs.modalForm.edit(record)
-      this.$refs.modalForm.title = '新增'
+      if (!record.id) {
+        this.$refs.modalForm.title = '新增'
+      }
     },
     handleSearch(value) {
       fetch(value, data => (this.data = data))

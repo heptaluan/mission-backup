@@ -3,23 +3,21 @@
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
-        <a-row :gutter="24">
-          <a-col :md="8" :sm="8">
-            <a-form-item label="耗材编码" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+        <a-row :gutter="24" class="search-group">
+          <a-col class="group">
+            <a-form-item label="耗材编码" :labelCol="{ span: 5 }" >
               <a-input placeholder="请输入耗材编码" v-model="queryParam.materialCode"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :md="8" :sm="8">
-            <a-form-item label="耗材名称" :labelCol="{ span: 5 }" :wrapperCol="{ span: 18, offset: 1 }">
+          <a-col class="group">
+            <a-form-item label="耗材名称" :labelCol="{ span: 5 }">
               <a-input placeholder="请输入耗材名称" v-model="queryParam.materialName"></a-input>
             </a-form-item>
           </a-col>
-          <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
-            <a-col :md="12" :sm="24">
-              <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
-              <a-button type="primary" @click="searchQuery" icon="search" style="margin-left: 21px">查询</a-button>
-            </a-col>
-          </span>
+          <a-col class="group btn">
+            <a-button type="primary" @click="searchQuery">查询</a-button>
+            <a-button @click="searchReset">重置</a-button>
+          </a-col>
         </a-row>
       </a-form>
     </div>
@@ -28,7 +26,7 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="handleAdd" type="primary" icon="plus">添加耗材</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls()">导出Excel</a-button>
+      <a-button type="primary" icon="download" @click="handleExportXls(`导出耗材列表${currentTime}`)">导出Excel</a-button>
       <!-- <a-upload
         name="file"
         :showUploadList="false"
@@ -192,7 +190,8 @@ export default {
         exportXlsUrl: '/tailai-system/mission/materialManagement/exportXls'
       },
       dictOptions: {},
-      superFieldList: []
+      superFieldList: [],
+      currentTime: ''
     }
   },
   created() {
@@ -210,7 +209,25 @@ export default {
       fieldList.push({ type: 'string', value: 'model', text: '型号', dictCode: '' })
       fieldList.push({ type: 'int', value: 'deviceType', text: '设备类型', dictCode: '' })
       this.superFieldList = fieldList
+    },
+    getCurrentTime() {
+      let yy = new Date().getFullYear()
+      let mm = new Date().getMonth() + 1 < 10 ? '0' + new Date().getMonth() + 1 : new Date().getMonth() + 1
+      let dd = new Date().getDate() < 10 ? '0' + new Date().getDate() : new Date().getDate()
+      let hh = new Date().getHours() < 10 ? '0' + new Date().getHours() : new Date().getHours()
+      let mf = new Date().getMinutes() < 10 ? '0' + new Date().getMinutes() : new Date().getMinutes()
+      let ss = new Date().getSeconds() < 10 ? '0' + new Date().getSeconds() : new Date().getSeconds()
+      yy = yy.toString()
+      mm = mm.toString()
+      dd = dd.toString()
+      hh = hh.toString()
+      mf = mf.toString()
+      ss = ss.toString()
+      this.currentTime = yy + mm + dd + hh + mf + ss
     }
+  },
+  mounted() {
+    this.getCurrentTime()
   }
 }
 </script>

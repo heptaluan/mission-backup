@@ -48,8 +48,8 @@ export default {
     this.listenNodeChange()
   },
   created() {
-    this.iframeUrl = `http://192.168.1.205/viewer/1?patient=${this.$route.query.id}&token=${this.token}&url=${Vue.prototype.API_BASE_URL}`
-    // this.iframeUrl = `${window._CONFIG['domianURL']}/viewer/1?patient=${this.$route.query.id}&token=${this.token}&url=${Vue.prototype.API_BASE_URL}`
+    this.iframeUrl = `http://ct.ananpan.com/viewer/1?patient=${this.$route.query.id}&token=${this.token}&url=${Vue.prototype.API_BASE_URL}`
+    // this.iframeUrl = `http://localhost:3000/viewer/1?patient=${this.$route.query.id}&token=${this.token}&url=${Vue.prototype.API_BASE_URL}`
   }
 }
 </script>

@@ -14,16 +14,20 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline" @keyup.enter.native="searchQuery">
           <a-row :gutter="24" class="search-group">
-            <div class="group">
-              <div class="title">耗材编码：</div>
-              <a-input allowClear v-model="queryParam.materialCode" placeholder="请输入耗材编码"></a-input>
-            </div>
-            <div class="group">
-              <div class="title">耗材名称：</div>
-              <a-input allowClear v-model="queryParam.materialName" placeholder="请输入耗材名称"></a-input>
-            </div>
-            <a-button @click="resetQuery" type="primary">重置</a-button>
-            <a-button @click="searchQuery" type="primary">查询</a-button>
+            <a-col class="group" :labelCol="{ span: 6 }">
+              <a-form-item label="耗材编码">
+                <a-input allowClear v-model="queryParam.materialCode" placeholder="请输入耗材编码"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col class="group" :labelCol="{ span: 6 }">
+              <a-form-item label="耗材名称">
+                <a-input allowClear v-model="queryParam.materialName" placeholder="请输入耗材名称"></a-input>
+              </a-form-item>
+            </a-col>
+            <a-col class="group btn">
+              <a-button @click="searchQuery" type="primary">查询</a-button>
+              <a-button @click="resetQuery">重置</a-button>
+            </a-col>
           </a-row>
         </a-form>
       </div>
@@ -197,7 +201,6 @@ export default {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-bottom: 20px;
 
   .group {
     display: flex;
