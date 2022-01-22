@@ -18,43 +18,49 @@
               </a-select>
             </a-form-item>
           </a-col>
-<!--          <a-col class="group md">-->
-<!--            <a-form-item label="销售:" :labelCol="{ span: 6 }">-->
-<!--              <a-select-->
-<!--                show-search-->
-<!--                :value="sellValue"-->
-<!--                placeholder="输入关联销售进行检索"-->
-<!--                :default-active-first-option="false"-->
-<!--                :show-arrow="false"-->
-<!--                :filter-option="false"-->
-<!--                :not-found-content="null"-->
-<!--                @search="handleSellSearch"-->
-<!--                @change="handleSellChange"-->
-<!--              >-->
-<!--                <a-select-option v-for="item in sellData" :key="item.id" :value="item.username">-->
-<!--                  {{ item.realname }}-->
-<!--                </a-select-option>-->
-<!--              </a-select>-->
-<!--            </a-form-item>-->
-<!--          </a-col>-->
+          <!--          <a-col class="group md">-->
+          <!--            <a-form-item label="销售:" :labelCol="{ span: 6 }">-->
+          <!--              <a-select-->
+          <!--                show-search-->
+          <!--                :value="sellValue"-->
+          <!--                placeholder="输入关联销售进行检索"-->
+          <!--                :default-active-first-option="false"-->
+          <!--                :show-arrow="false"-->
+          <!--                :filter-option="false"-->
+          <!--                :not-found-content="null"-->
+          <!--                @search="handleSellSearch"-->
+          <!--                @change="handleSellChange"-->
+          <!--              >-->
+          <!--                <a-select-option v-for="item in sellData" :key="item.id" :value="item.username">-->
+          <!--                  {{ item.realname }}-->
+          <!--                </a-select-option>-->
+          <!--              </a-select>-->
+          <!--            </a-form-item>-->
+          <!--          </a-col>-->
           <a-col class="group md">
-<!--            <a-form-item label="渠道商" prop="sendAccess" v-show="showSendAccess || sellValue" class="order-label">-->
+            <!--            <a-form-item label="渠道商" prop="sendAccess" v-show="showSendAccess || sellValue" class="order-label">-->
             <a-form-item label="渠道商" prop="sendAccess" class="order-label">
-              <a-select style="width:200px;" v-model="queryParam.accessShortName" placeholder="请选择渠道商">
-                <a-select-option v-for="item in distributorList" :key="item.id" :value="item.shortName">
-                  {{ item.accessName }}
+              <a-select
+                v-model='queryParam.accessShortName'
+                placeholder='请选择渠道商'
+                show-search
+                :value='channelValue'
+                :default-active-first-option='false'
+                :filter-option='false'
+                :not-found-content='null'
+                @search='handleChannelSearch'
+                @change='handleChannelChange'
+              >
+                <a-select-option v-for='item in distributorList' :key='item.id' :value='item.departNameAbbr'>
+                  {{ item.departName }}
                 </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
 
           <a-col class="group md">
-            <a-form-item label="医院" :labelCol="{ span: 5 }">
-              <a-select v-model="queryParam.hospitalShortName" placeholder="请选择医院">
-                <a-select-option v-for="item in hospitalList" :key="item.id" :value="item.hospitalName">
-                  {{ item.hospitalName }}
-                </a-select-option>
-              </a-select>
+            <a-form-item label="病例编号" :labelCol="{ span: 5 }">
+              <a-input allowClear v-model="queryParam.medicalCaseCode" placeholder="请输入病例编号"></a-input>
             </a-form-item>
           </a-col>
 
@@ -68,9 +74,8 @@
             </a-form-item>
           </a-col>
 
-
           <a-col class="group md">
-            <a-form-item label="上传时间" :labelCol="{ span: 5 }" >
+            <a-form-item label="上传时间" :labelCol="{ span: 5 }">
               <j-date
                 v-model="queryParam.createTime_begin"
                 :showTime="true"
@@ -125,16 +130,16 @@
         :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         @change="handleTableChange"
       >
-        <template slot="status" slot-scope="text, record">
-          <div v-for="item in dicomtaskStatus">
+        <!-- <template slot="status" slot-scope="text, record">
+          <div v-for="item in dicomtaskStatus" :key="item.value">
             <div v-if="record.status === item.value">
-              {{item.key}}
+              {{ item.key }}
             </div>
           </div>
-        </template>
+        </template> -->
 
         <span slot="action" slot-scope="text, record">
-          <a @click="handleShowDetail(record)">查看详情</a>
+          <a v-if="record.status === 1" @click="handleShowDetail(record)">查看详情</a>
         </span>
       </a-table>
     </div>
@@ -145,10 +150,10 @@
 
 <script>
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
+import { selectorFilterMixin } from '@/mixins/selectorFilterMixin'
 import '@/assets/less/TableExpand.less'
 import ViewportUploadModal from './modules/ViewportUploadModal.vue'
 import { queryRoleUsers } from '../../api/material'
-import { getHospitalList, getDistributorList } from '../../api/product/index'
 
 function sellFetch(value, callback) {
   let timeout
@@ -190,7 +195,7 @@ function sellFetch(value, callback) {
 
 export default {
   name: 'ViewportMetaList',
-  mixins: [JeecgListMixin],
+  mixins: [JeecgListMixin, selectorFilterMixin],
   components: {
     ViewportUploadModal
   },
@@ -213,15 +218,20 @@ export default {
           align: 'center',
           dataIndex: 'orderId'
         },
-        // {
-        //   title: '住院号',
-        //   align: 'center',
-        //   dataIndex: 'patientUid'
-        // },
+        {
+          title: '病例编号',
+          align: 'center',
+          dataIndex: 'medicalCaseCode'
+        },
         {
           title: '姓名',
           align: 'center',
           dataIndex: 'caseName'
+        },
+        {
+          title: '姓名拼写',
+          align: 'center',
+          dataIndex: 'patientName'
         },
         {
           title: '性别',
@@ -236,27 +246,50 @@ export default {
         {
           title: '检查日期',
           align: 'center',
-          dataIndex: 'createTime'
+          dataIndex: 'studyTime'
         },
         {
           title: '上传时间',
           align: 'center',
-          dataIndex: 'updateTime'
+          dataIndex: 'createTime'
         },
         {
           title: '渠道商',
           align: 'center',
           dataIndex: 'accessShortName_dictText'
         },
-        {
-          title: '医院',
-          align: 'center',
-          dataIndex: 'hospitalShortName_dictText'
-        },
+        // {
+        //   title: '医院',
+        //   align: 'center',
+        //   dataIndex: 'hospitalShortName_dictText'
+        // },
         {
           title: '影像号',
           align: 'center',
-          dataIndex: 'patientUid'
+          dataIndex: 'patientUid',
+          customRender: function(t, r, index) {
+            if (r.patientUid) {
+              return (
+                <a-tooltip placement="top" title={r.patientUid}>
+                  {r.patientUid.substring(0, 15) + '..'}
+                </a-tooltip>
+              )
+            }
+          }
+        },
+        {
+          title: 'ossKey 地址',
+          align: 'center',
+          dataIndex: 'ossKey',
+          customRender: function(t, r, index) {
+            if (r.ossKey) {
+              return (
+                <a-tooltip placement="top" title={r.ossKey}>
+                  {r.ossKey.substring(0, 15) + '..'}
+                </a-tooltip>
+              )
+            }
+          }
         },
         {
           title: '层厚(mm)',
@@ -287,7 +320,15 @@ export default {
           title: '状态',
           align: 'center',
           dataIndex: 'status',
-          scopedSlots: { customRender: 'status' }
+          customRender: function(t, r, index) {
+            if (r.status === 0) {
+              return '已上传'
+            } else if (r.status === 1) {
+              return '归档成功'
+            } else if (r.status === 2) {
+              return '失败'
+            }
+          }
         },
         {
           title: '操作',
@@ -300,28 +341,20 @@ export default {
       ],
       url: {
         list: 'multiomics/medicalImage/taskMedicalCaseView/list'
-        // delete: '/multiomics/productOrderMeta/delete',
-        // deleteBatch: '/multiomics/productOrderMeta/deleteBatch',
-        // exportXlsUrl: '/multiomics/productOrderMeta/exportXls',
-        // importExcelUrl: 'multiomics/productOrderMeta/importExcel'
       },
       dictOptions: {},
-      superFieldList: [],
       distributorList: [],
       sellData: [],
       user: null,
-      hospitalList: [],
       sellValue: undefined,
+      channelValue: undefined,
       showSendAccess: false,
       dicomtaskStatus: [
-        {key: '已上传', value: 0},
-        {key: '已归档', value: 1},
-        {key: '归档失败', value: 2}
+        { key: '已上传', value: 0 },
+        { key: '归档成功', value: 1 },
+        { key: '失败', value: 2 }
       ]
     }
-  },
-  created() {
-    this.getSuperFieldList()
   },
   computed: {
     importExcelUrl: function() {
@@ -330,59 +363,14 @@ export default {
   },
   methods: {
     initDictConfig() {},
-    getData() {
-      const data = {
-        medicalCaseNo: 'case-00000001',
-        sendDepartment: 'A02A01',
-        sendDoctor: '上海肺科李医生',
-        receiveAgencyCode: 'A03',
-        updateTime: null,
-        createBy: 'admin',
-        sendAgencyCode: 'A02',
-        createTime: '2021-09-15 14:39:37',
-        updateBy: null,
-        productRecognition: 'FEI_PAN_AN',
-        sysOrgCode: 'A01',
-        id: '1438029719336501249',
-        cancerType: 'L',
-        lastEditStep: 'basic',
-        currentState: 'TEMP_ORDER'
-      }
-    },
-    getSuperFieldList() {
-      let fieldList = []
-      fieldList.push({ type: 'string', value: 'sampleNo', text: '样本编号', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'productId', text: '产品', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'companyId', text: '送检单位', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'cancerType', text: '癌种', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'emsId', text: '快递公司', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'emsNo', text: '快递单号', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'deliveryAddressId', text: '收件地址', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'sendDepartment', text: '送检科室', dictCode: '' })
-      fieldList.push({ type: 'string', value: 'sendDoctor', text: '送检医生', dictCode: '' })
-      this.superFieldList = fieldList
-    },
     resetQuery() {
       this.queryParam = {}
-      this.sellValue = null;
+      this.sellValue = null
       this.loadData()
     },
     handleShowDetail(record) {
-      // this.$router.push({
-      //   path: `/viewport/patientsList?archiveJobId=${record.id}`
-      // })
       this.$router.push({
-        path: `viewportDetail?id=${record.patientId}`
-      })
-    },
-    loadHospitalList() {
-      getHospitalList().then(res => {
-        if (res.success) {
-          this.hospitalList = res.result.records
-          console.log(this.hospitalList)
-        } else {
-          that.$message.warning(res.message)
-        }
+        path: `/viewport/viewportDetail?resource=${record.patientId}&type=0`
       })
     },
     handleShowViewportUploadModal() {
@@ -398,30 +386,18 @@ export default {
       if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
         sellFetch(value, data => (this.sellData = data))
       }
-      this.$set(this.queryParam, 'sendAccess', undefined) // clean the previous data if the sellUser or sellUserId changed
+      // clean the previous data if the sellUser or sellUserId changed
+      this.$set(this.queryParam, 'sendAccess', undefined)
       if (value) {
         this.showSendAccess = true
         this.queryParam.seller = value
         this.loadDistributorList(value)
       }
-    },
-    loadDistributorList(value) {
-      const that = this
-      getDistributorList({
-        sellUser: value
-      }).then(res => {
-        if (res.success) {
-          that.distributorList = res.result.records
-        } else {
-          that.$message.warning(res.message)
-        }
-      })
-    },
+    }
   },
   mounted() {
-    this.user = this.$store.state.user.info;
-    this.loadDistributorList();
-    this.loadHospitalList();
+    this.user = this.$store.state.user.info
+    this.loadDistributorList()
     if (this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics')) {
       this.sellData = [this.user]
     }

@@ -3,30 +3,66 @@
     <!-- 查询区域 -->
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
-        <a-row :gutter="24">
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="订单编号">
-              <a-input placeholder="请输入订单编号" v-model="queryParam.orderId"></a-input>
+        <a-row :gutter="24" class="search-group">
+          <a-col class="group sm">
+            <a-form-item label="病例编号:" :labelCol="{ span: 6 }">
+              <a-input allowClear v-model="queryParam.orderCode" placeholder="请输入病例编号"></a-input>
             </a-form-item>
           </a-col>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
-            <a-form-item label="报告时间">
-              <j-date placeholder="请选择报告时间" v-model="queryParam.resultTime"></j-date>
+          <a-col class="group sm">
+            <a-form-item label="姓名:" :labelCol="{ span: 6 }">
+              <a-input allowClear v-model="queryParam.name" placeholder="请输入姓名"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group sm">
+            <a-form-item label="订单编号:" :labelCol="{ span: 6 }">
+              <a-input allowClear v-model="queryParam.orderId" placeholder="请输入订单编号"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group tiny">
+            <a-form-item label="性别:" :labelCol="{ span: 6 }">
+              <a-select v-model="queryParam.gender" placeholder="请选择性别" allowClear>
+                <a-select-option v-for="item in genderOption" :key="item.value" :value="item.value">
+                  {{ item.label }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col class="group sm">
+            <a-form-item label="身份证:" :labelCol="{ span: 6 }">
+              <a-input allowClear v-model="queryParam.idCard" placeholder="请输入身份证"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group sm">
+            <a-form-item label="手机号:" :labelCol="{ span: 6 }">
+              <a-input allowClear v-model="queryParam.phone" placeholder="请输入手机号"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group md">
+            <a-form-item label="报告时间" :labelCol="{ span: 5 }">
+              <j-date
+                v-model="queryParam.createTime_begin"
+                :showTime="true"
+                date-format="YYYY-MM-DD"
+                placeholder="请选择开始时间"
+              ></j-date>
+              <span style="width: 20px;"> - </span>
+              <j-date
+                v-model="queryParam.createTime_end"
+                :showTime="true"
+                date-format="YYYY-MM-DD"
+                placeholder="请选择结束时间"
+              ></j-date>
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
-            <a-col :xl="6" :lg="7" :md="8" :sm="24">
+            <a-col class="group sm">
               <a-form-item label="报告状态">
                 <a-input placeholder="请选择报告状态" v-model="queryParam.reportType"></a-input>
               </a-form-item>
             </a-col>
-            <a-col :xl="6" :lg="7" :md="8" :sm="24">
-              <a-form-item label="审核人">
-                <a-input placeholder="请输入审核人" v-model="queryParam.checkerName"></a-input>
-              </a-form-item>
-            </a-col>
           </template>
-          <a-col :xl="6" :lg="7" :md="8" :sm="24">
+          <a-col class="group sm">
             <span style="float: left;overflow: hidden;" class="table-page-search-submitButtons">
               <a-button type="primary" @click="searchQuery" icon="search">查询</a-button>
               <a-button type="primary" @click="searchReset" icon="reload" style="margin-left: 8px">重置</a-button>
@@ -42,31 +78,32 @@
     <!-- 查询区域-END -->
 
     <!-- 操作按钮区域 -->
-    <!-- <div class="table-operator">
-      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls('报告最终结果')">导出</a-button>
-      <a-upload
-        name="file"
-        :showUploadList="false"
-        :multiple="false"
-        :headers="tokenHeader"
-        :action="importExcelUrl"
-        @change="handleImportExcel"
-      >
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
-      <j-super-query
-        :fieldList="superFieldList"
-        ref="superQueryModal"
-        @handleSuperQuery="handleSuperQuery"
-      ></j-super-query>
+    <div class="table-operator">
+<!--      <a-button @click="handleAdd" type="primary" icon="plus">新增</a-button>-->
+<!--      <a-button type="primary" icon="download" @click="handleExportXls('报告最终结果')">导出</a-button>-->
+<!--      <a-upload-->
+<!--        name="file"-->
+<!--        :showUploadList="false"-->
+<!--        :multiple="false"-->
+<!--        :headers="tokenHeader"-->
+<!--        :action="importExcelUrl"-->
+<!--        @change="handleImportExcel"-->
+<!--      >-->
+<!--        <a-button type="primary" icon="import">导入</a-button>-->
+<!--      </a-upload>-->
+<!--      <j-super-query-->
+<!--        :fieldList="superFieldList"-->
+<!--        ref="superQueryModal"-->
+<!--        @handleSuperQuery="handleSuperQuery"-->
+<!--      ></j-super-query>-->
       <a-dropdown v-if="selectedRowKeys.length > 0">
         <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete" />删除</a-menu-item>
+          <a-menu-item key="1" @click="batchDownLoadExport"><a-icon type="export" />批量下载报告</a-menu-item>
+          <a-menu-item key="2" @click="batchDel"><a-icon type="delete" />删除</a-menu-item>
         </a-menu>
         <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down"/></a-button>
       </a-dropdown>
-    </div> -->
+    </div>
 
     <!-- table区域-begin -->
     <div>
@@ -75,7 +112,7 @@
         size="middle"
         :scroll="{ x: true }"
         bordered
-        rowKey="id"
+        rowKey="rowIndex"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -118,7 +155,7 @@
                 <a @click="handleDetail(record)">预览</a>
               </a-menu-item>
               <a-menu-item>
-                <a @click="handleDownload(record)">下载</a>
+                <a @click="handleDetailSD(record)">预览(山东)</a>
               </a-menu-item>
               <!-- <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -164,34 +201,75 @@ export default {
           dataIndex: 'orderId'
         },
         {
-          title: '代谢结果',
+          title: '病例编号',
           align: 'center',
-          dataIndex: 'ananpanReportValue_dictText'
+          dataIndex: 'orderCode'
         },
         {
-          title: '代谢总览',
+          title: '姓名',
           align: 'center',
-          dataIndex: 'ananpanReportAll'
+          dataIndex: 'name'
+        },
+        {
+          title: '年龄',
+          align: 'center',
+          dataIndex: 'age'
+        },
+        {
+          title: '性别',
+          align: 'center',
+          dataIndex: 'sex',
+          customRender: function(t, r, index) {
+            let text = '-'
+            if (t === '0') {
+              text = '女'
+            }
+            if (t === '1') {
+              text = '男'
+            }
+            return text
+          }
+        },
+        {
+          title: '手机号',
+          align: 'center',
+          dataIndex: 'phone'
+        },
+        {
+          title: '身份证',
+          align: 'center',
+          dataIndex: 'idCard'
+        },
+        {
+          title: '代谢结果',
+          align: 'center',
+          dataIndex: 'ananpanReportValue'
         },
         {
           title: '影像结果',
           align: 'center',
-          dataIndex: 'imageReportValue_dictText'
+          dataIndex: 'imageReportValue'
         },
         {
           title: '基因结果',
           align: 'center',
-          dataIndex: 'geneReportValue_dictText'
+          dataIndex: 'geneReportValue'
         },
         {
           title: '报告总结果',
           align: 'center',
-          dataIndex: 'reportValue_dictText'
+          dataIndex: 'reportValue'
         },
         {
           title: '报告状态',
           align: 'center',
-          dataIndex: 'reportType_dictText'
+          dataIndex: 'reportType'
+        },
+        {
+          title: '产品',
+          align: 'center',
+          dataIndex: 'choseProduct_dictText'
+
         },
         {
           title: '审核人',
@@ -255,16 +333,25 @@ export default {
       fieldList.push({ type: 'string', value: 'orderId', text: '订单编号', dictCode: '' })
       this.superFieldList = fieldList
     },
-    handleDownload(record) {},
+    handleDetailSD(record) {
+      const router = this.$router.resolve({
+        name: 'PagePreview',
+        params:{
+          reportId: record.id,
+          template: 'sd'
+        }
+      })
+      window.open(router.href, '_blank')
+    },
     handleDetail (record) {
       const router = this.$router.resolve({
         name: 'PagePreview',
         params:{
-          reportId: record.id
+          reportId: record.id,
+          template: 'com'
         }
       })
       window.open(router.href, '_blank')
-
     },
     handleBack (record) {
       this.reportReturn(record.id)
@@ -284,6 +371,33 @@ export default {
       } catch (e) {
         this.$message.warning(e.message)
       }
+    },
+    batchDownLoadExport () {
+      console.log(this.selectedRowKeys)
+    },
+    calcStyle(text) {
+      let bgColor = '#fff'
+      let Color = '#000'
+      const sore = parseFloat(text)
+      if (sore >= 50 && sore < 70) {
+        Color = '#fff'
+        bgColor = '#faad14'
+      }
+      if (sore >= 70) {
+        Color = '#fff'
+        bgColor = '#f5222d'
+      }
+      return `background-color: ${bgColor}; color: ${Color}`
+    },
+    calcStyleImage(text) {
+      let bgColor = '#fff'
+      let Color = '#000'
+      const sore = parseFloat(text)
+      if (sore >= 60) {
+        Color = '#fff'
+        bgColor = '#f5222d'
+      }
+      return `background-color: ${bgColor}; color: ${Color}`
     }
   }
 }

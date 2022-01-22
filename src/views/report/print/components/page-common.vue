@@ -1,17 +1,17 @@
 /* 包含标题、页尾的容器 */
 <template>
   <div class="page">
-    <div class="page-common__index" v-if="calPageIndex && !pageConfig.isNoFooter">{{calPageIndex}}</div>
+    <div class="page-common__index" v-if="false">{{calPageIndex}}</div>
     <div class="page-common">
       <div class="page-common__title" v-if="!noTitle">
           <div class="page-common__title__rect">
-            <img :src="require('@/assets/logo.png')" alt="">
+            <img :src="require('@/views/report/template/resource/logo.png')" alt="">
           </div>
       </div>
       <slot></slot>
     </div>
     <div v-if="!pageConfig.isNoFooter" class="page-common__footer">
-      免责声明：本报告仅针对您本次送检的样本。
+      {{calPageIndex}}
     </div>
   </div>
 </template>
@@ -90,11 +90,10 @@ export default {
   }
 
   &__title {
-    .top(10);
+    .top(16);
     margin-top: @top;
-    margin-left: @top;
-    .height(38);
-    // height: @h;
+    .left(72);
+    margin-left: @left;
     line-height: 1.4;
     display: flex;
     .font-size(20);
@@ -139,19 +138,18 @@ export default {
 
   &__footer {
     position: absolute;
-    .height(28);
-    min-height: @h;
+    height: 1.5cm;
     width: 100%;
     .left(81);
-    padding: 0 @left;
+    padding: 0.2cm @left;
     .bottom(5);
     bottom: @bottom;
     left: 50%;
     transform: translate(-50%);
-    font-size: 10.8px;
+    font-size: 14px;
     display: flex;
     justify-content: center;
-    color: #BEBEBE;
+    color: @colorP;
     background: #ffffff;
     z-index: 0;
   }

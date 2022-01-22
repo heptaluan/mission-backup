@@ -14,41 +14,41 @@
 </template>
 
 <script>
-import Icon from 'ant-design-vue/es/icon'
+  import Icon from 'ant-design-vue/es/icon'
 
-export default {
-  name: 'NumberInfo',
-  props: {
-    prefixCls: {
-      type: String,
-      default: 'ant-pro-number-info',
+  export default {
+    name: 'NumberInfo',
+    props: {
+      prefixCls: {
+        type: String,
+        default: 'ant-pro-number-info'
+      },
+      total: {
+        type: Number,
+        required: true
+      },
+      subTotal: {
+        type: Number,
+        required: true
+      },
+      subTitle: {
+        type: [String, Function],
+        default: ''
+      },
+      status: {
+        type: String,
+        default: 'up'
+      }
     },
-    total: {
-      type: Number,
-      required: true,
+    components: {
+      Icon
     },
-    subTotal: {
-      type: Number,
-      required: true,
-    },
-    subTitle: {
-      type: [String, Function],
-      default: '',
-    },
-    status: {
-      type: String,
-      default: 'up',
-    },
-  },
-  components: {
-    Icon,
-  },
-  data() {
-    return {}
-  },
-}
+    data () {
+      return {}
+    }
+  }
 </script>
 
 <style lang="less" scoped>
-@import 'index';
+  @import "index";
 </style>

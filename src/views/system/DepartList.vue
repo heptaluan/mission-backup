@@ -145,8 +145,8 @@
 </template>
 <script>
   import DepartModal from './modules/DepartModal'
-  import {queryDepartTreeList, searchByKeywords, deleteByDepartId} from '@/api/api'
-  import {httpAction, deleteAction} from '@/api/manage'
+  import { queryDepartTreeList, queryDepartTreeListByOrgType, searchByKeywords, deleteByDepartId } from '@/api/api'
+  import { httpAction, deleteAction } from '@/api/manage'
   import {JeecgListMixin} from '@/mixins/JeecgListMixin'
   import DepartAuthModal from './modules/DepartAuthModal'
   // 表头
@@ -261,16 +261,19 @@
         var that = this
         that.treeData = []
         that.departTree = []
-        queryDepartTreeList().then((res) => {
+        // get all organizes with '公司' type
+        const orgType = { catalog: 1 }
+        queryDepartTreeListByOrgType(orgType).then((res) => {
+          // queryDepartTreeList().then((res) => {
           if (res.success) {
             //部门全选后，再添加部门，选中数量增多
-            this.allTreeKeys = [];
+            this.allTreeKeys = []
             for (let i = 0; i < res.result.length; i++) {
               let temp = res.result[i]
               that.treeData.push(temp)
               that.departTree.push(temp)
               that.setThisExpandedKeys(temp)
-              that.getAllKeys(temp);
+              that.getAllKeys(temp)
               // console.log(temp.id)
             }
             this.loading = false
@@ -550,7 +553,7 @@
         }
       }
       //---- author:os_chengtgen -- date:20190827 --  for:切换父子勾选模式 =======------
-      
+
     },
     created() {
       this.currFlowId = this.$route.params.id

@@ -54,30 +54,39 @@
 </template>
 
 <script>
-  import { queryDepartTreeList } from '@/api/api'
+  import { queryDepartTreeList, queryDepartTreeListByOrgType } from '@/api/api'
   export default {
     name: 'JSelectDepartModal',
-    props:['modalWidth','multi','rootOpened','departId', 'store', 'text','treeOpera'],
-    data(){
+    props: ['modalWidth', 'multi', 'rootOpened', 'departId', 'store', 'text', 'treeOpera', 'alldepart'],
+    data() {
       return {
-        visible:false,
-        confirmLoading:false,
-        treeData:[],
-        autoExpandParent:true,
-        expandedKeys:[],
-        dataList:[],
-        checkedKeys:[],
-        checkedRows:[],
-        searchValue:"",
+        visible: false,
+        confirmLoading: false,
+        treeData: [],
+        autoExpandParent: true,
+        expandedKeys: [],
+        dataList: [],
+        checkedKeys: [],
+        checkedRows: [],
+        searchValue: '',
         checkStrictly: true,
-        fullscreen:false
+        fullscreen: false,
       }
     },
-    created(){
-      this.loadDepart();
+    mounted() {
+      // this.$bus.$off()
+      this.$bus.$on('innerObserve', (data) => {
+        console.log('all', this.alldepart)
+        this.dataList = []
+        if (this.alldepart) {
+          this.loadByRole()
+        } else {
+          this.loadByRole(data.id, data.catalog)
+        }
+      })
     },
-    watch:{
-      departId(){
+    watch: {
+      departId() {
         this.initDepartComponent()
       },
       visible: {
@@ -94,34 +103,58 @@
         }
       },
     },
-    methods:{
-      show(){
-        this.visible=true
-        this.checkedRows=[]
-        this.checkedKeys=[]
+    methods: {
+      show() {
+        this.visible = true
+        // this.handleClear()
+        this.checkedRows = []
+        this.dataList = []
+        this.checkedKeys = []
       },
-      loadDepart(){
+      loadByRole(id, role) {
+        if (role) {
+          this.loadDepartByRole(id, role)
+        } else {
+          this.loadDepart()
+        }
+      },
+      loadDepart() {
         // 这个方法是找到所有的部门信息
-        queryDepartTreeList().then(res=>{
-          if(res.success){
+        queryDepartTreeList().then(res => {
+          if (res.success) {
             let arr = [...res.result]
             this.reWriterWithSlot(arr)
             this.treeData = arr
             this.initDepartComponent()
-            if(this.rootOpened){
+            if (this.rootOpened) {
               this.initExpandedKeys(res.result)
             }
           }
         })
       },
-      initDepartComponent(flag){
+      loadDepartByRole(id, role) {
+        // 这个方法是找到所有的部门信息
+        const data = { catalog: role, ignoreSelected: 1, includeUser: id }
+        queryDepartTreeListByOrgType(data).then(res => {
+          if (res.success) {
+            let arr = [...res.result]
+            this.reWriterWithSlot(arr)
+            this.treeData = arr
+            this.initDepartComponent()
+            if (this.rootOpened) {
+              this.initExpandedKeys(res.result)
+            }
+          }
+        })
+      },
+      initDepartComponent(flag) {
         let arr = []
         //该方法两个地方用 1.visible改变事件重新设置选中项 2.组件编辑页面回显
-        let fieldName = flag==true?'key':this.text
-        if(this.departId){
+        let fieldName = flag == true ? 'key' : this.text
+        if (this.departId) {
           let arr2 = this.departId.split(',')
-          for(let item of this.dataList){
-            if(arr2.indexOf(item[this.store])>=0){
+          for (let item of this.dataList) {
+            if (arr2.indexOf(item[this.store]) >= 0) {
               arr.push(item[fieldName])
             }
           }
@@ -242,8 +275,6 @@
           searchValue: value,
           autoExpandParent: true,
         })
-
-
       },
       // 根据 checkedKeys 获取 rows
       getCheckedRows(checkedKeys) {
@@ -290,7 +321,7 @@
   // 限制部门选择树高度，避免部门太多时点击确定不便
   .my-dept-select-tree{
     height:350px;
-    
+
     &.fullscreen{
       height: calc(100vh - 250px);
     }

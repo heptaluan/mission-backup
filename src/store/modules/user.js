@@ -94,29 +94,29 @@ const user = {
     //手机号登录
     PhoneLogin({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
-          phoneLogin(userInfo).then(response => {
-          if(response.code =='200'){
-        const result = response.result
-        const userInfo = result.userInfo
-        Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
-        Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
-        Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
-        Vue.ls.set(UI_CACHE_DB_DICT_DATA, result.sysAllDictItems, 7 * 24 * 60 * 60 * 1000)
-        commit('SET_TOKEN', result.token)
-        commit('SET_INFO', userInfo)
-        commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
-        commit('SET_AVATAR', userInfo.avatar)
-        resolve(response)
-      }else{
-        reject(response)
-      }
-    }).catch(error => {
-        reject(error)
+        phoneLogin(userInfo).then(response => {
+          if (response.code == '200') {
+            const result = response.result
+            const userInfo = result.userInfo
+            Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(UI_CACHE_DB_DICT_DATA, result.sysAllDictItems, 7 * 24 * 60 * 60 * 1000)
+            commit('SET_TOKEN', result.token)
+            commit('SET_INFO', userInfo)
+            commit('SET_NAME', { username: userInfo.username, realname: userInfo.realname, welcome: welcome() })
+            commit('SET_AVATAR', userInfo.avatar)
+            resolve(response)
+          } else {
+            reject(response)
+          }
+        }).catch(error => {
+          reject(error)
+        })
       })
-    })
     },
     // 获取用户信息
-    GetPermissionList({ commit }) {
+    GetPermissionList({ commit,state }) {
       return new Promise((resolve, reject) => {
         queryPermissionsByUser().then(response => {
           const menuData = response.result.menu;
@@ -137,9 +137,31 @@ const user = {
                 }
               }
             })
-            //console.log(" menu show json ", menuData)
-            //update--end--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
-            commit('SET_PERMISSIONLIST', menuData)
+            const userName = Vue.ls.get(USER_NAME)
+            // 超级用户
+            if (userName === 'sz2012') {
+              const menu = menuData.slice(0);
+              menu.push({
+                component: 'report/SampleReportCheckList',
+                id: '1480422107625543681',
+                meta: {
+                  componentName: 'SampleReportCheckList',
+                  icon: 'team',
+                  internalOrExternal: false,
+                  keepAlive: false,
+                  title: '报告审核'
+                },
+                path: '/reportCheck',
+                name: 'ReportCheck',
+                redirect: null,
+                route: '1'
+              })
+              commit('SET_PERMISSIONLIST', menu)
+            } else {
+              //console.log(" menu show json ", menuData)
+              //update--end--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
+              commit('SET_PERMISSIONLIST', menuData)
+            }
           } else {
             reject('getPermissionList: permissions must be a non-null array !')
           }

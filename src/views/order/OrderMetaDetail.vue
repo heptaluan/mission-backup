@@ -20,19 +20,21 @@
       <a-descriptions-item label="送检科室"><span v-html="orderInfo.sendDepartment"></span></a-descriptions-item>
       <a-descriptions-item label="送检医生"><span v-html="orderInfo.sendDoctor"></span></a-descriptions-item>
       <!-- <a-descriptions-item label="签收人"><span v-html="orderInfo.checkBy"></span></a-descriptions-item> -->
-      <a-descriptions-item label="质控人"><span v-html="orderInfo.testBy"></span></a-descriptions-item>
+      <!-- <a-descriptions-item label="质控人"><span v-html="orderInfo.testBy"></span></a-descriptions-item> -->
       <a-descriptions-item label="销售"><span v-html="orderInfo.saleBy"></span></a-descriptions-item>
     </a-descriptions>
     <div class="order-progress">
       <div class="label-title b-flex">
         订单进度
-        <div class="order-progress-panel"><a-progress :percent="orderProgressValue" :showInfo="false" /></div>
+        <div class='order-progress-panel'>
+          <a-progress :percent='orderProgressValue' :showInfo='false' status='active' />
+        </div>
       </div>
       <div class="order-progress-table">
         <div class="progress-row" v-for="(item, index) in orderProgressList" :key="index">
           <div class="title">{{ item.title }}</div>
           <div class="text">
-            <span>{{ item.text }}</span>
+            <span :class="{ successStatus: item.status === 1 }">{{ item.text }}</span>
             <a-button v-if="item.showButton && !item.buttonGroup" :disabled="item.disState" size="small"
               >重新取样</a-button
             >
@@ -43,7 +45,7 @@
             </template>
           </div>
           <div class="time">
-            <span>{{ item.time }}</span>
+            <span :class="{ successStatus: item.status === 1 }">{{ item.time }}</span>
           </div>
         </div>
       </div>
@@ -55,19 +57,29 @@
           <div class="progress-item-title">
             <label class="text-weight">{{ list.title }}</label>
             <span> 订单号：{{ list.orderId }}</span>
-            <label class="responsible">责任人：</label>
-            <span>{{ list.responsible }}</span>
+            <!-- <label class="responsible">责任人：</label> -->
+            <!-- <span>{{ list.responsible }}</span> -->
           </div>
           <div class="progress-item-body">
             <a-steps :current="list.step" style="width: 100%" size="small">
               <a-step v-for="(item, index) in list.data" :key="index">
                 <span slot="title">{{ item.title }}</span>
-                <span slot="description">{{ item.time }}</span>
+                <span slot="description">
+                  <div :class="{ successStatus: item.status === '成功', errorStatus: item.status === '失败' }">
+                    状态：{{ item.status }}
+                  </div>
+                  <div
+                    v-if="item.time"
+                    :class="{ successStatus: item.status === '成功', errorStatus: item.status === '失败' }"
+                  >
+                    时间：{{ item.time }}
+                  </div>
+                </span>
                 <span v-if="item.showButton" slot="subTitle">
                   <a-button
                     :disabled="item.disState"
                     size="small"
-                    @click="e => handleSubOrderClick(list.omicsAnalysisType, item.omicsMilestone)"
+                    @click="e => handleSubOrderClick(item, item.omicsMilestone)"
                     >{{ item.buttonText }}</a-button
                   >
                 </span>
@@ -104,43 +116,8 @@ export default {
     return {
       baseInfo: {},
       orderInfo: {},
-      orderProgressValue: 60,
-      orderProgressList: [
-        {
-          title: '物流',
-          text: '已寄出',
-          time: '2021-08-18 16:05:12',
-          showButton: false,
-          disState: false,
-          buttonText: '',
-          buttonGroup: false
-        },
-        {
-          title: '签收',
-          text: '未开始',
-          time: '-',
-          showButton: false,
-          disState: false,
-          buttonText: '',
-          buttonGroup: false
-        },
-        {
-          title: '质控',
-          text: '未开始',
-          time: '-',
-          buttonGroup: false,
-          showButton: false,
-          disState: false
-        },
-        {
-          title: '报告',
-          text: '未开始',
-          time: '-',
-          buttonGroup: true,
-          showButton: false,
-          disState: false
-        }
-      ],
+      orderProgressValue: 0,
+      orderProgressList: [],
       childOrder: []
     }
   },
@@ -184,11 +161,22 @@ export default {
     },
     formatInstance(res) {
       const instanceHistoryStates = res.result.instance.historyStates
-      this.orderProgressValue = (instanceHistoryStates.length / 4) * 100
+      instanceHistoryStates.forEach(ele => {
+        const oneStep = 25
+        if (ele.stateResult == 1) {
+          this.orderProgressValue += oneStep
+        }
+      })
       for (let i = 0; i < instanceHistoryStates.length; i++) {
-        this.orderProgressList[i].title = instanceHistoryStates[i].productMilestone_dictText
-        this.orderProgressList[i].text = instanceHistoryStates[i].stateResult_dictText
-        this.orderProgressList[i].time = instanceHistoryStates[i].createTime
+        this.orderProgressList.push({
+          status: instanceHistoryStates[i].stateResult,
+          title: instanceHistoryStates[i].productMilestone_dictText,
+          text: instanceHistoryStates[i].stateResult_dictText,
+          time:
+            instanceHistoryStates[i].stateResult === -1
+              ? instanceHistoryStates[i].stateResult_dictText
+              : instanceHistoryStates[i].updateTime
+        })
       }
     },
     formatSubOrders(res) {
@@ -199,31 +187,50 @@ export default {
         this.childOrder.push({
           omicsAnalysisType: subOrders[i].omicsAnalysisType,
           title: subOrders[i].omicsAnalysisType_dictText,
-          orderId: subOrders[i].orderMetaId,
+          orderId: subOrders[i].id,
           responsible: '王大山',
           step: step ? step : 0,
           data: []
         })
         for (let j = 0; j < historyStates.length; j++) {
           if (this.childOrder[i].data) {
-            if (historyStates[j].omicsMilestone === 10000) {
-              this.childOrder[i].data.push({
-                omicsMilestone: historyStates[j].omicsMilestone,
-                title: historyStates[j].omicsMilestone_dictText,
-                time: historyStates[j].createTime,
-                showButton: true,
-                buttonText: '查看报告',
-                disState: subOrders[i].orderState >= 10000 ? false : true
-              })
-            } else {
-              this.childOrder[i].data.push({
-                omicsMilestone: historyStates[j].omicsMilestone,
-                title: historyStates[j].omicsMilestone_dictText,
-                time: historyStates[j].createTime,
-                showButton: false,
-                buttonText: '',
-                disState: false
-              })
+            const codeNum = historyStates[j].omicsMilestone
+            switch (codeNum) {
+              case 10000:
+                this.childOrder[i].data.push({
+                  omicsMilestone: historyStates[j].omicsMilestone,
+                  title: historyStates[j].omicsMilestone_dictText,
+                  time: historyStates[j].updateTime,
+                  showButton: false,
+                  buttonText: '查看报告',
+                  disState: historyStates[j].stateResult === 1 ? false : true,
+                  status: historyStates[j].stateResult_dictText
+                })
+                break
+              case 3100:
+                this.childOrder[i].data.push({
+                  omicsMilestone: historyStates[j].omicsMilestone,
+                  title: historyStates[j].omicsMilestone_dictText,
+                  time: historyStates[j].updateTime,
+                  showButton: true,
+                  buttonText: historyStates[j].stateResult === 1 ? '查看影像' : '重新归档',
+                  disState: historyStates[j].stateResult === 1 ? false : true,
+                  status: historyStates[j].stateResult_dictText,
+                  omicsOrderId: historyStates[j].omicsOrderId,
+                  stateResult: historyStates[j].stateResult
+                })
+                break
+              default:
+                this.childOrder[i].data.push({
+                  omicsMilestone: historyStates[j].omicsMilestone,
+                  title: historyStates[j].omicsMilestone_dictText,
+                  time: historyStates[j].updateTime,
+                  showButton: false,
+                  buttonText: '',
+                  disState: false,
+                  status: historyStates[j].stateResult_dictText
+                })
+                break
             }
           }
         }
@@ -278,8 +285,22 @@ export default {
         return m[p] - n[p]
       }
     },
-    handleSubOrderClick(omicsAnalysisType, omicsMilestone) {
-      console.log(`${omicsAnalysisType} + ${omicsMilestone}`)
+    handleSubOrderClick(item, omicsMilestone) {
+      switch (omicsMilestone) {
+        case 3100:
+          if (item.stateResult === 1) {
+            this.$router.push({
+              path: `/viewport/viewportDetail?resource=${item.omicsOrderId}&type=1`
+            })
+          } else {
+            console.log(`重新归档`)
+          }
+          break
+
+        default:
+          console.log(item)
+          break
+      }
     }
   }
 }
@@ -310,16 +331,17 @@ export default {
 }
 
 .order-progress-table {
-  border: 1px solid #222222;
   width: fit-content;
+  width: 100%;
   display: flex;
 
   .progress-row {
-    border-right: 1px solid #222;
-    min-width: 260px;
+    border: 1px solid #222;
+    width: 12.5%;
+    border-right: none;
 
     &:last-child {
-      border-right: none;
+      border-right: 1px solid #222;
     }
 
     .title,
@@ -330,7 +352,8 @@ export default {
       text-align: center;
     }
 
-    .text {
+    .text.successStatus,
+    .time.successStatus {
       color: rgb(16, 191, 125);
     }
 
@@ -393,5 +416,15 @@ export default {
   &-status {
     padding: 10px 15px;
   }
+}
+
+.successStatus {
+  font-size: 13px;
+  color: #10bf7d;
+}
+
+.errorStatus {
+  font-size: 13px;
+  color: #f5222d;
 }
 </style>

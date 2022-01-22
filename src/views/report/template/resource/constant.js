@@ -5,9 +5,15 @@
  */
 
 export const conclusion = {
-  description: '癌症是一种可改变细胞代谢和分泌物的疾病，已有大量研究表明，代谢组学、蛋白组学以及医学影像人工智能检测技术在多种癌症早期发现中具有重大价值。本项目对肺癌高度相关的生化分子进行检测，并结合肺部CT影像人工智能阅片等多组学技术，提供肺结节患者恶性病变风险评估。经多组学分析，该受检者肺小结节良恶性评估为：',
-  hint: '提示您肺癌发生风险较高，建议进一步诊疗或严密跟踪。',
-  content: '具体请临床医生结合患者的临床症状及本次检测结果进行综合分析。'
+  description: '经多组学分析，该受检者肺小结节良恶性评估为：',
+  high: {
+    hint: '提示您肺癌发生风险较高，建议进一步诊疗或严密跟踪。',
+    content: '具体请临床医生结合患者的临床症状及本次检测结果进行综合分析。'
+  },
+  low: {
+    hint: '提示您具有一定的肺癌发生风险。',
+    content: '建议您与临床医生沟通，结合临床信息等结果，做好定期随访。'
+  }
 }
 
 export const proteinResult = {
@@ -16,10 +22,23 @@ export const proteinResult = {
     suggest: '表示检测到恶性代谢异常早期信号，高度可疑，建议进一步诊疗或密切随访。'
   },
   mid: {
-    suggest: '表示检测到恶性代谢异常早期信号，高度可疑，建议进一步诊疗或密切随访。'
+    suggest: '表示受检者肺部器官代谢异常，可能已进入早期病变阶段，但也不排除少数的肺癌发生，建议随访观察。'
   }
 }
-
+/*人工智能阅片分析结果： 小结*/
 export const dicomResult = {
-  interpretation: '建议由临床医生综合临床表型，考虑是否进一步诊疗或严密跟踪。'
+  interpretation: '建议由临床医生综合临床表型，考虑是否进一步诊疗或严密跟踪。',
+  low: '考虑现有检测技术的局限性，建议视受检者状况综合评估复查或进行定期随访。'
+}
+export const preHeight = 1.32 // 结节小结每行高度
+export const tipHeight = 1.46 // 小结tips高度
+export const preHeightImage = 8.255  // 影像每幅图高度
+export const Patient = {
+  clinical: '肺结节',
+  detectionMethod: '血液蛋白组学/代谢组学，以及医学影像等多组学技术'
+}
+
+export const singature = {
+  Inspector: '杨清婷',
+  Reviewer: '夏文军'
 }

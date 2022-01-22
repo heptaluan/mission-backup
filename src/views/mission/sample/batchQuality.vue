@@ -34,7 +34,7 @@
         </a-col>
         <a-col class="group">
           <a-button @click="searchQuery" type="primary">查询</a-button>
-          <a-button @click="resetQuery" >重置</a-button>
+          <a-button @click="resetQuery">重置</a-button>
         </a-col>
       </a-row>
     </a-form>
@@ -140,7 +140,7 @@ export default {
         {
           title: '样本编号',
           align: 'center',
-          dataIndex: 'codeNumber'
+          dataIndex: 'sampleBarcode'
         },
         {
           title: '样本类型',
@@ -258,11 +258,11 @@ export default {
 </script>
 <style scoped lang="less">
 .btn-group {
-display: flex;
-justify-content: space-evenly;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 .ant-radio-group {
-padding-left: 15px;
+  padding-left: 15px;
 }
 </style>

@@ -43,10 +43,10 @@
 <script>
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { mixinDevice } from '@/utils/mixin'
-import { getCodeManagementList } from 'src/api/mission/project'
+import { getSampleBarcodeList } from 'src/api/mission/project'
 
 export default {
-  name: 'CodeControlModal',
+  name: 'ShowCreateCodeModal',
   mixins: [JeecgListMixin, mixinDevice],
   data() {
     return {
@@ -71,22 +71,29 @@ export default {
         {
           title: '病例编号',
           align: 'center',
-          dataIndex: 'codeMedicalCase'
+          dataIndex: 'caseBarcode'
         },
         {
           title: '样本编号',
           align: 'center',
-          dataIndex: 'codeNumber'
+          dataIndex: 'sampleBarcode'
         },
         {
-          title: '癌症类别',
-          align: 'center',
-          dataIndex: 'cancerType_dictText'
-        },
-        {
-          title: '样本类别',
+          title: '样本类型',
           align: 'center',
           dataIndex: 'sampleType_dictText'
+        },
+        {
+          title: '编号使用状态',
+          align: 'center',
+          dataIndex: 'codeUsageStatus',
+          customRender: function(t, r, index) {
+            if (r.codeUsageStatus === 1) {
+              return '已使用'
+            } else {
+              return '未使用'
+            }
+          }
         },
         {
           title: '创建时间',
@@ -104,7 +111,7 @@ export default {
         showQuickJumper: true,
         showSizeChanger: true,
         total: 0
-      },
+      }
     }
   },
   methods: {
@@ -124,8 +131,8 @@ export default {
     },
     loadData() {
       const that = this
-      getCodeManagementList({
-        codeManageId: that.record.id,
+      getSampleBarcodeList({
+        barcodeGenerateId: that.record.id,
         pageNo: that.ipagination.current,
         pageSize: that.ipagination.pageSize
       }).then(res => {

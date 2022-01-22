@@ -20,7 +20,7 @@
       <h3 class="order-title">样本信息</h3>
 
       <div class="order-content">
-        <a-form-model-item label="病例编号" style="display: flex;padding-left: 10px;">
+        <a-form-model-item label="病例编号" style="display: flex;" prop="medicalCaseCode">
           <a-select
             style="width:200px;"
             show-search
@@ -51,11 +51,14 @@
             </div>
             <div class="list-item">
               <a-input-number
-                @change="handleListContentChange(key)"
-                v-model="item.amount"
+                @change='handleListContentChange(key)'
+                class='rightLabel'
+                v-model='item.amount'
                 v-if="item.inputOne"
-                :min="min"
-                placeholder="请输入管数"
+                :min="1"
+                :max="300"
+                :precision="0"
+                placeholder="输入管数"
               />
               <span v-if="item.inputOne" class="item-text">{{ item.inputOne }}</span>
             </div>
@@ -159,7 +162,7 @@ function fetch(value, callback) {
   function fake() {
     queryCaseCode({
       codeStatus: 0,
-      caseCode: value + '*'
+      caseBarCode: value + '*'
     }).then(res => {
       if (res.success) {
         if (currentValue === value) {
@@ -168,7 +171,7 @@ function fetch(value, callback) {
           result.forEach(r => {
             data.push({
               key: r.id,
-              caseCode: r.caseCode,
+              caseCode: r.caseBarcode,
               id: r.id
             })
           })
@@ -197,7 +200,8 @@ export default {
         productRecognition: [{ required: true, message: '请选择检测项目', trigger: 'change' }],
         medicalCaseCode: [{ required: true, message: '请输入病例编号', trigger: 'blur' }],
         repeatCollect: [{ required: true, message: '请选择是否重复取血', trigger: 'change' }],
-        receiveAddress: [{ required: true, message: '请选择收件地址', trigger: 'change' }]
+        receiveAddress: [{ required: true, message: '请选择收件地址', trigger: 'change' }],
+        caseCode: [{ required: true, message: '请输入病例编号', trigger: 'blur' }]
       },
       productInfoList: [],
       departList: [],
@@ -209,7 +213,6 @@ export default {
       addressList: [],
       data: [],
       value: undefined,
-      min: 0
     }
   },
   props: {
@@ -343,7 +346,7 @@ export default {
               this.$message.success('订单信息已保存！')
               if (typeof cb === 'function') cb()
             } else {
-              this.$message.success(res.message)
+              this.$message.error(res.message)
             }
           })
         }
@@ -367,16 +370,16 @@ export default {
       if (list) {
         const includeSample = list.split(',')
         for (let i = 0; i < includeSample.length; i++) {
-          formatSampleTypes.push(sampleTypes[includeSample[i]])
+          formatSampleTypes.push(sampleTypes.find(item => item.value === includeSample[i]))
         }
       }
       const newList = formatSampleTypes
         .map(item => {
           switch (item.value) {
-            case '1':
-            case '2':
-            case '6':
-            case '11':
+            case 'qx':
+            case 'xq':
+            case 'wzx':
+            case 'xqjy':
               return {
                 checked: false,
                 name: item.text,
@@ -390,7 +393,7 @@ export default {
                 emsNumber: '',
                 sampleType: item.value
               }
-            case '7':
+            case 'slz':
               return {
                 ichecked: false,
                 name: item.text,
@@ -404,7 +407,7 @@ export default {
                 emsNumber: '',
                 sampleType: item.value
               }
-            case '8':
+            case 'sbl':
               return {
                 checked: false,
                 name: item.text,
@@ -418,8 +421,8 @@ export default {
                 emsNumber: '',
                 sampleType: item.value
               }
-            case '9':
-            case '10':
+            case 'slb':
+            case 'xxzz':
               return {
                 checked: false,
                 name: item.text,
@@ -498,11 +501,11 @@ export default {
 
   .ant-checkbox-wrapper {
     margin-left: 0;
-    margin-right: 15px;
+    margin-right: 10px;
   }
 
   .ant-input {
-    width: 200px;
+    width: 150px;
   }
 
   .ant-radio-wrapper {
@@ -526,13 +529,13 @@ export default {
 
     .check-box {
       display: inline-block;
-      min-width: 173px;
+      min-width: 80px;
     }
 
     .list-item {
       display: inline-block;
       margin-right: 25px;
-      min-width: 136px;
+      min-width: 110px;
     }
 
     .item-text {
@@ -544,13 +547,14 @@ export default {
       margin-right: 12px;
     }
 
-    .ant-calendar-picker {
-      width: 150px;
-    }
-
     .ant-input-number {
       width: 80px;
+
+      &.rightLabel {
+        width: 120px;
+      }
     }
+
   }
 }
 

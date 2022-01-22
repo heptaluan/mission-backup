@@ -33,7 +33,7 @@ const common = {
     // 是否是异步模式
     isAsync() {
       let isAsync = this.originColumn.async
-      return isAsync != null && isAsync !== '' ? !!isAsync : true
+      return (isAsync != null && isAsync !== '') ? !!isAsync : true
     },
   },
   /** 公共属性监听 */
@@ -46,14 +46,15 @@ const common = {
         } else {
           this.loadDataByValue(value)
         }
-      },
+      }
     },
     dict() {
       this.loadDataByDict()
-    },
+    }
   },
   /** 公共方法 */
   methods: {
+
     // 根据 value 查询数据，用于回显
     async loadDataByValue(value) {
       if (this.isAsync) {
@@ -61,9 +62,9 @@ const common = {
           if (common.labelMap.has(value)) {
             this.innerOptions = cloneObject(common.labelMap.get(value))
           } else {
-            let { success, result } = await getAction(`/sys/dict/loadDictItem/${this.dict}`, { key: value })
+            let {success, result} = await getAction(`/sys/dict/loadDictItem/${this.dict}`, {key: value})
             if (success && result && result.length > 0) {
-              this.innerOptions = [{ value: value, text: result[0] }]
+              this.innerOptions = [{value: value, text: result[0]}]
               common.labelMap.set(value, cloneObject(this.innerOptions))
             }
           }
@@ -95,7 +96,7 @@ const common = {
                 return
               }
             }
-            let { success, result } = await ajaxGetDictItems(dictStr, null)
+            let {success, result} = await ajaxGetDictItems(dictStr, null)
             if (success) {
               this.innerOptions = result
             }
@@ -103,7 +104,9 @@ const common = {
         }
       }
     },
+
   },
+
 }
 
 // 显示组件，自带翻译
@@ -125,7 +128,9 @@ export const DictSearchSpanCell = {
     ...common.methods,
   },
   render(h) {
-    return h('span', {}, [filterDictText(this.innerOptions, this.innerSelectValue || this.innerValue)])
+    return h('span', {}, [
+      filterDictText(this.innerOptions, this.innerSelectValue || this.innerValue)
+    ])
   },
 }
 
@@ -144,14 +149,14 @@ export const DictSearchInputCell = {
       scopedSlots: {
         notFoundContent: () => {
           if (this.loading) {
-            return <a-spin size="small" />
+            return <a-spin size="small"/>
           } else if (this.hasRequest) {
             return <div>没有查询到任何数据</div>
           } else {
             return <div>{this.tipsContent}</div>
           }
-        },
-      },
+        }
+      }
     }
   },
   computed: {
@@ -170,7 +175,7 @@ export const DictSearchInputCell = {
     ...common.watch,
   },
   created() {
-    this.loadData = debounce(this.loadData, 300) //消抖
+    this.loadData = debounce(this.loadData, 300)//消抖
   },
   methods: {
     ...common.methods,
@@ -186,24 +191,22 @@ export const DictSearchInputCell = {
       }
       // 字典code格式：table,text,code
       this.hasRequest = true
-      getAction(`/sys/dict/loadDict/${this.dict}`, { keyword: value })
-        .then((res) => {
-          if (currentRequestId !== requestId) {
-            return
-          }
-          let { success, result, message } = res
-          if (success) {
-            this.innerOptions = result
-            result.forEach((item) => {
-              common.labelMap.set(item.value, [item])
-            })
-          } else {
-            this.$message.warning(message)
-          }
-        })
-        .finally(() => {
-          this.loading = false
-        })
+      getAction(`/sys/dict/loadDict/${this.dict}`, {keyword: value}).then(res => {
+        if (currentRequestId !== requestId) {
+          return
+        }
+        let {success, result, message} = res
+        if (success) {
+          this.innerOptions = result
+          result.forEach((item) => {
+            common.labelMap.set(item.value, [item])
+          })
+        } else {
+          this.$message.warning(message)
+        }
+      }).finally(() => {
+        this.loading = false
+      })
     },
 
     handleChange(selectedValue) {
@@ -223,11 +226,9 @@ export const DictSearchInputCell = {
 
     renderOptionItem() {
       let options = []
-      this.options.forEach(({ value, text, label, title, disabled }) => {
+      this.options.forEach(({value, text, label, title, disabled}) => {
         options.push(
-          <a-select-option key={value} value={value} disabled={disabled}>
-            {text || label || title}
-          </a-select-option>
+          <a-select-option key={value} value={value} disabled={disabled}>{text || label || title}</a-select-option>
         )
       })
       return options
@@ -257,5 +258,5 @@ export const DictSearchInputCell = {
         dispatchEvent.call(this, event, 'ant-select')
       },
     },
-  },
+  }
 }

@@ -15,7 +15,7 @@ export default {
   name: 'h-progress',
   props: {
     progress: {
-      type: Number,
+      type: String,
       require: true
     }
   },
@@ -29,7 +29,7 @@ export default {
   },
   methods:{
     init() {
-      const left = (this.progress + 1000) * 100 / 2000
+      const left = (this.progress * 1 + 1000) * 100 / 2000
       this.positionStyle = `left: ${left}%`
     }
   }

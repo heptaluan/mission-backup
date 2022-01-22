@@ -127,7 +127,34 @@ export const JeecgListMixin = {
         sqp['superQueryParams'] = encodeURI(this.superQueryParams)
         sqp['superQueryMatchType'] = this.superQueryMatchType
       }
-      var param = Object.assign(sqp, this.queryParam, this.isorter, this.filters)
+
+      // 所有查询条件添加模糊查询
+      const queryParam = Object.assign({}, this.queryParam)
+      for (const key in queryParam) {
+        if (Object.hasOwnProperty.call(queryParam, key)) {
+          if (
+            key === 'createBy' ||
+            key === 'medicalCaseCode' ||
+            key === 'caseName' ||
+            key === 'planName' ||
+            key === 'batchNo' ||
+            key === 'leaveApplyId' ||
+            key === 'caseIdentityNumber' ||
+            key === 'caseBarcode' ||
+            key === 'barcodeGenerateId' ||
+            key === 'addressName' ||
+            key === 'address' ||
+            key === 'identifyCode' ||
+            key === 'departName' ||
+            key === 'mobile' ||
+            key === 'phone'
+          ) {
+            queryParam[key] = '*' + queryParam[key] + '*'
+          }
+        }
+      }
+
+      var param = Object.assign(sqp, queryParam, this.isorter, this.filters)
       param.field = this.getQueryField()
       param.pageNo = this.ipagination.current
       param.pageSize = this.ipagination.pageSize
@@ -141,7 +168,6 @@ export const JeecgListMixin = {
       })
       return str
     },
-
     onSelectChange(selectedRowKeys, selectionRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectionRows = selectionRows
@@ -393,7 +419,7 @@ export const JeecgListMixin = {
     },
     // 一次清空组件中data里的数据
     cleanDataOfComponent() {
-      Object.assign(this.$data, this.$options.data.call(this));
+      Object.assign(this.$data, this.$options.data.call(this))
     }
   }
 }

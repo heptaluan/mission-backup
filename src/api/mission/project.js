@@ -3,7 +3,7 @@
  * @Date 2021/4/8
  * @description
  */
-import { getAction, postAction, putAction, uploadAction } from '@/api/manage'
+import { getAction, postAction, putAction, uploadAction} from '@/api/manage'
 const prefix = '/mission/projectInfo'
 
 const api = {
@@ -14,7 +14,7 @@ const api = {
   deleteBatch: prefix + '/deleteBatch',
   delete: prefix + '/delete',
   exportXlsUrl: prefix + '/exportXls',
-  importExcelUrl: prefix + '/importExcelUrl',
+  importExcelUrl: prefix + '/importExcelUrl'
 }
 
 export const queryOwnershipType = (params) => getAction('/mission/fileInfo/list', params)
@@ -110,6 +110,7 @@ export const getCaseSampleOrigin = (params) => getAction('/mission/caseSample/or
 // 病例样本信息-查询原始数据
 export const putCaseSampleEdit = (params) => putAction('/mission/caseSample/edit', params)
 
+
 // ======================= 新增
 
 // 样本管理-查看质控报告
@@ -124,7 +125,10 @@ export const stockApplyFeedback = (params) => putAction('/tailai-system/mission/
 // ================================================= 编号管理
 
 // 样本编号详情管理-分页列表查询
-export const getCodeManagementList = (params) => getAction('/mission/codeManagement/code/list', params)
+export const getSampleBarcodeList = (params) => getAction('/mission/codeManagement/sampleBarcode/list', params)
+
+// 历史编号导入
+export const getCaseBarcodeList = (params) => getAction('/mission/codeManagement/caseBarcode/list', params)
 
 // 文件管理-通过id下载
 export const downloadFileInfo = (params) => getAction('/mission/fileInfo/download', params)
@@ -143,6 +147,7 @@ export const queryUserByDepId = (params) => getAction('/sys/user/queryUserByDepI
 // 质检
 export const getAuthForQc = () => getAction('/sys/sysDepart/isQCHead')
 // 入库审核权限
-export const getAuthForTest = () => getAction('/sys/sysDepart/isTestingHead')
+export const getAuthForTest = ()=> getAction('/sys/sysDepart/isTestingHead')
+
 
 export default api

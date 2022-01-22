@@ -15,7 +15,7 @@ export default {
   methods: {
     widthHeight() {
       this.iframeHeight = window.innerHeight - 140
-      this.iframeWidth = window.innerWidth - 72 - document.querySelector('.ant-layout-sider').clientWidth
+      this.iframeWidth = window.innerWidth - 56 - document.querySelector('.ant-layout-sider').clientWidth
     },
     listenNodeChange() {
       const that = this
@@ -48,8 +48,8 @@ export default {
     this.listenNodeChange()
   },
   created() {
-    this.iframeUrl = `http://ct.ananpan.com/viewer/1?patient=${this.$route.query.id}&token=${this.token}&url=${Vue.prototype.API_BASE_URL}`
-    // this.iframeUrl = `http://localhost:3000/viewer/1?patient=${this.$route.query.id}&token=${this.token}&url=${Vue.prototype.API_BASE_URL}`
+    // this.iframeUrl = `http://localhost:3000/viewer/1?resource=${this.$route.query.resource}&token=${this.token}&url=${Vue.prototype.API_BASE_URL}&type=${this.$route.query.type}`
+    this.iframeUrl = `http://ct.ananpan.com/viewer/1?resource=${this.$route.query.resource}&token=${this.token}&url=${Vue.prototype.API_BASE_URL}&type=${this.$route.query.type}`
   }
 }
 </script>

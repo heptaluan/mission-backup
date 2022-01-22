@@ -33,11 +33,11 @@ export default {
       this.value = value
     },
     check() {
-      if (/^[1-9]\d*$/.test(this.value) && this.value < 201) {
+      if (/^[1-9]\d*$/.test(this.value) && this.value < 1101) {
         this.editable = false
         this.$emit('change', this.value)
       } else {
-        this.$message.warning(`请输入正确的耗材数量（不能超过200份）！`)
+        this.$message.warning(`请输入正确的耗材数量（不能超过1100份）！`)
       }
     },
     edit() {

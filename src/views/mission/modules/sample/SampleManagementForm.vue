@@ -244,13 +244,15 @@ export default {
     },
     downloadTpl() {
       const token = this.$ls.get(ACCESS_TOKEN)
-      const url = `${window._CONFIG['domianURL']}/tailai-system/mission/fileInfo/downloadImportTemplate?token=${token}&type=${1}`
+      const url = `${
+        window._CONFIG['domianURL']
+      }/tailai-system/mission/fileInfo/downloadImportTemplate?token=${token}&type=${1}`
       window.open(url, '_blank')
     },
     beforeTplUpload(file) {
       this.tplFile = file
       return true
-    },
+    }
     // handleUploadfile(file) {
     //   const { tplFile } = this
     //   const formData = new FormData()

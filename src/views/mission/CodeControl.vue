@@ -4,7 +4,7 @@
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24" class="search-group">
           <a-col class="group md">
-            <a-form-item label="耗材订单编号" >
+            <a-form-item label="耗材订单编号">
               <a-input
                 allowClear
                 v-model="queryParam.leaveApplyId"
@@ -22,12 +22,7 @@
                 placeholder="请选择开始时间"
               ></j-date>
               <span style="width: 10px;"> - </span>
-              <j-date
-                v-model="queryParam.updateTime_end"
-                :showTime="true"
-                c
-                placeholder="请选择结束时间"
-              ></j-date>
+              <j-date v-model="queryParam.updateTime_end" :showTime="true" c placeholder="请选择结束时间"></j-date>
             </a-form-item>
           </a-col>
           <a-col class="group md">
@@ -50,10 +45,18 @@
             </a-form-item>
           </a-col>
           <a-col class="group md">
-            <a-form-item label="客户" prop="sendAccess" class="order-label">
-              <a-select style="width:200px;" v-model="queryParam.agencyId" placeholder="请选择客户">
-                <a-select-option v-for="item in distributorList" :key="item.id" :value="item.shortName">
-                  {{ item.accessName }}
+            <a-form-item label='渠道商' prop='sendAccess' class='order-label'>
+              <a-select v-model='queryParam.agencyShortName' placeholder='请选择渠道商'
+                        style='width:200px'
+                        show-search
+                        :value='channelValue'
+                        :default-active-first-option='false'
+                        :filter-option='false'
+                        :not-found-content='null'
+                        @search='handleChannelSearch'
+                        @change='handleChannelChange'>
+                <a-select-option v-for='item in distributorList' :key='item.id' :value='item.departNameAbbr'>
+                  {{ item.departName }}
                 </a-select-option>
               </a-select>
             </a-form-item>
@@ -62,13 +65,15 @@
             <a-button @click="searchQuery" type="primary">查询</a-button>
             <a-button @click="resetQuery">重置</a-button>
           </a-col>
-          <!-- <div class="group">
-            <div class="title">项目：</div>
-            <j-dict-select-tag v-model="queryParam.projectId" dictCode="project_info, project_name, id, logical_state=1" placeholder="请选择项目组" style="width: 180px"></j-dict-select-tag>
-          </div> -->
         </a-row>
       </a-form>
     </div>
+
+    <!-- 操作按钮区域 -->
+    <div class="table-operator">
+      <a-button type="primary" icon="upload" @click="handleImportHistorical">历史编号导入</a-button>
+    </div>
+
     <!-- table区域-begin -->
     <a-table
       ref="table"
@@ -105,14 +110,33 @@
       </template>
 
       <span slot="action" slot-scope="text, record">
-        <div class="btn-group" v-if="record.circuitResult === 10000" style="display: flex;">
-          <a @click="preview(record)">查看</a>
-          <a @click="downloadCode(record)" v-has="'codeEdit'">下载编号</a>
+        <div class="btn-group" style="display: flex;">
+          <a v-if="record.status === 1" @click="preview(record)">查看编号</a>
+          <a v-if="record.status === 1" @click="downloadCode(record)" v-has="'codeEdit'">下载编号</a>
+          <a v-if="record.status !== 1" @click="handleShowLog(record)" v-has="'codeEdit'">查看日志</a>
+          <!-- <a-dropdown>
+            <a class="ant-dropdown-link">更多 <a-icon type="down"/></a>
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <a @click="downloadCode(record)" v-has="'codeEdit'">下载编号</a>
+              </a-menu-item>
+              <a-menu-item>
+                <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                  <a>删除</a>
+                </a-popconfirm>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown> -->
         </div>
       </span>
     </a-table>
 
-    <CodeControlModal ref="codeControlModal" @ok="modalFormOk" />
+    <ShowCreateCodeModal ref="showCreateCodeModal" @ok="modalFormOk" />
+    <ShowImportCodeModal ref="showImportCodeModal" @ok="modalFormOk" />
+
+    <ImportHistoricalCodeModal ref="importHistoricalCodeModal" @ok="modalFormOk" />
+    <OrderHistoryModal ref="orderHistoryModal" @ok="modalFormOk" />
+
   </a-card>
 </template>
 
@@ -120,11 +144,14 @@
 import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixinForMount'
-import CodeControlModal from './modules/sample/CodeControlModal'
+import { selectorFilterMixin } from '@/mixins/selectorFilterMixin'
+import ShowCreateCodeModal from './modules/sample/ShowCreateCodeModal'
+import ShowImportCodeModal from './modules/sample/ShowImportCodeModal'
+import ImportHistoricalCodeModal from './modules/sample/ImportHistoricalCodeModal'
 import Vue from 'vue'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import { queryRoleUsers } from '../../api/material'
-import { getDistributorList } from '../../api/product/index'
+import OrderHistoryModal from '../order/modules/OrderHistoryModal.vue'
 
 function sellFetch(value, callback) {
   let timeout
@@ -164,12 +191,14 @@ function sellFetch(value, callback) {
   timeout = setTimeout(fake, 300)
 }
 
-
 export default {
   name: 'CodeControl',
-  mixins: [JeecgListMixin, mixinDevice],
+  mixins: [JeecgListMixin, mixinDevice, selectorFilterMixin],
   components: {
-    CodeControlModal
+    ShowCreateCodeModal,
+    ShowImportCodeModal,
+    ImportHistoricalCodeModal,
+    OrderHistoryModal
   },
   data() {
     return {
@@ -193,34 +222,66 @@ export default {
         {
           title: '耗材订单编号',
           align: 'center',
-          dataIndex: 'leaveApplyId'
-        },
-        {
-          title: '客户',
-          align: 'center',
-          dataIndex: 'agencyId_dictText'
-        },
-        {
-          title: '编号数量',
-          align: 'center',
-          dataIndex: 'codeAmount',
+          dataIndex: 'leaveApplyId',
           customRender: function(t, r, index) {
-            if (r.circuitResult !== 10000) {
-              return '-'
-            } else {
+            if (r.leaveApplyId) {
               return t
+            } else {
+              return '-'
             }
           }
         },
         {
+          title: '渠道商',
+          align: 'center',
+          dataIndex: 'agencyShortName_dictText'
+        },
+        {
+          title: '编号数量',
+          align: 'center',
+          dataIndex: 'codeAmount'
+          // customRender: function(t, r, index) {
+          //   if (r.status !== 10000) {
+          //     return '-'
+          //   } else {
+          //     return t
+          //   }
+          // }
+        },
+        {
           title: '病例数量',
           align: 'center',
-          dataIndex: 'caseAmount',
+          dataIndex: 'caseAmount'
+          // customRender: function(t, r, index) {
+          //   if (r.circuitResult !== 10000) {
+          //     return '-'
+          //   } else {
+          //     return t
+          //   }
+          // }
+        },
+
+        {
+          title: '状态',
+          align: 'center',
+          dataIndex: 'status_dictText'
+          // customRender: function(t, r, index) {
+          //   if (r.circuitResult === 20000) {
+          //     return '进行中'
+          //   } else {
+          //     return t
+          //   }
+          // }
+        },
+        {
+          title: '类别',
+          align: 'center',
+          dataIndex: 'taskType',
           customRender: function(t, r, index) {
-            if (r.circuitResult !== 10000) {
-              return '-'
+            if (r.taskType === 1) {
+              return '外部导入'
             } else {
-              return t
+              return '系统生成'
             }
           }
         },
@@ -228,18 +289,6 @@ export default {
           title: '创建时间',
           align: 'center',
           dataIndex: 'createTime'
-        },
-        {
-          title: '状态',
-          align: 'center',
-          dataIndex: 'circuitResult_dictText',
-          customRender: function(t, r, index) {
-            if (r.circuitResult === 20000) {
-              return '进行中'
-            } else {
-              return t
-            }
-          }
         },
         {
           title: '操作',
@@ -251,13 +300,15 @@ export default {
         }
       ],
       url: {
-        list: `mission/codeManagement/list`
+        list: `mission/codeManagement/list`,
+        delete: 'mission/codeManagement/delete'
       },
       distributorList: [],
       sellData: [],
       user: null,
       hospitalList: [],
       sellValue: undefined,
+      channelValue: undefined
     }
   },
   computed: {
@@ -267,7 +318,11 @@ export default {
   },
   methods: {
     preview(record) {
-      this.$refs.codeControlModal.show(record)
+      if (record.taskType === 1) {
+        this.$refs.showImportCodeModal.show(record)
+      } else if (record.taskType === 0) {
+        this.$refs.showCreateCodeModal.show(record)
+      }
     },
     downloadCode(record) {
       const token = Vue.ls.get(ACCESS_TOKEN)
@@ -280,7 +335,7 @@ export default {
     },
     resetQuery() {
       this.queryParam = {}
-      this.sellValue = null;
+      this.sellValue = null
       this.loadData()
     },
     onChange(e) {
@@ -308,22 +363,16 @@ export default {
         this.loadDistributorList(value)
       }
     },
-    loadDistributorList(value) {
-      const that = this
-      getDistributorList({
-        sellUser: value
-      }).then(res => {
-        if (res.success) {
-          that.distributorList = res.result.records
-        } else {
-          that.$message.warning(res.message)
-        }
-      })
+    handleImportHistorical() {
+      this.$refs.importHistoricalCodeModal.show()
+    },
+    handleShowLog(record) {
+      this.$refs.orderHistoryModal.show(record)
     },
   },
   mounted() {
-    this.user = this.$store.state.user.info;
-    this.loadDistributorList();
+    this.user = this.$store.state.user.info
+    this.loadDistributorList()
     if (this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics')) {
       this.sellData = [this.user]
     }
@@ -369,6 +418,7 @@ export default {
     margin-right: 15px;
   }
 }
+
 .btn-group {
   display: flex;
   justify-content: space-evenly;

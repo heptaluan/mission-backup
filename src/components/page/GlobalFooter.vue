@@ -21,7 +21,7 @@ export default {
   name: 'LayoutFooter',
   data() {
     return {
-      showFooter: true,
+      showFooter: true
     }
   },
   methods: {
@@ -31,16 +31,16 @@ export default {
       } else {
         this.showFooter = true
       }
-    },
+    }
   },
   watch: {
-    $route: function () {
+    $route: function() {
       this.setFooterStyle()
-    },
+    }
   },
   mounted() {
     this.setFooterStyle()
-  },
+  }
 }
 </script>
 

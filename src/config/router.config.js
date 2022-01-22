@@ -105,8 +105,13 @@ export const constantRouterMap = [
     name: 'Preview',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/report/template/preview')
   },
+  // {
+  //   path: '/print/:reportId',
+  //   name: 'PagePreview',
+  //   component: () => import(/* webpackChunkName: "fail" */ '@/views/report/print')
+  // },
   {
-    path: '/print/:reportId',
+    path: '/print/:reportId/:template',
     name: 'PagePreview',
     component: () => import(/* webpackChunkName: "fail" */ '@/views/report/print')
   },

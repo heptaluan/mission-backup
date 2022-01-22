@@ -14,8 +14,9 @@
       :depart-id="value"
       :store="storeField"
       :text="textField"
-      :treeOpera="treeOpera"
-      @ok="handleOK"
+      :treeOpera='treeOpera'
+      :alldepart='alldepart'
+      @ok='handleOK'
       @initComp="initComp"/>
   </div>
 </template>
@@ -28,27 +29,30 @@
     components:{
       JSelectDepartModal
     },
-    props:{
-      modalWidth:{
-        type:Number,
-        default:500,
-        required:false
+    props: {
+      modalWidth: {
+        type: Number,
+        default: 500,
+        required: false
       },
-      multi:{
-        type:Boolean,
-        default:false,
-        required:false
+      multi: {
+        type: Boolean,
+        default: false,
+        required: false
       },
-      rootOpened:{
-        type:Boolean,
-        default:true,
-        required:false
+      alldepart: {
+        type: Boolean
       },
-      value:{
-        type:String,
-        required:false
+      rootOpened: {
+        type: Boolean,
+        default: true,
+        required: false
       },
-      disabled:{
+      value: {
+        type: String,
+        required: false
+      },
+      disabled: {
         type: Boolean,
         required: false,
         default: false
@@ -80,7 +84,6 @@
         default: false,
         required: false
       }
-      
     },
     data(){
       return {
@@ -105,9 +108,12 @@
     mounted(){
       this.storeVals = this.value
     },
-    watch:{
-      value(val){
+    watch: {
+      value(val) {
         this.storeVals = val
+      },
+      role() {
+        this.textVals = undefined
       }
     },
     methods:{
@@ -121,7 +127,7 @@
             let arr1 = this.storeVals.split(',')
             let arr2 = this.textVals.split(',')
             let info = []
-            for(let i=0;i<arr1.length;i++){
+            for (let i = 0; i < arr1.length; i++) {
               info.push({
                 value: arr1[i],
                 text: arr2[i]
@@ -131,24 +137,26 @@
           }
         }
       },
-      openModal(){
+      openModal() {
+        console.log(this.alldepart)
         this.$refs.innerDepartSelectModal.show()
       },
       handleOK(rows) {
+
         if (!rows && rows.length <= 0) {
           this.textVals = ''
           this.storeVals = ''
         } else {
           let arr1 = []
           let arr2 = []
-          for(let dep of rows){
+          for (let dep of rows) {
             arr1.push(dep[this.storeField])
             arr2.push(dep[this.textField])
           }
           this.storeVals = arr1.join(',')
           this.textVals = arr2.join(',')
         }
-        this.$emit("change", this.storeVals)
+        this.$emit('change', this.storeVals)
         this.backDeparInfo()
       },
       getDepartNames(){

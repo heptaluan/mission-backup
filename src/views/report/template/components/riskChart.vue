@@ -3,13 +3,15 @@
   <h4 v-html="title"></h4>
   <div class="risk-content">
     <div class="risk-progress text-center">
-       <a-progress stroke-linecap="square" :percent="data.risk" type="dashboard" :strokeColor = "getStatus(data.risk)" :width="width"/>
-       <p v-html="getStatusText(data.risk)" class="text-center text-weight"></p>
-       <h-progress :progress="data.avgDensity"></h-progress>
-       <p class="text-orange">密度：{{data.avgDensity}}HU</p>
+       <a-progress stroke-linecap="square" :percent="percent" type="dashboard" :strokeColor = "getStatus(data.scrynMaligant)" :width="width"/>
+       <p v-html="getStatusText(data.scrynMaligant)" class="text-center text-weight font-hei"></p>
+      <div class="risk-progress-panel">
+        <h-progress :progress="data.meanHu"></h-progress>
+      </div>
+       <p class="text-orange text-small">密度：{{data.meanHu}}HU</p>
      </div>
     <div class="risk-diameter">
-      <diameter :diameter="data.diameter"></diameter>
+      <diameter :diameter="data.diameterNorm"></diameter>
     </div>
   </div>
 </div>
@@ -29,38 +31,47 @@
     },
     data () {
       return {
-        width: 100
+        width: 110
       }
     },
     computed: {
       title () {
         const { data } = this
-        return `结节${data.index}:${data.lung}${data.lungLobe}<span class="text-orange">${data.shape}</span>`
+        return `结节${data.index}:${data.lungLocation}${data.lobeLocation}<span class="text-orange">${data.featureLabel}</span>`
+      },
+      percent () {
+        let percent = this.data.scrynMaligant.replace('%', '')
+        percent = percent * 1
+        return percent
       }
     },
     methods: {
       getStatusText (risk) {
+        let _risk = risk.replace('%', '')
+        _risk = _risk * 1
         let status = '低风险'
-        if (risk < 70 ) {
+        if (_risk < 60 ) {
           status = '低风险'
         }
         // if (risk < 70 && risk >=50 ) {
         //   status = '低风险'
         // }
-        if (risk >= 70 ) {
+        if (_risk >= 60 ) {
           status = '高风险'
         }
         return status
       },
       getStatus (risk) {
+        let _risk = risk.replace('%', '')
+        _risk = _risk * 1
         let status = '低风险'
-        if (risk < 70 ) {
+        if (_risk < 60 ) {
           status = '#5fb679'
         }
-        if (risk < 70 && risk >=50 ) {
-          status = '#dc5f0d'
-        }
-        if (risk >= 70 ) {
+        // if (_risk < 70 && _risk >=50 ) {
+        //   status = '#dc5f0d'
+        // }
+        if (_risk >= 60 ) {
           status = '#fe0100'
         }
         return status

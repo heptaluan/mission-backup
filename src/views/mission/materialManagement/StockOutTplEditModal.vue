@@ -28,17 +28,11 @@
           </a-col>
           <a-col :span="24">
             <a-form-model-item label="规格" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="units">
-              <a-input-number
-                style="width:100%;"
-                :min="1"
-                :max="50"
-                v-model="model.units"
-                placeholder="请输入规格"
-              ></a-input-number>
+              <a-input style="width:100%;" v-model="model.units" placeholder="请输入规格"></a-input>
             </a-form-model-item>
           </a-col>
           <a-col :span="24">
-            <a-form-model-item label="自定义后缀" :labelCol="labelCol" :wrapperCol="wrapperCol" prop="suffix">
+            <a-form-model-item label="自定义后缀" :labelCol="labelCol" :wrapperCol="wrapperCol">
               <a-input v-model="model.suffix" placeholder="请输入自定义后缀"></a-input>
             </a-form-model-item>
           </a-col>
@@ -88,7 +82,7 @@ export default {
       model: {},
       rules: {
         sampleType: [{ required: true, message: '请选择样本类别', trigger: 'blur' }],
-        units: [{ required: true, message: '请输入规格（仅限正整数）', trigger: 'blur', pattern: /^[1-9]\d*$/ }],
+        units: [{ required: true, message: '请输入正确的规格', trigger: 'blur', pattern: /^[A-Za-z0-9]{1,20}$/ }],
         suffix: [
           {
             required: true,

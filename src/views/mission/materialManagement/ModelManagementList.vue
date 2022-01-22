@@ -16,7 +16,7 @@
           </a-col>
           <a-col class="group btn">
             <a-button type="primary" @click="searchQuery">查询</a-button>
-            <a-button @click="searchReset">重置</a-button>
+            <a-button @click="searchReset()">重置</a-button>
           </a-col>
         </a-row>
       </a-form>
