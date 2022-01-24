@@ -1,4 +1,5 @@
 @import "common.less";
+
 .main {
   .search-group {
     display: flex;
@@ -49,15 +50,19 @@
   display: flex;
   align-items: center
 }
+
 .footer-bar .ant-btn {
   margin-right: 15px;
 }
+
 .footer-bar .flex-1 {
   flex: 1;
 }
+
 .b-form-row {
   margin-bottom: 20px;
   padding: 5px 15px;
+
   .form-label {
     margin-right: 15px;
     width: 72px;
@@ -70,9 +75,11 @@
       width: 120px;
     }
   }
+
   .b-form-item {
     display: flex;
   }
+
   .form-control {
     .ant-select {
       width: 100%;
@@ -94,24 +101,30 @@
 .search-group {
   flex-wrap: wrap;
   margin-bottom: 0 !important;
+
   .group {
     margin-right: 0 !important;
+
     &.tiny {
       .ant-input-affix-wrapper {
         width: 90px !important;
       }
+
       .ant-select {
         width: 120px !important;
       }
     }
+
     &.sm {
       .ant-input-affix-wrapper {
         width: 140px !important;
       }
+
       .ant-select {
         width: 160px !important;
       }
     }
+
     &.md {
       .ant-input-affix-wrapper {
         width: 180px !important;
@@ -123,7 +136,9 @@
     }
 
     &.lg {
-      .ant-select, .ant-input {
+
+      .ant-select,
+      .ant-input {
         width: 360px !important;
       }
     }
@@ -146,54 +161,65 @@
     .title {
       max-width: 50px !important;
       width: initial !important;
+
       &.long {
         max-width: initial !important;
       }
     }
   }
+
   &.ant-row {
     display: flex;
   }
 }
 
-.nodules-panel{
+.nodules-panel {
   .image-table {
-  display: flex;
-  border: 1px solid #f0f0f0;
-  margin-bottom: 15px;
-  .image-row {
     display: flex;
-    flex-direction: column;
-    border-right: 1px solid #f0f0f0;
-    &:last-child {
-      border-right: 1px solid transparent;
+    border: 1px solid #f0f0f0;
+    margin-bottom: 15px;
+
+    .image-row {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #f0f0f0;
+
+      &:last-child {
+        border-right: 1px solid transparent;
+      }
     }
-  }
-  .image-col {
-    text-align: center;
-    padding: 10px 4px;
-    &:first-child{
-      border-bottom: 1px solid #f0f0f0;
-    }
-    >span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    &.hight-risk {
-      background-color: #f5222d;
-      color: #fff;
+
+    .image-col {
+      text-align: center;
+      padding: 10px 4px;
+
+      &:first-child {
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      >span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      &.hight-risk {
+        background-color: #f5222d;
+        color: #fff;
+      }
     }
   }
 }
-}
+
 .report-detail {
   position: relative;
+
   .edit-toolbar {
     position: absolute;
     top: 15px;
     right: 15px;
   }
+
   .title {
     color: rgba(0, 0, 0, .85);
     font-size: 16px;
@@ -238,6 +264,7 @@
   .image-result {
     position: relative;
     padding-top: 15px;
+
     &-list {
       display: flex;
       flex-wrap: wrap;
@@ -256,7 +283,8 @@
       padding-right: 15px;
       margin-bottom: 30px;
 
-      &:hover, &:active {
+      &:hover,
+      &:active {
         .edit-toolbar {
           display: block;
         }
@@ -279,17 +307,20 @@
       }
     }
   }
+
   .edit-toolbar-save {
     position: absolute;
     top: -30px;
     right: 15px;
   }
 }
+
 .gen-upload-body {
   .ant-upload.ant-upload-select-picture-card {
     width: 100%;
     min-height: 256px;
   }
+
   .gen-image-preview {
     max-width: 100%;
   }
@@ -298,7 +329,9 @@
 
 
 @media screen and (max-width: 1450px) {
-  .mobile, .desktop {
+
+  .mobile,
+  .desktop {
     .report-detail {
       .image-result-item {
         flex: 0 0 100%;
