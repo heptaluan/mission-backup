@@ -4,9 +4,9 @@
       <img :src="extraImage" />
     </div>
     <!-- keep-alive  -->
-    <keep-alive>
+<!--    <keep-alive>-->
       <route-view ref="content"></route-view>
-    </keep-alive>
+<!--    </keep-alive>-->
   </page-layout>
 </template>
 

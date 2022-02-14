@@ -4,6 +4,34 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24" class="search-group">
+          <a-col class="group md">
+            <a-form-item label="渠道商:" :labelCol="{ span: 6 }">
+              <a-select
+                v-model="queryParam.sendAccess"
+                placeholder="请选择渠道商"
+                allowClear
+                show-search
+                :default-active-first-option="false"
+                :filter-option="false"
+                :not-found-content="null"
+                @search="handleChannelSearch"
+                @change="handleChannelChange"
+              >
+                <a-select-option v-for="item in distributorList" :key="item.id" :value="item.departNameAbbr">
+                  {{ item.departName }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col class="group md">
+            <a-form-item label="医院:" :labelCol="{ span: 6 }">
+              <a-select v-model="queryParam.sendHospital" placeholder="请选择医院">
+                <a-select-option v-for="item in hospitalList" :key="item.id" :value="item.departNameAbbr">
+                  {{ item.departName }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <a-col class="group sm">
             <a-form-item label="病例编号:" :labelCol="{ span: 6 }">
               <a-input allowClear v-model="queryParam.orderCode" placeholder="请输入病例编号"></a-input>
@@ -15,27 +43,21 @@
             </a-form-item>
           </a-col>
           <a-col class="group sm">
-            <a-form-item label="订单编号:" :labelCol="{ span: 6 }">
-              <a-input allowClear v-model="queryParam.orderId" placeholder="请输入订单编号"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col class="group tiny">
-            <a-form-item label="性别:" :labelCol="{ span: 6 }">
-              <a-select v-model="queryParam.gender" placeholder="请选择性别" allowClear>
-                <a-select-option v-for="item in genderOption" :key="item.value" :value="item.value">
+            <a-form-item label="产品">
+              <a-select v-model="queryParam.choseProduct" placeholder="请选择产品类型" allowClear>
+                <a-select-option v-for="item in productOption" :key="item.value" :value="item.value">
                   {{ item.label }}
                 </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col class="group sm">
-            <a-form-item label="身份证:" :labelCol="{ span: 6 }">
-              <a-input allowClear v-model="queryParam.idCard" placeholder="请输入身份证"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col class="group sm">
-            <a-form-item label="手机号:" :labelCol="{ span: 6 }">
-              <a-input allowClear v-model="queryParam.phone" placeholder="请输入手机号"></a-input>
+          <a-col class="group tiny">
+            <a-form-item label="性别:" :labelCol="{ span: 6 }">
+              <a-select v-model="queryParam.sex" placeholder="请选择性别" allowClear>
+                <a-select-option v-for="item in genderOption" :key="item.value" :value="item.value">
+                  {{ item.label }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col class="group md">
@@ -55,10 +77,20 @@
               ></j-date>
             </a-form-item>
           </a-col>
+          <a-col class="group sm">
+            <a-form-item label="身份证:" :labelCol="{ span: 6 }">
+              <a-input allowClear v-model="queryParam.idCard" placeholder="请输入身份证"></a-input>
+            </a-form-item>
+          </a-col>
+          <a-col class="group sm">
+            <a-form-item label="订单编号:" :labelCol="{ span: 6 }">
+              <a-input allowClear v-model="queryParam.orderId" placeholder="请输入订单编号"></a-input>
+            </a-form-item>
+          </a-col>
           <template v-if="toggleSearchStatus">
             <a-col class="group sm">
-              <a-form-item label="报告状态">
-                <a-input placeholder="请选择报告状态" v-model="queryParam.reportType"></a-input>
+              <a-form-item label="手机号:" :labelCol="{ span: 6 }">
+                <a-input allowClear v-model="queryParam.phone" placeholder="请输入手机号"></a-input>
               </a-form-item>
             </a-col>
           </template>
@@ -105,7 +137,7 @@
         size="middle"
         :scroll="{x:true}"
         bordered
-        rowKey="rowIndex"
+        rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -157,7 +189,6 @@
             </a-menu>
           </a-dropdown>
         </span>
-
       </a-table>
     </div>
   </a-card>
@@ -169,10 +200,11 @@
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { putAction, postAction } from '@/api/manage'
+  import { selectorFilterMixin } from '@/mixins/selectorFilterMixin'
 
   export default {
     name: 'SampleReportHistoryList',
-    mixins:[JeecgListMixin, mixinDevice],
+    mixins:[JeecgListMixin, mixinDevice, selectorFilterMixin],
     data () {
       return {
         description: '报告历史管理页面',
@@ -189,14 +221,14 @@
             }
           },
           {
-            title:'订单编号',
-            align:"center",
-            dataIndex: 'orderId'
+            title: '渠道商',
+            align: 'center',
+            dataIndex: 'sendAccess_dictText'
           },
           {
-            title: '病例编号',
+            title: '医院',
             align: 'center',
-            dataIndex: 'orderCode'
+            dataIndex: 'sendHospital_dictText'
           },
           {
             title: '姓名',
@@ -222,11 +254,6 @@
               }
               return text
             }
-          },
-          {
-            title: '手机号',
-            align: 'center',
-            dataIndex: 'phone'
           },
           {
             title: '身份证',
@@ -262,9 +289,19 @@
             scopedSlots: { customRender: 'colorText' },
           },
           {
-            title:'报告状态',
+            title: '产品',
+            align: 'center',
+            dataIndex: 'choseProduct_dictText'
+          },
+          {
+            title:'订单编号',
             align:"center",
-            dataIndex: 'reportType'
+            dataIndex: 'orderId'
+          },
+          {
+            title: '病例编号',
+            align: 'center',
+            dataIndex: 'orderCode'
           },
           {
             title: '操作',
@@ -286,10 +323,18 @@
         },
         dictOptions:{},
         superFieldList:[],
+        distributorList: [],
+        hospitalList: [],
+        ipagination: {
+          pageSize: 10,
+          pageSizeOptions: ['10', '20', '50'],
+        },
       }
     },
     created() {
       this.getSuperFieldList();
+      this.loadDistributorList()
+      this.loadHospitalList()
     },
     computed: {
       importExcelUrl: function(){

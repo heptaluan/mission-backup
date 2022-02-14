@@ -23,7 +23,12 @@
         :autoExpandParent="autoExpandParent"
         :expandedKeys="expandedKeys"
         :checkedKeys="checkedKeys">
-
+        <!--        <a-tooltip>-->
+        <!--          <template slot="title">-->
+        <!--            prompt text-->
+        <!--          </template>-->
+        <!--          Tooltip will show when mouse enter.-->
+        <!--        </a-tooltip>-->
         <template slot="title" slot-scope="{title}">
           <span v-if="title.indexOf(searchValue) > -1">
             {{title.substr(0, title.indexOf(searchValue))}}
@@ -76,11 +81,19 @@
     mounted() {
       // this.$bus.$off()
       this.$bus.$on('innerObserve', (data) => {
-        console.log('all', this.alldepart)
-        this.dataList = []
-        if (this.alldepart) {
+        console.log('Department type: ', this.alldepart, ', data role:', data.role, ', data type:', data.catalog)
+        // this.dataList = []
+        if (this.alldepart == 'all' && data.role == 'all') {
           this.loadByRole()
-        } else {
+        } else if (this.alldepart == 'company' && data.role == 'company') {
+          if (data.catalog) {
+            this.loadByRole(data.id, data.catalog)
+          } else {
+            this.loadByRole()
+          }
+        } else if (this.alldepart == 'user' && data.role == 'user') {
+          this.loadByRole(data.id, data.catalog)
+        } else if (this.alldepart == 'superUser' && data.role == 'superUser') {
           this.loadByRole(data.id, data.catalog)
         }
       })
@@ -94,6 +107,9 @@
           this.initDepartComponent(true)
         }
       }
+      // treeData(n,o) {
+      //   console.log(n,'-',o)
+      // }
     },
     computed:{
       treeScreenClass() {
@@ -108,7 +124,7 @@
         this.visible = true
         // this.handleClear()
         this.checkedRows = []
-        this.dataList = []
+        // this.dataList = []
         this.checkedKeys = []
       },
       loadByRole(id, role) {
@@ -123,6 +139,7 @@
         queryDepartTreeList().then(res => {
           if (res.success) {
             let arr = [...res.result]
+            console.log('tree:', arr)
             this.reWriterWithSlot(arr)
             this.treeData = arr
             this.initDepartComponent()
@@ -138,6 +155,7 @@
         queryDepartTreeListByOrgType(data).then(res => {
           if (res.success) {
             let arr = [...res.result]
+            console.log('tree:', arr)
             this.reWriterWithSlot(arr)
             this.treeData = arr
             this.initDepartComponent()
@@ -166,6 +184,7 @@
         }
       },
       reWriterWithSlot(arr){
+        this.dataList = []
         for(let item of arr){
           if(item.children && item.children.length>0){
             this.reWriterWithSlot(item.children)
@@ -225,6 +244,7 @@
             }
           }
           this.checkedRows = this.getCheckedRows(this.checkedKeys)
+          console.log('checkedrow: ', this.checkedRows[0].id)
         }
       },
       onExpand (expandedKeys) {
@@ -245,8 +265,9 @@
         this.handleClear()
       },
       handleClear(){
-        this.visible=false
-        this.checkedKeys=[]
+        this.visible = false
+        // this.dataList = []
+        this.checkedKeys = []
       },
       getParentKey(currKey,treeData){
         let parentKey

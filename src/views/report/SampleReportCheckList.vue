@@ -130,7 +130,7 @@
         size="middle"
         :scroll="{ x: true }"
         bordered
-        rowKey="rowIndex"
+        rowKey="id"
         :columns="columns"
         :dataSource="dataSource"
         :pagination="ipagination"
@@ -167,6 +167,7 @@
             下载
           </a-button>
         </template>
+
         <span slot="action" slot-scope="text, record">
           <a @click="handleDetail(record)">详情</a>
           <!--           <a-divider type="vertical" />-->
@@ -299,8 +300,8 @@
           {
             title: '状态',
             align: 'center',
-            key: 'reportType',
-            dataIndex: 'reportType',
+            key: 'checkType',
+            dataIndex: 'checkType',
             scopedSlots: { customRender: 'tags' },
           },
           {

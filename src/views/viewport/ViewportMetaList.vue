@@ -377,13 +377,13 @@ export default {
       this.$refs.viewportUploadModal.show()
     },
     handleSellSearch(value) {
-      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+      if (!(this.user.includes('sales_omics') && !this.user.includes('sales_super_omics'))) {
         sellFetch(value, data => (this.sellData = data))
       }
     },
     handleSellChange(value) {
       this.sellValue = value
-      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+      if (!(this.user.includes('sales_omics') && !this.user.includes('sales_super_omics'))) {
         sellFetch(value, data => (this.sellData = data))
       }
       // clean the previous data if the sellUser or sellUserId changed
@@ -396,9 +396,9 @@ export default {
     }
   },
   mounted() {
-    this.user = this.$store.state.user.info
+    this.user = this.$store.getters.userRole
     this.loadDistributorList()
-    if (this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics')) {
+    if (this.user.includes('sales_omics') && !this.user.includes('sales_super_omics')) {
       this.sellData = [this.user]
     }
   }

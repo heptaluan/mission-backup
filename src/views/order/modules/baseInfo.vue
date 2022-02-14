@@ -291,7 +291,7 @@ export default {
     }
   },
   mounted() {
-    this.user = this.$store.state.user.info
+    this.user = this.$store.getters.userRole
     this.initForm()
   },
   methods: {
@@ -334,7 +334,7 @@ export default {
         })
       }
       // set value of role to the selector of '关联泰莱销售' if role includes sales_omics but not sales_super_omics
-      if (this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics')) {
+      if (this.user.includes('sales_omics') && !this.user.includes('sales_super_omics')) {
         this.sellData = [this.user]
       }
     },
@@ -426,13 +426,13 @@ export default {
       })
     },
     handleSellSearch(value) {
-      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+      if (!(this.user.includes('sales_omics') && !this.user.includes('sales_super_omics'))) {
         sellFetch(value, data => (this.sellData = data))
       }
     },
     handleSellChange(value) {
       this.sellValue = value
-      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+      if (!(this.user.includes('sales_omics') && !this.user.includes('sales_super_omics'))) {
         sellFetch(value, data => (this.sellData = data))
       }
       // this.$set(this.form, 'sendAccess', '') // clean the previous data if the sellUser or sellUserId changed

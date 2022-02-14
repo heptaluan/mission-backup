@@ -8,13 +8,13 @@
       <a-descriptions-item label="住 院 号">{{patientInfo.patientId}}</a-descriptions-item>
       <a-descriptions-item label="送检医师">{{patientInfo.sendDoctor}}</a-descriptions-item>
       <a-descriptions-item label="临床诊断">{{patientInfo.clinical}}</a-descriptions-item>
-      <a-descriptions-item label="送检单位">{{patientInfo.sendHospital}}</a-descriptions-item>
+      <a-descriptions-item label="送检单位">{{patientInfo.sendHospital_dictText}}</a-descriptions-item>
       <a-descriptions-item label="送检日期">{{patientInfo.createTime}}</a-descriptions-item>
 <!--      <a-descriptions-item label="检测方法">{{patientInfo.detectionMethod}}</a-descriptions-item>-->
     </a-descriptions>
     <a-divider style="margin-bottom: 32px"/>
     <a-descriptions title="订单信息">
-      <a-descriptions-item label="订单号">{{report.orderId}}</a-descriptions-item>
+      <a-descriptions-item label="订单号">{{patientInfo.orderId}}</a-descriptions-item>
       <a-descriptions-item label="病例编号">{{patientInfo.orderCode}}</a-descriptions-item>
       <a-descriptions-item label="状态">已出报告</a-descriptions-item>
       <a-descriptions-item label="代谢结果">{{report.ananpanReportValue}}</a-descriptions-item>
@@ -30,7 +30,7 @@
     <a-divider style="margin-bottom: 32px"/>
     <div class="report-result">
       <a-descriptions title="代谢结果" >
-        <a-descriptions-item label="肺癌">{{report.ananpanReportValue}}</a-descriptions-item>
+        <a-descriptions-item label="代谢得分">{{report.ananpanReportValue}}</a-descriptions-item>
       </a-descriptions>
     </div>
     <a-divider style="margin-bottom: 16px"/>
@@ -221,11 +221,11 @@
           }
           const res = await getAction(url, postData)
           if (res.code === 200) {
-            this.report = res.result.report
+            this.report = res.result.reportInfo
             this.dicomResult = JSON.parse(this.report.imageReportAll)
             this.modelTitle = `窗宽：${this.dicomResult.windowing}  窗位： ${this.dicomResult.windowLevel}`
-            this.patientInfo = res.result.info
-            this.patientInfo.sex = res.result.info.sex ? (res.result.info.sex === '0' ? '女' : '男') : '-'
+            this.patientInfo = res.result
+            this.patientInfo.sex = res.result.sex ? (res.result.sex === '0' ? '女' : '男') : '-'
             this.inputScore = this.patientInfo.reportValue
             this.finalScore = this.patientInfo.ananpanReportValue
             this.prossesData(this.dicomResult )
@@ -283,7 +283,6 @@
               finalScore
             })
           }
-        console.log(this.rowNodulesList)
       },
       fixMaligant (value) {
         let retValue = 0

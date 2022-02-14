@@ -192,17 +192,16 @@ export default {
         departName: [
           {
             required: true,
-            message: '请输入正确的渠道商名称（仅限汉字，英文和数字）',
-            trigger: 'blur',
-            pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/
+            message: '请输入正确的渠道商名称',
+            trigger: 'blur'
           }
         ],
         departNameAbbr: [
           {
             required: true,
-            message: '请输入渠道商缩写（仅限二到十五位大写字母）',
+            message: '请输入渠道商缩写（仅限三到八位大写字母）',
             trigger: 'blur',
-            pattern: /^\w{2,15}$/
+            pattern: /^[A-Z]{3,8}$/
           }
         ],
         // contactName: [{ required: true, message: '请输入联系人名称', trigger: 'blur' }],
@@ -353,9 +352,9 @@ export default {
     }
   },
   mounted() {
-    this.user = this.$store.state.user.info
+    this.user = this.$store.getters.userRole
     // this.formDisabled = true
-    if (this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics')) {
+    if (this.user.includes('sales_omics') && !this.user.includes('sales_super_omics')) {
       this.data.push(this.user)
     }
   },
@@ -487,14 +486,14 @@ export default {
         })
     },
     handleSearch(value) {
-      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+      if (!(this.user.includes('sales_omics') && !this.user.includes('sales_super_omics'))) {
         fetch(value, data => (this.data = data))
       }
     },
     sellerChange(value) {
       console.log(value)
       this.value = value
-      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+      if (!(this.user.includes('sales_omics') && !this.user.includes('sales_super_omics'))) {
         fetch(value, data => (this.data = data))
       }
     },

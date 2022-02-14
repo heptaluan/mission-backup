@@ -52,12 +52,18 @@ export const JeecgListMixin = {
       genderOption: [
         { label: '男', value: 1 },
         { label: '女', value: 0 }
+      ],
+      productOption: [
+        { label: '全部', value: '' },
+        { label: '斐盼安', value: 'FA' },
+        { label: '斐盼康', value: 'FK' }
       ]
     }
   },
   created() {
     if (!this.disableMixinCreated) {
       console.log(' -- mixin created -- ')
+      this.ipagination.current = this.getParams('pageNo') * 1 || 1
       this.loadData()
       //初始化字典配置 在自己页面定义
       this.initDictConfig()
@@ -75,6 +81,17 @@ export const JeecgListMixin = {
     }
   },
   methods: {
+    getParams(key) {
+      const search = window.location.search.substring(1)
+      const vars = search.split('&')
+      for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split('=')
+        if (pair[0] === key) {
+          return pair[1]
+        }
+      }
+      return false
+    },
     loadData(arg) {
       if (!this.url.list) {
         this.$message.error('请设置url.list属性!')
@@ -84,6 +101,7 @@ export const JeecgListMixin = {
       if (arg === 1) {
         this.ipagination.current = 1
       }
+      console.log(this.ipagination.current)
       var params = this.getQueryParams() //查询条件
       this.loading = true
       getAction(this.url.list, params)
@@ -130,6 +148,9 @@ export const JeecgListMixin = {
 
       // 所有查询条件添加模糊查询
       const queryParam = Object.assign({}, this.queryParam)
+      if (queryParam.datePick) {
+        delete queryParam.datePick
+      }
       for (const key in queryParam) {
         if (Object.hasOwnProperty.call(queryParam, key)) {
           if (
@@ -145,8 +166,10 @@ export const JeecgListMixin = {
             key === 'addressName' ||
             key === 'address' ||
             key === 'identifyCode' ||
+            key === 'identityNumber' ||
             key === 'departName' ||
             key === 'mobile' ||
+            key === 'phoneNumber' ||
             key === 'phone'
           ) {
             queryParam[key] = '*' + queryParam[key] + '*'
@@ -158,7 +181,13 @@ export const JeecgListMixin = {
       param.field = this.getQueryField()
       param.pageNo = this.ipagination.current
       param.pageSize = this.ipagination.pageSize
+      this.changeUrl(param.pageNo)
       return filterObj(param)
+    },
+    // 查询记住页码参数
+    changeUrl (pageNo) {
+      if (!pageNo) pageNo = 1
+      window.history.replaceState({}, window.document.title, '?pageNo=' + pageNo )
     },
     getQueryField() {
       //TODO 字段权限控制

@@ -214,13 +214,13 @@ export default {
         edges: []
       },
       validatorRules: {
-        departName: [{ required: true, message: '请输入机构/部门名称!' }],
+        departName: [{ required: true, message: '请输入机构/部门名称!', trigger: 'blur' }],
         departNameAbbr: [
           {
             required: true,
-            message: '请输入渠道商简称(3-7位大写字母)',
+            message: '请输入渠道商简称(3-8位大写字母)',
             trigger: 'blur',
-            pattern: /^[A-Z]{3,7}$/
+            pattern: /^[A-Z]{3,8}$/
           }],
         orgCode: [{ required: true, message: '请输入机构编码!' }],
         // orgCategory:[{required: true, message: '请输入机构类型!'}],
@@ -256,11 +256,11 @@ export default {
     },
     // orgTypeWithUserRole() {
     //   this.user = this.userInfo()
-    //   if (this.user.role.includes('admin')) {
+    //   if (this.user.includes('admin')) {
     //     return this.departmentType[0].value
-    //   } else if (this.user.role.includes('channel_omics') && !this.user.role.includes('hospital')) {
+    //   } else if (this.user.includes('channel_omics') && !this.user.includes('hospital')) {
     //     return this.departmentType[1].value
-    //   } else if (!this.user.role.includes('channel_omics') && this.user.role.includes('hospital')) {
+    //   } else if (!this.user.includes('channel_omics') && this.user.includes('hospital')) {
     //     return this.departmentType[2].value
     //   }
     // },

@@ -127,7 +127,13 @@ export default {
       form: {},
       rules: {
         departName: [{ required: true, message: '请输入医院名称', trigger: 'blur' }],
-        departNameAbbr: [{ required: true, message: '请输入医院简称', trigger: 'blur' }],
+        departNameAbbr: [
+          {
+            required: true,
+            message: '请输入渠道商缩写（仅限三到八位大写字母）',
+            trigger: 'blur',
+            pattern: /^[A-Z]{3,8}$/
+          }],
         // department: [{ required: true, message: '请输入科室', trigger: 'blur' }],
         // contactDoctor: [{ required: true, message: '请输入联系医生', trigger: 'blur' }],
         mobile: [

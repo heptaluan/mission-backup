@@ -289,13 +289,13 @@ export default {
       this.$refs.stockOutModal.show()
     },
     handleSellSearch(value) {
-      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+      if (!(this.user.includes('sales_omics') && !this.user.includes('sales_super_omics'))) {
         sellFetch(value, data => (this.sellData = data))
       }
     },
     handleSellChange(value) {
       this.sellUserId = value
-      if (!(this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics'))) {
+      if (!(this.user.includes('sales_omics') && !this.user.includes('sales_super_omics'))) {
         sellFetch(value, data => (this.sellData = data))
       }
       this.$set(this.queryParam, 'leaveAgency', undefined)
@@ -336,10 +336,10 @@ export default {
     }
   },
   mounted() {
-    this.getCurrentTime();
-    this.user = this.$store.state.user.info;
-    this.loadDistributorList();
-    if (this.user.role.includes('sales_omics') && !this.user.role.includes('sales_super_omics')) {
+    this.getCurrentTime()
+    this.user = this.$store.getters.userRole
+    this.loadDistributorList()
+    if (this.user.includes('sales_omics') && !this.user.includes('sales_super_omics')) {
       this.sellData = [this.user]
     }
   }

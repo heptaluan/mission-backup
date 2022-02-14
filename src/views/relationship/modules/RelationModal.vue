@@ -140,9 +140,9 @@ export default {
         departNameAbbr: [
           {
             required: true,
-            message: '请输入渠道商简称(3-7位大写字母)',
+            message: '请输入渠道商简称(3-8位大写字母)',
             trigger: 'blur',
-            pattern: /^[A-Z]{3,7}$/
+            pattern: /^[A-Z]{3,8}$/
           }
         ],
         // orgCode:[{ required: true, message: '请输入机构编码!' }],

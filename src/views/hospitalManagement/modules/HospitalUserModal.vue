@@ -60,7 +60,7 @@
         <!--部门分配-->
         <a-form-model-item label='部门分配' :labelCol='labelCol' :wrapperCol='wrapperCol' v-show='false'>
           <j-select-depart v-model='model.selecteddeparts' :multi='true' @back='backDepartInfo' :backDepart='true'
-                           :allDepart='true'
+                           :alldepart="'all'"
                            :treeOpera='true'>>
           </j-select-depart>
         </a-form-model-item>
@@ -73,7 +73,7 @@
         </a-form-model-item>
         <a-form-model-item label='负责部门' :labelCol='labelCol' :wrapperCol='wrapperCol' v-show='departIdShow==true'>
           <j-select-depart v-model='model.departIds' :multi='true' @back='backDepartInfo' :backDepart='true'
-                           :alldepart='false'
+                           :alldepart="model.userIdentity == 1 ? 'user' : 'superUser'"
                            :treeOpera='true'>>
           </j-select-depart>
         </a-form-model-item>
@@ -465,7 +465,7 @@ export default {
       }
     },
     userInfo() {
-      const role = this.$store.getters.userInfo.role
+      const role = this.$store.getters.userRole
       return role.toString()
     }
   }

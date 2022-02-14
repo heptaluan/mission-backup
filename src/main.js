@@ -30,7 +30,7 @@ import {
   DEFAULT_FIXED_HEADER_HIDDEN,
   DEFAULT_FIXED_SIDEMENU,
   DEFAULT_CONTENT_WIDTH_TYPE,
-  DEFAULT_MULTI_PAGE,
+  DEFAULT_MULTI_PAGE
 } from '@/store/mutation-types'
 import config from '@/defaultSettings'
 
@@ -79,6 +79,6 @@ function main() {
       store.commit('SET_TOKEN', Vue.ls.get(ACCESS_TOKEN))
       store.commit('SET_MULTI_PAGE', Vue.ls.get(DEFAULT_MULTI_PAGE, config.multipage))
     },
-    render: (h) => h(App),
+    render: h => h(App)
   }).$mount('#app')
 }

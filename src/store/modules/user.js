@@ -1,7 +1,17 @@
 import Vue from 'vue'
-import { login, logout, phoneLogin, thirdLogin } from "@/api/login"
-import { ACCESS_TOKEN, USER_NAME,USER_INFO,USER_AUTH,SYS_BUTTON_AUTH,UI_CACHE_DB_DICT_DATA,TENANT_ID,CACHE_INCLUDED_ROUTES } from "@/store/mutation-types"
-import { welcome } from "@/utils/util"
+import { login, logout, phoneLogin, thirdLogin } from '@/api/login'
+import {
+  ACCESS_TOKEN,
+  USER_NAME,
+  USER_INFO,
+  USER_ROLE,
+  USER_AUTH,
+  SYS_BUTTON_AUTH,
+  UI_CACHE_DB_DICT_DATA,
+  TENANT_ID,
+  CACHE_INCLUDED_ROUTES
+} from '@/store/mutation-types'
+import { welcome } from '@/utils/util'
 import { queryPermissionsByUser } from '@/api/api'
 import { getAction } from '@/api/manage'
 
@@ -35,9 +45,12 @@ const user = {
     SET_INFO: (state, info) => {
       state.info = info
     },
+    SET_ROLE: (state, role) => {
+      state.role = role
+    },
     SET_TENANT: (state, id) => {
       state.tenantid = id
-    },
+    }
   },
 
   actions: {
@@ -49,13 +62,15 @@ const user = {
           if(response.success){
             const result = response.result
             const userInfo = result.userInfo
-            userInfo.role = result.role
+            const userRole = result.role
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_ROLE, userRole, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', result.token)
             commit('SET_INFO', userInfo)
-            commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
+            commit('SET_ROLE', userRole)
+            commit('SET_NAME', { username: userInfo.username, realname: userInfo.realname, welcome: welcome() })
             commit('SET_AVATAR', userInfo.avatar)
             resolve(response)
           }else{
@@ -73,14 +88,16 @@ const user = {
           if(response.code =='200'){
             const result = response.result
             const userInfo = result.userInfo
-            userInfo.role = result.role
+            const userRole = result.role
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_ROLE, userRole, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(UI_CACHE_DB_DICT_DATA, result.sysAllDictItems, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', result.token)
             commit('SET_INFO', userInfo)
-            commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
+            commit('SET_ROLE', userRole)
+            commit('SET_NAME', { username: userInfo.username, realname: userInfo.realname, welcome: welcome() })
             commit('SET_AVATAR', userInfo.avatar)
             resolve(response)
           }else{
@@ -101,9 +118,11 @@ const user = {
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_ROLE, userRole, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(UI_CACHE_DB_DICT_DATA, result.sysAllDictItems, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', result.token)
             commit('SET_INFO', userInfo)
+            commit('SET_ROLE', userRole)
             commit('SET_NAME', { username: userInfo.username, realname: userInfo.realname, welcome: welcome() })
             commit('SET_AVATAR', userInfo.avatar)
             resolve(response)
@@ -181,6 +200,7 @@ const user = {
         Vue.ls.remove(ACCESS_TOKEN)
         Vue.ls.remove(USER_INFO)
         Vue.ls.remove(USER_NAME)
+        Vue.ls.remove(USER_ROLE)
         Vue.ls.remove(UI_CACHE_DB_DICT_DATA)
         Vue.ls.remove(CACHE_INCLUDED_ROUTES)
         Vue.ls.remove(TENANT_ID)
@@ -207,9 +227,11 @@ const user = {
             Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_NAME, userInfo.username, 7 * 24 * 60 * 60 * 1000)
             Vue.ls.set(USER_INFO, userInfo, 7 * 24 * 60 * 60 * 1000)
+            Vue.ls.set(USER_ROLE, userRole, 7 * 24 * 60 * 60 * 1000)
             commit('SET_TOKEN', result.token)
             commit('SET_INFO', userInfo)
-            commit('SET_NAME', { username: userInfo.username,realname: userInfo.realname, welcome: welcome() })
+            commit('SET_ROLE', userRole)
+            commit('SET_NAME', { username: userInfo.username, realname: userInfo.realname, welcome: welcome() })
             commit('SET_AVATAR', userInfo.avatar)
             resolve(response)
           }else{

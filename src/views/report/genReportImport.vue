@@ -408,12 +408,13 @@
         postAction(httpurl, postData).then((res) => {
           if (res.success) {
             that.$message.success(res.message)
-            that.$emit('ok')
           } else {
             that.$message.warning(res.message)
           }
         }).finally(() => {
           that.confirmLoading = false
+          that.ModifyVisible = false
+          that.loadData()
         })
       },
       beforeUpload(file) {

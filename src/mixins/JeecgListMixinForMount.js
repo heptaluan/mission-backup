@@ -59,6 +59,7 @@ export const JeecgListMixin = {
   },
   mounted() {
     if (!this.disableMixinCreated) {
+      this.ipagination.current = this.getParams('pageNo') * 1 || 1
       this.loadData()
       //初始化字典配置 在自己页面定义
       this.initDictConfig()
@@ -154,7 +155,13 @@ export const JeecgListMixin = {
       param.field = this.getQueryField()
       param.pageNo = this.ipagination.current
       param.pageSize = this.ipagination.pageSize
+      this.changeUrl(param.pageNo)
       return filterObj(param)
+    },
+    // 查询记住页码参数
+    changeUrl (pageNo) {
+      if (!pageNo) pageNo = 1
+      window.history.replaceState({}, window.document.title, '?pageNo=' + pageNo )
     },
     getQueryField() {
       //TODO 字段权限控制

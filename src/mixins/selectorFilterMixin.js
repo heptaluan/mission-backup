@@ -22,7 +22,7 @@ export const selectorFilterMixin = {
       function fake() {
         const that = this
         getDistributorAllList({
-          departNameAbbr: value != null ? '*' + value + '*' : undefined
+          departName: value != null ? '*' + value + '*' : undefined
         }).then(res => {
           if (res.success) {
             that.distributorList = res.result
@@ -58,7 +58,7 @@ export const selectorFilterMixin = {
         if (this.queryParam != null && this.queryParam.sendHospital != null) {
           this.$set(this.queryParam, 'sendHospital', undefined) // clean the previous data if the sellUser or sellUserId changed
         }
-        that.loadHospitalList(value ? value : undefined)
+        // that.loadHospitalList(value ? value : undefined)
       })
     },
     loadDistributorList(value, sellUser) {
@@ -83,23 +83,25 @@ export const selectorFilterMixin = {
         }
       })
     },
-    loadHospitalList(distributor) {
+    // loadHospitalList(distributor) {
+    loadHospitalList() {
       let data = null
-      if (distributor) {
-        data = {
-          relateAccess: distributor != null ? '*' + distributor + '*' : undefined,
-          pageNo: 1,
-          pageSize: 9999
-        }
-      } else {
-        data = {
-          pageNo: 1,
-          pageSize: 9999
-        }
-      }
-      getHospitalList(data).then(res => {
+      // if (distributor) {
+      //   data = {
+      //     relateAccess: distributor != null ? '*' + distributor + '*' : undefined,
+      //     pageNo: 1,
+      //     pageSize: 9999
+      //   }
+      // } else {
+      //   data = {
+      //     pageNo: 1,
+      //     pageSize: 9999
+      //   }
+      // }
+      data = { orgCategory: 4000 }
+      getDistributorAllList(data).then(res => {
         if (res.success) {
-          this.hospitalList = res.result.records
+          this.hospitalList = res.result
         } else {
           this.$message.warning(res.message)
         }

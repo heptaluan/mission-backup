@@ -1,8 +1,8 @@
 <template>
   <div class="dicom-result">
     <p v-for="(item, index) in pulmonaryNodules" :key="index" v-html="getContent(item)" v-if="pulmonaryNodules" class="text-indent"></p>
-    <p class="text-indent padding-top-bottom-xs" v-html="interpretation" v-if="pulmonaryNodules"></p>
-    <div class="dicom-result-item" v-for="(item, index) in data" :key="index">
+    <p class="text-indent padding-top-bottom-xs" v-html="interpretation" v-if="data.showTips"></p>
+    <div class="dicom-result-item" v-for="(item, index) in data.image" :key="index">
       <div class="item-content-image">
         <div class="title" v-html="item.title"></div>
         <div class="b-flex">
@@ -73,7 +73,7 @@
     components: { DicomImage },
     props: {
       data: {
-        type: Array,
+        type: Object,
         require: true
       },
       pulmonaryNodules: {
@@ -83,6 +83,10 @@
       pageConfig: {
         type: Object,
         require: true
+      },
+      imageReportValue: {
+        type: Number,
+        require: true
       }
     },
     data () {
@@ -91,14 +95,15 @@
     },
     computed: {
       interpretation () {
-        const { imageReportValue } = this.data
-        return imageReportValue >= 70 ? dicomResult.interpretation : dicomResult.low
+        const { imageReportValue } = this
+        return imageReportValue >= 60 ? dicomResult.interpretation : dicomResult.low
       }
     },
     methods: {
       getContent (item) {
-        const { index, imageIndex, diameter, noduleSize, centerHu, scrynMaligant } = item
-        return `结节${index}：于左肺上叶尖后段影像（IMG ${imageIndex}）可见一磨玻璃结节，大小约 ${diameter}，CT值约 ${centerHu} HU，体积约 ${noduleSize} m³, 结节恶性风险为：${scrynMaligant} %。`
+        const { index, imageIndex, diameter, noduleSize, centerHu, scrynMaligant, featureLabel, lobeLocation, lungLocation } = item
+        const diameterText = this.fixDiameter(diameter)
+        return `结节${index}：于${lungLocation}${lobeLocation}影像（IMG ${imageIndex}）可见一${featureLabel}结节，大小约 ${diameterText}，CT值约 ${centerHu} HU，体积约 ${noduleSize} mm³, 结节恶性风险为：${scrynMaligant} %。`
       },
       fixMaligant (value) {
         let retValue = 0

@@ -7,17 +7,32 @@
         <a-button type="primary" icon="download" class="btn" @click="handlDownloadTemplate">下载模板</a-button>
       </div>
 
-      <div class="downloadBox">
-        <div class="txt">填写完毕后上传：</div>
-        <a-upload :file-list="fileList" @change="handleChange" :before-upload="beforeUpload">
-          <a-button type="primary" icon="upload">上传文件</a-button>
-        </a-upload>
+      <div class='downloadBox drag'>
+        <div class='txt'>填写完毕后上传：</div>
+        <!--        <a-upload :file-list="fileList" @change="handleChange" :before-upload="beforeUpload">-->
+        <!--          <a-button type="primary" icon="upload">上传文件</a-button>-->
+        <!--        </a-upload>-->
+        <div class='dragBox'>
+          <a-upload-dragger
+            @change='handleChange'
+            :file-list='fileList'
+            :remove='handleRemove'
+            :before-upload='beforeUpload'
+          >
+            <p class='ant-upload-drag-icon'>
+              <a-icon type='inbox' />
+            </p>
+            <p class='ant-upload-text'>
+              可以拖动文件到该区域进行上传
+            </p>
+          </a-upload-dragger>
+        </div>
       </div>
-
 
       <a-form-model-item label='渠道商' prop='agencyId' class='sm'>
         <a-select v-model='form.agencyId' placeholder='请选择渠道商'
                   show-search
+                  allowClear
                   :value='channelValue'
                   :default-active-first-option='false'
                   :filter-option='false'
@@ -113,6 +128,13 @@ export default {
         console.log('file: ', this.currentFile)
       }
     },
+    handleRemove(file) {
+      const index = this.fileList.indexOf(file)
+      const newFileList = this.fileList.slice()
+      newFileList.splice(index, 1)
+      this.fileList = newFileList
+      this.fileInfoId = ''
+    },
     handleUpload(file) {
       const that = this
       const formData = new FormData()
@@ -169,14 +191,30 @@ export default {
 .downloadBox {
   margin-bottom: 12px;
   display: flex;
+
+  &.drag {
+    flex-wrap: wrap;
+
+    .txt {
+      margin-bottom: 8px;
+    }
+
+    .dragBox {
+      width: 100%;
+      padding-bottom: 24px;
+    }
+  }
+
   .yellow {
     align-self: center;
     margin-right: 12px;
     color: #db9200;
+
     /deep/ svg {
       font-size: 20px;
     }
   }
+
   .txt,
   .btn {
     align-self: center;

@@ -60,10 +60,10 @@
         </a-form-model-item>
 
         <!--部门分配-->
-        <a-form-model-item label='部门分配' :labelCol='labelCol' :wrapperCol='wrapperCol' v-show='!departDisabled'>
+        <a-form-model-item label='部门分配' :labelCol='labelCol' :wrapperCol='wrapperCol' v-show='departDisabled'>
           <j-select-depart v-model='model.selecteddeparts' :multi='true' @back='backDepartInfo' :backDepart='true'
-                           :allDepart='true'
-                           :treeOpera='true'>>
+                           :alldepart="'company'"
+                           :treeOpera='true'>
           </j-select-depart>
         </a-form-model-item>
 
@@ -83,28 +83,24 @@
             <a-radio :value='2'>上级</a-radio>
           </a-radio-group>
         </a-form-model-item>
-        <!--        <a-form-model-item label='负责部门' :labelCol='labelCol' :wrapperCol='wrapperCol' v-show='departIdShow==true'>-->
-        <!--          <j-select-depart v-model='model.departIds' :multi='true' @back='backDepartInfo' :backDepart='true'-->
-        <!--                           :treeOpera='true'>-->
-        <!--          </j-select-depart>-->
-        <!--        </a-form-model-item>-->
         <a-form-model-item :label="model.userIdentity == 1 ? '关联渠道商': '管辖范围'" :labelCol='labelCol'
                            :wrapperCol='wrapperCol'
+                           v-show='(model.userIdentity == 1 && isOperator) || model.userIdentity == 2'
                            prop='departIds'>
           <j-select-depart v-model='model.departIds' :multi='true' @back='backDepartInfo' :backDepart='true'
-                           :alldepart='false'
-                           :treeOpera='true' v-show='model.userIdentity == 1'>
+                           :disabled='model.userIdentity==2'
+                           :treeOpera='true' :alldepart="model.userIdentity == 1 ? 'user' : 'superUser'">
           </j-select-depart>
-          <j-multi-select-tag
-            :disabled='model.userIdentity == 2'
-            v-show='model.userIdentity == 2'
-            v-model='model.departIds'
-            :options='nextDepartOptions'
-            placeholder='请选择负责部门'>
-          </j-multi-select-tag>
         </a-form-model-item>
+        <!--        <a-form-model-item :label="'管辖范围'" :labelCol='labelCol'-->
+        <!--                           :wrapperCol='wrapperCol' v-if='model.userIdentity == 2'-->
+        <!--                           prop='departIds'>-->
+        <!--          <j-select-depart v-model='model.departIds' :multi='true' @back='backDepartInfo' :backDepart='true'-->
+        <!--                           :treeOpera='true' :alldepart="model.userIdentity == 1 ? 'user' : 'superUser'" :disabled='model.userIdentity==2'>-->
+        <!--          </j-select-depart>-->
+        <!--        </a-form-model-item>-->
         <a-form-model-item label='来源' :labelCol='labelCol' :wrapperCol='wrapperCol' v-show='resourceShow && isOperator'>
-          <j-multi-select-tag v-model='model.chargeSourceType' dictCode='order_source_type' placeholder='请选择来源' />
+          <j-multi-select-tag v-model='model.chargeSourceTypes' dictCode='order_source_type' placeholder='请选择来源' />
         </a-form-model-item>
 
         <a-form-model-item label='头像' :labelCol='labelCol' :wrapperCol='wrapperCol'>
@@ -230,8 +226,8 @@ export default {
         { key: 2, value: '科研' }
       ],
       isOperator: false,
-      resourceShow: true,
-      selectType: 3000
+      isChannel: false,
+      resourceShow: true
     }
   },
   created() {
@@ -256,27 +252,25 @@ export default {
       //根据屏幕宽度自适应抽屉宽度
       this.resetScreenSize()
       that.userId = record.id
+      this.initTreeData(record)
       that.model = Object.assign({}, { selectedroles: '', selecteddeparts: '' }, record)
-      //身份为上级显示负责部门，否则不显示
-      if (this.model.userIdentity == 2) {
-        this.departIdShow = true
-        this.resourceShow = false
-      } else {
-        this.departIdShow = false
-        this.resourceShow = true
-      }
-      this.$nextTick(() => {
-        this.$bus.$emit('innerObserve', { id: that.userId, catalog: that.selectType })
-      })
+
       if (record.hasOwnProperty('id')) {
         that.getUserRoles(record.id)
         that.getUserDeparts(record.id)
+      } else {
+        this.identityChange(this.model.userIdentity)
       }
-      console.log('that.model=', that.model)
-      this.roleChange(that.model.selectedroles)
+    },
+    initTreeData(record) {
+      this.changeTreeOptions('company', record.orgCatalog)
+      this.identityChange(record.userIdentity, true)
     },
     isDisabledAuth(code) {
       return disabledAuthFilter(code)
+    },
+    departBelongSwitch(orgCatalog) {
+      this.model.orgCatalog = orgCatalog
     },
     //窗口最大化切换
     toggleScreen() {
@@ -330,14 +324,59 @@ export default {
       })
     },
     roleChange(ele) {
-      let operator = null
+      let operators = []
+      let channels = []
       this.rolesOptions.forEach(item => {
-        if (item.label === '运营') {
-          operator = item
+        if (item.roleCode === 'operate_omics' || item.roleCode === 'operate_omics_manage') {
+          operators.push(item)
+        }
+        if (item.roleCode === 'channel_omics' || item.roleCode === 'channel_omics_sale_manage') {
+          channels.push(item)
         }
       })
       const arr = ele.split(',')
-      this.isOperator = arr.includes(operator.value)
+      if (operators.length > 0) {
+        this.isOperator = this.checkIncludes(arr, operators)
+      }
+      if (channels.length > 0) {
+        this.isChannel = this.checkIncludes(arr, channels)
+      }
+      if (this.isOperator) {
+        this.isChannel = false
+        if (channels.length > 0) {
+          this.model.selectedroles = this.removeRole(arr, channels)
+        }
+        this.departBelongSwitch('1')
+      } else if (this.isChannel) {
+        this.isOperator = false
+        if (operators.length > 0) {
+          this.model.selectedroles = this.removeRole(arr, operators)
+        }
+        this.departBelongSwitch('3000')
+      } else {
+        this.departBelongSwitch()
+      }
+      this.initTreeData(this.model)
+    },
+    checkIncludes(a, b) {
+      for (let i = 0; i < a.length; i++) {
+        for (let j = 0; j < b.length; j++) {
+          if (a[i] == b[j].value) {
+            return true
+          }
+        }
+      }
+    },
+    removeRole(arr, target) {
+      for (let i = 0; i < arr.length; i++) {
+        for (let j = 0; j < target.length; j++) {
+          if (arr[i] == target[j].value) {
+            arr.splice(i, 1)
+            this.$message.error('无法同时绑定运营和渠道商角色')
+          }
+        }
+      }
+      return arr.toString()
     },
     getUserDeparts(userid) {
       let that = this
@@ -378,6 +417,7 @@ export default {
       this.nextDepartOptions = []
       this.departIdShow = false
       this.isOperator = false
+      this.isChannel = false
       this.$refs.form.resetFields()
     },
     moment,
@@ -415,6 +455,7 @@ export default {
       })
     },
     handleCancel() {
+      // this.$bus.$off('innerObserve')
       this.close()
     },
     validateToNextPassword(rule, value, callback) {
@@ -523,19 +564,41 @@ export default {
       }
       //TODO 验证文件大小
     },
-    identityChange(e) {
-      if (e.target.value === 1) {
-        this.departIdShow = false
-        this.model.departIds = undefined
-        this.selectType = 3000
-        this.resourceShow = true
-      } else if (e.target.value === 2) {
-        this.selectType = 1
+    identityChange(e, isInit) {
+      if (e === 1 || (e.target && e.target.value === 1)) {
+        if (this.isOperator) {
+          this.departIdShow = true
+          this.resourceShow = true
+        } else {
+          this.departIdShow = false
+          this.resourceShow = true
+        }
+        if (!isInit) {
+          this.model.departIds = undefined
+        }
+        this.changeTreeOptions('user', 3000)
+      } else if (e === 2 || (e.target && e.target.value === 2)) {
         this.departIdShow = true
-        this.model.departIds = this.model.selecteddeparts
+        if (this.model.selecteddeparts && this.model.selecteddeparts != '') {
+          this.model.departIds = this.model.selecteddeparts
+        }
         this.resourceShow = false
+        this.changeTreeOptions('superUser', this.model.orgCatalog)
       }
+    },
+    changeTreeOptions(role, selectType) {
+      this.$nextTick(() => {
+        this.$bus.$emit('innerObserve', { id: this.userId, catalog: selectType, role: role })
+      })
     }
+  },
+  watch: {
+    // 'model.selecteddeparts'(n, o) {
+    //   if (n && n != '') {
+    //     this.identityChange(this.model.userIdentity)
+    //   }
+    //   console.log(this.model.selecteddeparts)
+    // }
   }
 }
 </script>

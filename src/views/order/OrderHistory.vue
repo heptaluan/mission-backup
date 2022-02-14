@@ -26,8 +26,8 @@
         ref="table"
         size="middle"
         bordered
-        rowKey="index"
-        class="j-table-force-nowrap"
+        rowKey='id'
+        class='j-table-force-nowrap'
         :scroll="{ x: true }"
         :columns="columns"
         :dataSource="dataSource"

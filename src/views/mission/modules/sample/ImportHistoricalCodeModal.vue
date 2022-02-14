@@ -4,6 +4,7 @@
       <a-form-model-item label='渠道商' prop='agencyShortName'>
         <a-select v-model='form.agencyShortName' placeholder='请选择渠道商'
                   show-search
+                  allowClear
                   :value='channelValue'
                   :default-active-first-option='false'
                   :filter-option='false'

@@ -14,16 +14,19 @@
         <test-result class="page-content" :data="testResult" v-if="report.id"></test-result>
       </page-common>
       <page-common :pageConfig="pageConfig" :pageIndex="index + 3" v-for="(page, index) in imagePage" :key="index + 3" v-if="imagePage.length">
-        <dicom-result :data="page.image" :pulmonaryNodules = "page.pulmonaryNodules" v-if="page.image.length" class="page-content"></dicom-result>
+        <dicom-result :data="page" :pulmonaryNodules = "page.pulmonaryNodules" v-if="page.image.length || page.pulmonaryNodules.length" :imageReportValue="report.imageReportValue" class="page-content"></dicom-result>
       </page-common>
       <page-common :pageConfig="pageConfig" :pageIndex="index + imagePage.length + 3" v-for="(page, index) in riskPage" :key="index + imagePage.length + 3" v-if="riskPage.length">
         <h3 class="text-orange evaluation-title" v-if="index === 0">AI（人工智能）结节恶性概率评估</h3>
         <dicom-evaluation :data="page.image" v-if="page.image.length" class="page-content"></dicom-evaluation>
       </page-common>
-      <page-common :pageConfig="pageConfig" :pageIndex="pageLast">
+      <page-common :pageConfig="pageConfig" :pageIndex="pageLast" v-if="isHasFK">
+        <page-gen class="page-content" :data="report"></page-gen>
+      </page-common>
+      <page-common :pageConfig="pageConfig" :pageIndex="isHasFK ? pageLast + 1 : pageLast">
         <explain class="page-content"></explain>
       </page-common>
-      <page-common :pageConfig="pageConfig" :pageIndex="pageLast + 1">
+      <page-common :pageConfig="pageConfig" :pageIndex="isHasFK ? pageLast + 2 : pageLast + 1">
         <page-explain class="page-content"></page-explain>
       </page-common>
     </div>
@@ -42,13 +45,14 @@
   import Explain from '../template/components/explain'
   import PageExplain from '../template/components/page-explain-t'
   import PageCommon from './components/page-common'
+  import PageGen from '../template/components/page-genValue'
   import { getAction } from '@/api/manage'
   import { preHeight, preHeightImage, tipHeight } from '../template/resource/constant'
   import * as dayjs from 'dayjs'
 
   export default {
     name: 'print-preview',
-    components: { PageCommon, Explain, DicomEvaluation, DicomResult, TestResult, Signature, ConclusionResult, Conclusion, PatientInfo, PageExplain },
+    components: { PageCommon, Explain, DicomEvaluation, DicomResult, TestResult, Signature, ConclusionResult, Conclusion, PatientInfo, PageExplain, PageGen },
     data() {
       return {
         patientInfo: {},
@@ -77,6 +81,11 @@
         pulmonaryNodules: undefined,
         patient: {},
         loadData:  false
+      }
+    },
+    computed: {
+      isHasFK (){
+        return this.report.choseProduct === 'FK' && this.report.geneReportValue
       }
     },
     mounted () {
@@ -119,6 +128,9 @@
         }
       },
       proessData (dicomResult) {
+        if (!dicomResult || !dicomResult.nodulesList || dicomResult.total === 0) {
+          return false
+        }
         let pulmonaryNodules = dicomResult.nodulesList.filter(o => {
           let scrynMaligant = o.scrynMaligant.replace('%', '')
           return scrynMaligant * 1 > 59.999
@@ -127,22 +139,52 @@
         this.pulmonaryNodules = pulmonaryNodules.slice(0)
         let beginIndex = 0
         const nodulesCount = this.pulmonaryNodules.length
-        const height = nodulesCount * preHeight + tipHeight
-        beginIndex = Math.ceil(height / preHeightImage)
-        beginIndex = beginIndex >= 3 ? 0 : 3 - beginIndex
-        beginIndex = beginIndex - 1
-        // 分页
+        let count = nodulesCount
+        const prePageCount = 18
+        let pageIndex = 0
+        // 影像小结分页
+        while (count > 0) {
+          // 是否最后一页
+          count = count - prePageCount
+          const currentPageCount = count < 0 ? (count + prePageCount) : count
+          const lastPage = count < 0
+          const start = pageIndex * prePageCount
+          const end = !lastPage ? (pageIndex + 1) * prePageCount : nodulesCount
+          const imagePage = {
+            pageIndex: pageIndex,
+            image: [],
+            pulmonaryNodules: this.pulmonaryNodules.slice(start, end)
+          }
+          if (lastPage) {
+            const height = currentPageCount * preHeight + tipHeight
+            // 计算最后一页结节占用高度
+            beginIndex = Math.floor(height / preHeightImage) + 1
+            // 占满 那么另起一页 ps:一般不会遇到这种情况
+            // 起始位置
+            if (beginIndex === 3) {
+              beginIndex = 0
+              pageIndex++
+            }
+            imagePage.showTips = true
+          } else {
+            imagePage.showTips = false
+          }
+          this.imagePage.push(imagePage)
+          pageIndex++
+        }
+        if(pageIndex === 0) pageIndex = 1
+        // 图像结果/图表分页
         for (let i = 0; i < dicomResult.total; i++) {
           const Image = dicomResult.nodulesList[i]
-          if (!Image.title) Image.title = `窗宽：${dicomResult.windowing}  窗位： ${dicomResult.windowLevel}`
-          let imagePageIndex = i > beginIndex ? Math.ceil((i - beginIndex) / 3) + 1 : 1
+          if (!Image.title) Image.title = `结节${Image.index}&nbsp;&nbsp;窗宽：${dicomResult.windowing}  窗位： ${dicomResult.windowLevel}`
+          let imagePageIndex =  Math.floor((i + beginIndex) / 3) + pageIndex
           let riskPageIndex = Math.floor(i / 4) + 1
           if (imagePageIndex > this.imagePage.length) {
             const imagePage = {
               pageIndex: imagePageIndex,
-              image: []
+              image: [],
+              showTips: imagePageIndex === 1 && this.pulmonaryNodules.length === 0
             }
-            if (imagePageIndex === 1) imagePage.pulmonaryNodules = this.pulmonaryNodules
             imagePage.image.push(Image)
             this.imagePage.push(imagePage)
           } else {

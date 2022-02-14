@@ -67,6 +67,7 @@
   </div>
   <a-modal
     v-model="ModifyVisible"
+    class="report-detail-modal"
     width="1096px"
     title="AI影像表观--修改"
     @ok="handleOk"
@@ -76,8 +77,8 @@
         <div class="item-content-image">
           <div class="title" v-html="modelTitle"></div>
           <div class="b-flex">
-            <dicom-image :url="mForm.imageUrl1" footer="横断面" class="b-flex-2"></dicom-image>
-            <dicom-image :url="mForm.imageUrl2" footer="局部细节" class="b-flex-1"></dicom-image>
+            <dicom-image :url="mForm.imageUrl1" footer="横断面" class="b-flex-5 margin-right-sm"></dicom-image>
+            <dicom-image :url="mForm.imageUrl2" footer="局部细节" class="b-flex-3"></dicom-image>
           </div>
         </div>
         <div class="item-content-info">
@@ -87,41 +88,49 @@
           </div>
           <a-form-model ref="editFrom" :model="mForm" :rules="validatorRules" slot="detail">
             <a-form-model-item label="肺" prop="lung" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
-              <a-input v-model="mForm.lungLocation" placeholder="请选择"></a-input>
+              <span v-html="mForm.lungLocation"></span>
             </a-form-model-item>
             <a-form-model-item label="肺叶" prop="lungLobe" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
-              <a-input v-model="mForm.lobeLocation" placeholder="请输入肺叶"></a-input>
+              <span v-html="mForm.lobeLocation"></span>
             </a-form-model-item>
             <a-form-model-item label="大小" prop="size" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
               <div class="item-info-row">
-                <a-input v-model="mForm.sizeW" placeholder="请输入" suffix="mm"></a-input>
-                *
-                <a-input v-model="mForm.sizeH" placeholder="请输入" suffix="mm"></a-input>
+                <span v-html="mForm.diameter"></span>
               </div>
             </a-form-model-item>
             <a-form-model-item label="体积" prop="size" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
-              <a-input v-model="mForm.noduleSize" placeholder="请输入结节体积" suffix="mm³"></a-input>
+              <a-input v-model="mForm.noduleSize" placeholder="请输入结节体积" suffix="mm³" v-if="false"></a-input>
+              <span v-html="mForm.noduleSize + ' mm³'"></span>
             </a-form-model-item>
-            <a-form-model-item label="形态类型" prop="shape" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
-              <a-input v-model="mForm.featureLabel" placeholder="请选择形态类型"></a-input>
+            <a-form-model-item label="形态类型" prop="featureLabel" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
+              <a-select v-model="mForm.featureLabel" placeholder="请选择形态类型">
+                <a-select-option v-for="item in featureLabelOption" :key="item.value" :value="item.value">
+                  {{ item.label }}
+                </a-select-option>
+              </a-select>
             </a-form-model-item>
             <a-form-model-item label="标准直径" prop="diameter" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
-              <a-input v-model="mForm.diameterNorm" placeholder="请输入标准直径" suffix="mm"></a-input>
+              <a-input v-model="mForm.diameterNorm" placeholder="请输入标准直径" suffix="mm" v-if="false"></a-input>
+              <span v-html="mForm.diameterNorm + ' mm'"></span>
             </a-form-model-item>
-            <a-form-model-item label="恶性风险" prop="risk" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
+            <a-form-model-item label="恶性风险" prop="scrynMaligant" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
               <a-input v-model="mForm.scrynMaligant" placeholder="请输入风险系数" suffix="%"></a-input>
             </a-form-model-item>
             <a-form-model-item label="中心密度" prop="centerDensity" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
-              <a-input v-model="mForm.centerHu" placeholder="请输入中心密度" suffix="HU"></a-input>
+              <a-input v-model="mForm.centerHu" placeholder="请输入中心密度" suffix="HU" v-if="false"></a-input>
+              <span v-html="mForm.centerHu + ' HU'"></span>
             </a-form-model-item>
             <a-form-model-item label="平均密度" prop="avgDensity" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
-              <a-input v-model="mForm.meanHu" placeholder="请输入平均密度" suffix="HU"></a-input>
+              <a-input v-model="mForm.meanHu" placeholder="请输入平均密度" suffix="HU" v-if="false"></a-input>
+              <span v-html="mForm.meanHu + ' HU'"></span>
             </a-form-model-item>
             <a-form-model-item label="最大密度" prop="maxDensity" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
-              <a-input v-model="mForm.maxHu" placeholder="请输入最大密度" suffix="HU"></a-input>
+              <a-input v-model="mForm.maxHu" placeholder="请输入最大密度" suffix="HU" v-if="false"></a-input>
+              <span v-html="mForm.maxHu + ' HU'"></span>
             </a-form-model-item>
             <a-form-model-item label="最小密度" prop="minDensity" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
-              <a-input v-model="mForm.minHu" placeholder="请输入最小密度" suffix="HU"></a-input>
+              <a-input v-model="mForm.minHu" placeholder="请输入最小密度" suffix="HU" v-if="false"></a-input>
+              <span v-html="mForm.minHu + ' HU'"></span>
             </a-form-model-item>
           </a-form-model>
         </div>
@@ -147,7 +156,7 @@ export default {
     return {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 6 },
+        sm: { span: 7 },
       },
       wrapperCol: {
         xs: { span: 24 },
@@ -210,39 +219,44 @@ export default {
         getPatient: '/multiomics/productOrder/orderStepInfo'
       },
       validatorRules: {
-        lungLocation: [{ required: true, message: '请选择肺!' }],
-        lobeLocation: [{ required: true, message: '请输入肺叶!' }],
-        diameter: [{ required: true, message: '请输入大小!' }],
-        noduleSize: [
-          { required: true, message: '请输入体积!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ],
+        // lungLocation: [{ required: true, message: '请选择肺!' }],
+        // lobeLocation: [{ required: true, message: '请输入肺叶!' }],
+        // diameter: [{ required: true, message: '请输入大小!' }],
+        // noduleSize: [
+        //   { required: true, message: '请输入体积!' },
+        //   { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+        // ],
         featureLabel: [{ required: true, message: '请选择形态类型!' }],
         scrynMaligant: [{ required: true, message: '请输入风险!' }],
-        diameterNorm: [
-          { required: true, message: '请输入直径!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ],
-        centerHu: [
-          { required: true, message: '请输入中心密度!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ],
-        meanHu: [
-          { required: true, message: '请输入平均密度!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ],
-        maxHu: [
-          { required: true, message: '请输入最大密度!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ],
-        minHu: [
-          { required: true, message: '请输入最小密度!' },
-          { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
-        ]
+        // diameterNorm: [
+        //   { required: true, message: '请输入直径!' },
+        //   { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+        // ],
+        // centerHu: [
+        //   { required: true, message: '请输入中心密度!' },
+        //   { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+        // ],
+        // meanHu: [
+        //   { required: true, message: '请输入平均密度!' },
+        //   { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+        // ],
+        // maxHu: [
+        //   { required: true, message: '请输入最大密度!' },
+        //   { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+        // ],
+        // minHu: [
+        //   { required: true, message: '请输入最小密度!' },
+        //   { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+        // ]
       },
       currImage: null,
       confirmLoading: false,
-      modelTitle: ''
+      modelTitle: '',
+      featureLabelOption: [
+        { label: '磨玻璃', value: '磨玻璃' },
+        { label: '胸膜实性', value: '胸膜实性' },
+        { label: '肺内实性', value: '肺内实性' }
+      ]
     }
   },
   filters: {
@@ -271,12 +285,7 @@ export default {
     handleEditImage (image) {
       const { diameter } = image
       const { dicomResult } = this
-      let sizeArr = diameter.split('*')
-      const sizeW = sizeArr[0].substring(0, sizeArr[0].length - 2)
-      const sizeH = sizeArr[1].substring(0, sizeArr[0].length - 2)
       this.mForm = image
-      this.mForm.sizeW = sizeW
-      this.mForm.sizeH = sizeH
       this.mForm.scrynMaligant = this.mForm.scrynMaligant.replace('%', '')
       this.currImage = image
       this.ModifyVisible = true
@@ -341,7 +350,6 @@ export default {
       }
     },
     handleOk () {
-      this.mForm.diameter = this.mForm.sizeW + 'mm *' + this.mForm.sizeH + 'mm'
       this.mForm.scrynMaligant = this.mForm.scrynMaligant
       const id = this.$route.params.id
       const that = this
@@ -400,30 +408,5 @@ export default {
 <style lang="less">
   .result-image {
     max-width: 100%;
-  }
-  .ant-modal-body {
-    .image-result {
-      display: flex;
-
-      .result-image {
-        margin-top: 45px;
-      }
-      .item-content-info {
-        padding: 15px 0 15px 15px;
-      }
-      .item-content-image {
-        .title {
-          color: rgba(0, 0, 0, .85);
-          font-size: 16px;
-          font-weight: bold;
-          margin-bottom: 16px;
-        }
-      }
-    }
-
-    .item-info-row {
-      display: flex;
-      align-items: center;
-    }
   }
 </style>

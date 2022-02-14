@@ -41,7 +41,7 @@
         required: false
       },
       alldepart: {
-        type: Boolean
+        type: String
       },
       rootOpened: {
         type: Boolean,
@@ -113,7 +113,11 @@
         this.storeVals = val
       },
       role() {
+        console.log('ddd')
         this.textVals = undefined
+      },
+      textVals(n, o) {
+        console.log(n, '---', o)
       }
     },
     methods:{

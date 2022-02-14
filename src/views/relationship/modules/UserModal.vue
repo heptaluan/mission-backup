@@ -65,7 +65,7 @@
         <a-form-model-item label='部门分配' :labelCol='labelCol' :wrapperCol='wrapperCol' prop='selecteddeparts'
                            v-show='false'>
           <j-select-depart v-model='model.selecteddeparts' disabled :multi='true' @back='backDepartInfo'
-                           :backDepart='true' :alldepart='true'
+                           :backDepart='true' :alldepart="'all'"
                            :treeOpera='true'>
           </j-select-depart>
         </a-form-model-item>
@@ -81,7 +81,8 @@
                            :wrapperCol='wrapperCol'
                            prop='departIds'>
           <j-select-depart v-model='model.departIds' :multi='false' @back='backDepartInfo' :backDepart='true'
-                           :disabled='model.userIdentity == 2' :alldepart='false'
+                           :disabled='model.userIdentity == 2'
+                           :alldepart="model.userIdentity == 1 ? 'user' : 'superUser'"
                            :treeOpera='true'>
           </j-select-depart>
         </a-form-model-item>
@@ -192,8 +193,6 @@ export default {
       nextDepartOptions: [],
       user: null,
       selectType: 4000,
-      specialRole: 'channel_omics',
-      ttt: false
     }
   },
   created() {
@@ -219,20 +218,20 @@ export default {
       //根据屏幕宽度自适应抽屉宽度
       this.resetScreenSize()
       that.userId = record.id
+      this.initTreeData(record)
       that.model = Object.assign({}, { selecteddeparts: '' }, record)
       //身份为上级显示负责部门，否则不显示
-      // if (this.model.userIdentity == 2) {
-      //   this.departIdShow = true
-      // } else {
-      //   this.departIdShow = false
-      // }
-      this.changeTreeOptions()
+
       if (record.hasOwnProperty('id')) {
         that.getUserRoles(record.id)
         that.getUserDeparts(record.id)
       } else {
-        that.model.selectedroles = 'channel_omics' // must have channel_omics role
+        that.model.selectedroles = '1458261604958257153' // must have channel_omics role
       }
+    },
+    initTreeData(record) {
+      this.changeTreeOptions('all')
+      this.identityChange(record.userIdentity)
     },
     isDisabledAuth(code) {
       return disabledAuthFilter(code)
@@ -489,29 +488,36 @@ export default {
     },
     identityChange(e) {
       this.model.departIds = undefined
-      if (e.target.value === 1) {
+      if (e === 1 || (e.target && e.target.value === 1)) {
         // this.departIdShow = false
         this.selectType = 4000
-        this.model.departIds = undefined
-      } else {
+        this.changeTreeOptions('user')
+        this.model.selectedroles = '1458261604958257153'
+      } else if (e === 2 || (e.target && e.target.value === 2)) {
         // this.departIdShow = true
         this.selectType = 3000
         this.model.departIds = this.model.selecteddeparts
+        this.model.selectedroles = '1486175292129988609'
+        this.changeTreeOptions('superUser')
       }
-      this.changeTreeOptions()
     },
     userInfo() {
-      const role = this.$store.getters.userInfo.role
+      const role = this.$store.getters.userRole
       return role.toString()
     },
-    changeTreeOptions() {
+    changeTreeOptions(role) {
       this.$nextTick(() => {
-        this.$bus.$emit('innerObserve', { id: this.userId, catalog: this.selectType })
+        this.$bus.$emit('innerObserve', { id: this.userId, catalog: this.selectType, role: role })
       })
     }
   },
   watch: {
-    // model.dep
+    // 'model.selecteddeparts'(n, o) {
+    //   if (n && n != '') {
+    //     this.identityChange(this.model.userIdentity)
+    //   }
+    //   console.log(this.model.selecteddeparts)
+    // }
   }
 }
 </script>

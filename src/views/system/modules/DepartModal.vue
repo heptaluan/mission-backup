@@ -19,19 +19,19 @@
           prop='departName'
           :hidden='false'
           hasFeedback>
-          <a-input id='departName' placeholder='请输入机构/部门名称' v-model='model.departName' />
+          <a-input id='departName' placeholder='请输入机构名称' v-model='model.departName' />
         </a-form-model-item>
-        <a-form-model-item label='医院简称' prop='departNameAbbr' :labelCol='labelCol' :wrapperCol='wrapperCol'>
-          <a-input placeholder='请输入医院简称' v-model='model.departNameAbbr'
+        <a-form-model-item label='机构简称' prop='departNameAbbr' :labelCol='labelCol' :wrapperCol='wrapperCol'>
+          <a-input placeholder='请输入机构简称' v-model='model.departNameAbbr'
                    @change='checkAbbr(model.departNameAbbr, model)' />
         </a-form-model-item>
-        <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' :hidden='seen' label='上级部门' hasFeedback>
+        <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' :hidden='seen' label='上级机构' hasFeedback>
           <a-tree-select
             style='width:100%'
             :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
             :treeData='departTree'
             v-model='model.parentId'
-            placeholder='请选择上级部门'
+            placeholder='请选择上级机构'
             :disabled='condition'>
           </a-tree-select>
         </a-form-model-item>
@@ -40,12 +40,23 @@
           :wrapperCol='wrapperCol'
           prop='orgCategory'
           label='机构类型'>
-          <a-select v-model='model.orgCategory' placeholder='请选择机构类型' @change='orgChange'>
-            <a-select-option v-for='item in departmentType' :key='item.id' :value='item.value'>
+          <a-radio-group v-model='model.orgCategory' @change='orgChange'>
+            <a-radio v-for='item in departmentType' :key='item.id' :value='item.value'>
               {{ item.txt }}
-            </a-select-option>
-          </a-select>
+            </a-radio>
+          </a-radio-group>
         </a-form-model-item>
+        <!--        <a-form-model-item-->
+        <!--          :labelCol="labelCol"-->
+        <!--          :wrapperCol="wrapperCol"-->
+        <!--          prop="subDepartType"-->
+        <!--          label="部门">-->
+        <!--          <a-radio-group v-model="model.subDepartType">-->
+        <!--            <a-radio v-for='item in subDepartType' :key='item.id' :value='item.value'>-->
+        <!--              {{ item.txt }}-->
+        <!--            </a-radio>-->
+        <!--          </a-radio-group>-->
+        <!--        </a-form-model-item>-->
         <a-form-model-item
           :labelCol="labelCol"
           :wrapperCol="wrapperCol"
@@ -124,13 +135,13 @@ export default {
 
         confirmLoading: false,
         validatorRules: {
-          departName: [{ required: true, message: '请输入机构/部门名称!' }],
+          departName: [{ required: true, message: '请输入机构名称!', trigger: 'blur' }],
           departNameAbbr: [
             {
               required: true,
-              message: '请输入医院简称(3-7位大写字母)',
+              message: '请输入机构简称(3-8位大写字母)',
               trigger: 'blur',
-              pattern: /^[A-Z]{3,7}$/
+              pattern: /^[A-Z]{3,8}$/
             }
           ],
           orgCode: [{ required: true, message: '请输入机构编码!' }],
@@ -153,6 +164,10 @@ export default {
         { value: 1, txt: '公司' },
         { value: 3000, txt: '渠道商' },
         { value: 4000, txt: '医院' }
+      ],
+      subDepartType: [
+        { value: 1, txt: '部门' },
+        { value: 2, txt: '岗位' }
       ],
       selectType: 1
     }
@@ -235,7 +250,7 @@ export default {
         }
       },
       orgChange(value) {
-        this.selectType = value
+        this.selectType = value.target.value
         this.model.departNameAbbr = undefined
       }
     }
