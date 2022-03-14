@@ -35,7 +35,7 @@
 
 <script>
 import { getDistributorAllList } from '@api/product/index'
-import { getOrderImportTask, getproductOrderOorderUserView } from '../../api/order'
+import { getOrderImportTask, getproductOrderOrderUserView } from '../../api/order'
 
 export default {
   name: 'SelectorFilter',

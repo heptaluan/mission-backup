@@ -169,7 +169,7 @@ export default {
     },
     loadMaterialList(type) {
       const that = this
-      const params = this.getQueryParams()
+      const params = this.getQueryParams(true)
       const product = {
         product: [type],
         page: that.ipagination.current,

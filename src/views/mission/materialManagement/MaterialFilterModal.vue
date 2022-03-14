@@ -181,7 +181,7 @@ export default {
   },
   methods: {
     resetQuery() {
-      this.queryParam = {}
+      this.cleanData()
       this.loadData()
     },
     show() {
@@ -190,10 +190,17 @@ export default {
     handleCancel() {
       console.log(`取消`)
       this.visible = false
+      this.resetQuery()
     },
     handleOk() {
       this.$emit('ok', this.selectionRows)
       this.visible = false
+      this.resetQuery()
+    },
+    cleanData() {
+      this.queryParam = {}
+      this.selectionRows = []
+      this.selectedRowKeys = []
     },
     getSuperFieldList() {
       let fieldList = []

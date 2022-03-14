@@ -15,8 +15,8 @@
                         :not-found-content='null'
                         @search='handleChannelSearch'
                         @change='handleChannelChange'>
-                <a-select-option v-for='item in distributorList' :key='item.id' :value='item.shortName'>
-                  {{ item.accessName }}
+                <a-select-option v-for='item in distributorList' :key='item.id' :value='item.departNameAbbr'>
+                  {{ item.departName }}
                 </a-select-option>
               </a-select>
             </a-form-item>
@@ -24,8 +24,8 @@
           <a-col class='group md'>
             <a-form-item label='医院:' :labelCol='{ span: 5 }'>
               <a-select v-model='queryParam.sendHospital' placeholder='请选择医院'>
-                <a-select-option v-for='item in hospitalList' :key='item.id' :value='item.shortName' allowClear>
-                  {{ item.hospitalName }}
+                <a-select-option v-for='item in hospitalList' :key='item.id' :value='item.departNameAbbr' allowClear>
+                  {{ item.departName }}
                 </a-select-option>
               </a-select>
             </a-form-item>
@@ -36,19 +36,28 @@
             </a-form-item>
           </a-col>
           <a-col class="group sm">
+            <a-form-item label="产品">
+              <a-select v-model="queryParam.choseProduct" placeholder="请选择产品类型" allowClear>
+                <a-select-option v-for="item in productOption" :key="item.value" :value="item.value">
+                  {{ item.label }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col class="group sm">
             <a-form-item label="审核:" :labelCol="{ span: 5 }">
-              <a-select v-model="queryParam.checkType" placeholder="请选择是否审核" allowClear default-value="0">
+              <a-select v-model="queryParam.checkType" placeholder="请选择是否审核">
                 <a-select-option v-for="(item, index) in checkOption" :key="index" :value="item.value">
                   {{item.label}}
                 </a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
-          <a-col class="group tiny">
-            <a-form-item label="性别:" :labelCol="{ span: 5 }">
-              <a-select v-model="queryParam.sex" placeholder="请选择性别" allowClear>
-                <a-select-option v-for="item in genderOption" :key="item.value" :value="item.value">
-                  {{ item.label }}
+          <a-col class="group sm">
+            <a-form-item label="报告状态">
+              <a-select v-model="queryParam.reportType" placeholder="请选择报告状态">
+                <a-select-option v-for="(item, index) in reportOption" :key="index" :value="item.value">
+                  {{item.label}}
                 </a-select-option>
               </a-select>
             </a-form-item>
@@ -56,11 +65,6 @@
           <a-col class="group sm">
             <a-form-item label="身份证:" :labelCol="{ span: 6 }">
               <a-input allowClear v-model="queryParam.idCard" placeholder="请输入身份证"></a-input>
-            </a-form-item>
-          </a-col>
-          <a-col class="group sm" v-if="false">
-            <a-form-item label="手机号:" :labelCol="{ span: 6 }">
-              <a-input allowClear v-model="queryParam.phone" placeholder="请输入手机号"></a-input>
             </a-form-item>
           </a-col>
           <a-col class="group md">
@@ -81,9 +85,27 @@
             </a-form-item>
           </a-col>
           <template v-if="toggleSearchStatus">
+            <a-col class="group tiny">
+              <a-form-item label="性别:" :labelCol="{ span: 5 }">
+                <a-select v-model="queryParam.sex" placeholder="请选择性别" allowClear>
+                  <a-select-option v-for="item in genderOption" :key="item.value" :value="item.value">
+                    {{ item.label }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+            <a-col class="group sm" v-if="false">
+              <a-form-item label="手机号:" :labelCol="{ span: 6 }">
+                <a-input allowClear v-model="queryParam.phone" placeholder="请输入手机号"></a-input>
+              </a-form-item>
+            </a-col>
             <a-col class="group sm">
-              <a-form-item label="报告状态">
-                <a-input placeholder="请选择报告状态" v-model="queryParam.reportType"></a-input>
+              <a-form-item label="审阅状态">
+                <a-select v-model="queryParam.imageType" placeholder="请选择报告状态">
+                  <a-select-option v-for="(item, index) in ImageOption" :key="index" :value="item.value">
+                    {{item.label}}
+                  </a-select-option>
+                </a-select>
               </a-form-item>
             </a-col>
           </template>
@@ -135,7 +157,6 @@
         :dataSource="dataSource"
         :pagination="ipagination"
         :loading="loading"
-        :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         class="j-table-force-nowrap"
         @change="handleTableChange"
       >
@@ -143,13 +164,19 @@
           <div v-html="text"></div>
         </template>
         <template slot="tags" slot-scope="checkType">
-          <a-tag :color="checkType === 1 ?  '#87d068': '#2db7f5'">{{checkType === 1 ? '已经审核': '未审核'}}</a-tag>
+          <a-tag :color="checkType === 1 ?  '#87d068': '#2db7f5'">{{checkType === 1 ? '已审核': '未审核'}}</a-tag>
+        </template>
+        <template slot="reportTypetags" slot-scope="text">
+          <a-tag :color="text === 2 ?  '#87d068': '#2db7f5'">{{text === 2 ? '已出': '未出'}}</a-tag>
         </template>
         <template slot="colorText" slot-scope="text">
           <span v-html="text" :style="calcStyle(text)"></span>
         </template>
         <template slot="colorTextImage" slot-scope="text">
           <span v-html="text" :style="calcStyleImage(text)"></span>
+        </template>
+        <template slot="geneColorText" slot-scope="text, record">
+          <span v-html="geneText(text, record)" :style="calcStyleImage(text)"></span>
         </template>
         <template slot="imgSlot" slot-scope="text">
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
@@ -199,10 +226,11 @@
   import { mixinDevice } from '@/utils/mixin'
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { selectorFilterMixin } from '@/mixins/selectorFilterMixin'
+  import { reportMixin } from '@/mixins/reportMixin'
 
   export default {
     name: 'SampleReportCheckList',
-    mixins: [JeecgListMixin, mixinDevice, selectorFilterMixin],
+    mixins: [JeecgListMixin, mixinDevice, selectorFilterMixin, reportMixin],
     data() {
       return {
         description: '初始报告结果管理页面',
@@ -264,60 +292,97 @@
             dataIndex: 'choseProduct_dictText',
 
           },
+          // {
+          //   title: '身份证',
+          //   align: 'center',
+          //   dataIndex: 'idCard'
+          // },
           {
-            title: '身份证',
-            align: 'center',
-            dataIndex: 'idCard'
-          },
-          {
-            title: '代谢结果',
+            title: '代谢',
             align: 'center',
             dataIndex: 'ananpanReportValue',
             key: 'ananpanReportValue',
             scopedSlots: { customRender: 'colorText' },
           },
           {
-            title: '影像结果',
+            title: '影像',
             align: 'center',
             dataIndex: 'imageReportValue',
             key: 'imageReportValue',
             scopedSlots: { customRender: 'colorTextImage' },
           },
           {
-            title: '表观结果',
+            title: '表观',
             align: 'center',
             dataIndex: 'geneReportValue',
             key: 'geneReportValue',
-            scopedSlots: { customRender: 'colorTextImage' },
+            scopedSlots: { customRender: 'geneColorText' },
           },
           {
-            title: '报告总结果',
+            title: '总结果',
             align: 'center',
             dataIndex: 'reportValue',
             key: 'reportValue',
             scopedSlots: { customRender: 'colorText' },
           },
           {
-            title: '状态',
+            title: '审核状态',
             align: 'center',
             key: 'checkType',
             dataIndex: 'checkType',
             scopedSlots: { customRender: 'tags' },
           },
           {
-            title: '预计完成时间',
+            title: '报告状态',
+            align: 'center',
+            key: 'reportType',
+            dataIndex: 'reportType',
+            scopedSlots: { customRender: 'reportTypetags' },
+          },
+          {
+            title: '医生检阅',
+            align: 'center',
+            key: 'imageType',
+            dataIndex: 'imageType',
+            customRender: function(t, r, index) {
+              let text = '未生成'
+              switch (t.toString()) {
+                case '1':
+                  text = '未检阅'
+                  break
+                case '2':
+                  text = '泰莱医生已检查'
+                  break
+                case '3':
+                  text = '点内医生已检查'
+                  break
+                case '4':
+                  text = '均已检查'
+                  break
+                case '5':
+                  text = '超级管理员已检查'
+                  break
+                case '9':
+                  text = '一键检查'
+                  break
+              }
+              return text
+            }
+          },
+          {
+            title: '预计完成',
             align: 'center',
             dataIndex: 'planCompletionTime'
           },
           {
-            title: '实际完成时间',
+            title: '实际完成',
             align: 'center',
             dataIndex: 'actualCompletionTime'
           },
           {
             title: () => {
               return (
-                <div>剩余完<br />成时间</div>
+                <div>剩余<br />完成</div>
               )
             },
             align: 'center',
@@ -380,6 +445,20 @@
           { label: '未审核', value: 0 },
           { label: '全部', value: '' }
         ],
+        reportOption: [
+          { label: '已出报告', value: 2 },
+          { label: '未出报告', value: 0 },
+          { label: '全部', value: '' }
+        ],
+        ImageOption: [
+          // { label: '未检查', value: 0 },
+          { label: '泰莱医生已检查', value: 2 },
+          { label: '点内医生已检查', value: 3 },
+          { label: '均已检查', value: 4 },
+          { label: '超级管理员已检查', value: 5 },
+          { label: '一键检查', value: 9 },
+          { label: '全部', value: '' }
+        ],
         isorter: {
           column: 'reportType, planCompletionTime',
           order: 'asc'
@@ -389,11 +468,30 @@
           pageSizeOptions: ['20', '50', '100'],
         },
         channelValue: null,
-        disableMixinCreated: false
+        disableMixinCreated: true
       }
     },
-    created() {
+    mounted() {
+      let checkType = this.getParams('checkType')
+      if (checkType === false) {
+        this.$set(this.queryParam, 'checkType', 0)
+      } else {
+        this.$set(this.queryParam, 'checkType', checkType === '' ? checkType : checkType * 1)
+      }
+      let reportType = this.getParams('reportType')
+      if (reportType === false) {
+        this.$set(this.queryParam, 'reportType', '')
+      } else {
+        this.$set(this.queryParam, 'reportType', reportType === '' ? reportType : reportType * 1)
+      }
+      // let imageType = this.getParams('imageType')
+      // if (imageType === false) {
+      //   this.$set(this.queryParam, 'imageType', 10)
+      // } else {
+      //   this.$set(this.queryParam, 'imageType', imageType === '' ? imageType : imageType * 1)
+      // }
       this.loadDistributorList()
+      this.loadHospitalList()
       this.getSuperFieldList()
       this.loadData()
     },
@@ -423,36 +521,19 @@
       },
       handleDetail (record) {
         // /reportDetail
-        this.$router.push({name: 'ReportCheckDetail', params: {
+        // this.$router.push({name: 'reportCheckDetail-@id', params: {
+        //     id: record.id
+        //   }})
+        const router = this.$router.resolve({
+          name: 'reportCheckDetail-@id',
+          params:{
             id: record.id
-          }})
+          }
+        })
+        window.open(router.href, '_blank')
       },
       handleCheckChange(value) {
         this.$set(this.queryParam, 'checkType', value)
-      },
-      calcStyle(text) {
-        let bgColor = '#fff'
-        let Color = '#000'
-        const sore = parseFloat(text)
-        if (sore >= 50 && sore < 70) {
-          Color = '#fff'
-          bgColor = '#faad14'
-        }
-        if (sore >= 70) {
-          Color = '#fff'
-          bgColor = '#f5222d'
-        }
-        return `background-color: ${bgColor}; color: ${Color}`
-      },
-      calcStyleImage(text) {
-        let bgColor = '#fff'
-        let Color = '#000'
-        const sore = parseFloat(text)
-        if (sore >= 60) {
-          Color = '#fff'
-          bgColor = '#f5222d'
-        }
-        return `background-color: ${bgColor}; color: ${Color}`
       }
     }
   }

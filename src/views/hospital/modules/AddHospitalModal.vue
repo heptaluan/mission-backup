@@ -15,7 +15,8 @@
           <a-input :disabled='formDisabled' placeholder='请输入医院名称' v-model='form.departName' />
         </a-form-model-item>
         <a-form-model-item label='医院简称' prop='departNameAbbr'>
-          <a-input :disabled='formDisabled || specialDisabled' placeholder='请输入医院简称' v-model='form.departNameAbbr'
+          <a-input class='autoUppercase' :disabled='formDisabled || specialDisabled' placeholder='请输入医院简称'
+                   v-model='form.departNameAbbr'
                    @change='checkAbbr(form.departNameAbbr, form)' />
         </a-form-model-item>
         <a-form-model-item label='联系电话' prop='mobile'>
@@ -61,6 +62,7 @@
       <div class="form-title">地址信息</div>
       <div class='form-content'>
         <a-form-model-item label='地区' prop='zone'>
+          <!--          <region :disabled='formDisabled' :regionData='regionData' v-model='form.zone' :value='form.zone' />-->
           <region :disabled='formDisabled' v-model='form.zone' :value='form.zone' />
         </a-form-model-item>
         <a-form-model-item label='详细地址' prop='address'>
@@ -111,6 +113,7 @@ function getBase64(file) {
 export default {
   name: 'AddHospitalModal',
   mixins: [mixinDevice, selectorFilterMixin, commonFunctionsMixin],
+  // props: ['regionData'],
   components: { Region },
   data() {
     return {
@@ -132,7 +135,7 @@ export default {
             required: true,
             message: '请输入渠道商缩写（仅限三到八位大写字母）',
             trigger: 'blur',
-            pattern: /^[A-Z]{3,8}$/
+            pattern: /^[a-zA-Z]{3,8}$/
           }],
         // department: [{ required: true, message: '请输入科室', trigger: 'blur' }],
         // contactDoctor: [{ required: true, message: '请输入联系医生', trigger: 'blur' }],

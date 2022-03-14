@@ -33,7 +33,7 @@
             <a-input id='departName' placeholder='请输入医院名称' v-model='model.departName' />
           </a-form-model-item>
           <a-form-model-item label='医院简称' prop='departNameAbbr'>
-            <a-input :disabled='formDisabled' placeholder='请输入医院简称' v-model='model.departNameAbbr'
+            <a-input class='autoUppercase' :disabled='formDisabled' placeholder='请输入医院简称' v-model='model.departNameAbbr'
                      @change='checkAbbr(model.departNameAbbr, model)' />
           </a-form-model-item>
           <a-form-model-item
@@ -147,7 +147,7 @@ export default {
             required: true,
             message: '请输入医院简称(3-8位大写字母)',
             trigger: 'blur',
-            pattern: /^[A-Z]{3,8}$/
+            pattern: /^[a-zA-Z]{3,8}$/
           }
         ],
         // orgCode:[{ required: true, message: '请输入机构编码!' }],

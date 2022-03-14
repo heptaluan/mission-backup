@@ -80,7 +80,7 @@
         <a-form-model-item :label="model.userIdentity == 1 ? '关联医院': '管辖范围'" :labelCol='labelCol'
                            :wrapperCol='wrapperCol'
                            prop='departIds'>
-          <j-select-depart v-model='model.departIds' :multi='false' @back='backDepartInfo' :backDepart='true'
+          <j-select-depart v-model='model.departIds' :multi='true' @back='backDepartInfo' :backDepart='true'
                            :disabled='model.userIdentity == 2'
                            :alldepart="model.userIdentity == 1 ? 'user' : 'superUser'"
                            :treeOpera='true'>

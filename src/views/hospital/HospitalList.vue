@@ -140,6 +140,7 @@
       </a-table>
     </div>
 
+<!--    <AddHospitalModal ref="modalForm" :regionData='originalRegion' @ok="modalFormOk" />-->
     <AddHospitalModal ref="modalForm" @ok="modalFormOk" />
   </a-card>
 </template>
@@ -149,6 +150,7 @@ import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { selectorFilterMixin } from '@/mixins/selectorFilterMixin'
+// import { commonFunctionsMixin } from '@/mixins/commonFunctionsMixin'
 import AddHospitalModal from './modules/AddHospitalModal'
 import { getRegionWithDepartment } from '@/api/api'
 
@@ -259,7 +261,7 @@ export default {
         }
       ],
       url: {
-        list: 'mission/businessAccess/list'
+        list: 'mission/businessAccess/hospitalList'
       },
       dictOptions: {},
       superFieldList: [],
@@ -316,6 +318,7 @@ export default {
   mounted() {
     this.loadDistributorList()
     this.loadRelatedRegion()
+    // this.initRegion()
   }
 }
 </script>
@@ -355,6 +358,11 @@ export default {
       .ant-radio-button-wrapper {
         margin: 0 8px 8px 0;
         border-radius: 4px !important;
+        border-left: 1px solid #d9d9d9;
+
+        &::before {
+          display: none !important;
+        }
       }
     }
   }

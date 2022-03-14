@@ -17,7 +17,7 @@
               <a v-if='this.currSelected.title' style='margin-left: 10px' @click='onClearSelected'>取消选择</a>
             </div>
           </a-alert>
-          <a-input-search @search='onSearch' style='width:100%;margin-top: 10px' placeholder='请输入部门名称' />
+          <a-input-search @search='onSearch' style='width:100%;margin-top: 10px' placeholder='请输入医院名称' />
           <!-- 树-->
           <a-col :md='10' :sm='24'>
             <template>
@@ -76,14 +76,14 @@
         <a-tab-pane tab='基本信息' key='2'>
           <a-card :bordered='false' v-if='selectedKeys.length>0'>
             <a-form-model ref='form' :model='model' :rules='validatorRules'>
-              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' prop='departName' label='机构名称'>
-                <a-input placeholder='请输入机构/部门名称' v-model='model.departName' />
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' prop='departName' label='医院名称'>
+                <a-input placeholder='请输入医院名称' v-model='model.departName' />
               </a-form-model-item>
-              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' prop='departNameAbbr' label='机构简称'>
-                <a-input placeholder='请输入机构简称' disabled v-model='model.departNameAbbr'
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' prop='departNameAbbr' label='医院简称'>
+                <a-input class='autoUppercase' placeholder='请输入医院简称' disabled v-model='model.departNameAbbr'
                          @change='checkAbbr(model.departNameAbbr, model)' />
               </a-form-model-item>
-              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='上级部门'>
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='上级医院'>
                 <a-tree-select
                   style='width:100%'
                   :dropdownStyle="{maxHeight:'200px',overflow:'auto'}"
@@ -93,8 +93,8 @@
                   placeholder='无'>
                 </a-tree-select>
               </a-form-model-item>
-              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' prop='orgCode' label='机构编码'>
-                <a-input disabled placeholder='请输入机构编码' v-model='model.orgCode' />
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' prop='orgCode' label='医院编码'>
+                <a-input disabled placeholder='请输入医院编码' v-model='model.orgCode' />
               </a-form-model-item>
               <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='手机号'>
                 <a-input placeholder='请输入手机号' v-model='model.mobile' />
@@ -119,7 +119,7 @@
           </a-card>
           <a-card v-else>
             <a-empty>
-              <span slot='description'> 请先选择一个部门! </span>
+              <span slot='description'> 请先选择一个医院! </span>
             </a-empty>
           </a-card>
         </a-tab-pane>
@@ -141,16 +141,16 @@ import { commonFunctionsMixin } from '@/mixins/commonFunctionsMixin'
 // 表头
 const columns = [
   {
-    title: '机构名称',
+    title: '医院名称',
     dataIndex: 'departName'
   },
   {
-    title: '机构类型',
+    title: '医院类型',
     align: 'center',
     dataIndex: 'orgType'
   },
   {
-    title: '机构编码',
+    title: '医院编码',
     dataIndex: 'orgCode'
   },
   {
@@ -214,16 +214,16 @@ export default {
         edges: []
       },
       validatorRules: {
-        departName: [{ required: true, message: '请输入机构/部门名称!', trigger: 'blur' }],
+        departName: [{ required: true, message: '请输入医院名称!', trigger: 'blur' }],
         departNameAbbr: [
           {
             required: true,
             message: '请输入渠道商简称(3-8位大写字母)',
             trigger: 'blur',
-            pattern: /^[A-Z]{3,8}$/
+            pattern: /^[a-zA-Z]{3,8}$/
           }],
-        orgCode: [{ required: true, message: '请输入机构编码!' }],
-        // orgCategory:[{required: true, message: '请输入机构类型!'}],
+        orgCode: [{ required: true, message: '请输入医院编码!' }],
+        // orgCategory:[{required: true, message: '请输入医院类型!'}],
         mobile: [{ validator: this.validateMobile }],
         zone: [{ required: true, message: '请选择地区', trigger: 'change' }],
         address: [{ required: true, message: '请输入详细地址', trigger: 'blur' }]
@@ -272,7 +272,7 @@ export default {
       const orgType = { catalog: 4000 }
       queryDepartTreeListByOrgType(orgType).then((res) => {
         if (res.success) {
-          //部门全选后，再添加部门，选中数量增多
+          //医院全选后，再添加医院，选中数量增多
           this.allTreeKeys = []
           for (let i = 0; i < res.result.length; i++) {
             let temp = res.result[i]
@@ -406,7 +406,7 @@ export default {
       // this.$refs.relationUser.onClearSelected()
       // this.$refs.relationUser.open(record)
     },
-    // 触发onSelect事件时,为部门树右侧的form表单赋值
+    // 触发onSelect事件时,为医院树右侧的form表单赋值
     // setValuesToForm(record) {
     //   if(record.orgCategory == '1'){
     //     this.orgCategoryDisabled = true;
@@ -428,7 +428,7 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           if (!this.currSelected.id) {
-            this.$message.warning('请点击选择要修改部门!')
+            this.$message.warning('请点击选择要修改医院!')
             return
           }
           this.currSelected.regionLevel = this.model.zone.length
@@ -455,7 +455,7 @@ export default {
       } else if (num == 2) {
         let key = this.currSelected.key
         if (!key) {
-          this.$message.warning('请先点击选中上级部门！')
+          this.$message.warning('请先点击选中上级医院！')
           return false
         }
         this.$refs.departModal.add(this.selectedKeys)
@@ -469,7 +469,7 @@ export default {
       var that = this
       this.$confirm({
         title: '确认删除',
-        content: '确定要删除此部门以及子节点数据吗?',
+        content: '确定要删除此医院以及子节点数据吗?',
         onOk: function() {
           deleteByDepartId({ id: that.rightClickSelectedKey }).then((resp) => {
             if (resp.success) {

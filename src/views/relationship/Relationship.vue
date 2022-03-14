@@ -16,7 +16,7 @@
               <a v-if="this.currSelected.title" style="margin-left: 10px" @click="onClearSelected">取消选择</a>
             </div>
           </a-alert>
-          <a-input-search @search="onSearch" style="width:100%;margin-top: 10px" placeholder="请输入部门名称" />
+          <a-input-search @search='onSearch' style='width:100%;margin-top: 10px' placeholder='请输入渠道商名称' />
           <!-- 树-->
           <a-col :md="10" :sm="24">
             <template>
@@ -74,47 +74,48 @@
           <RelationUserList ref='relationUser' />
         </a-tab-pane>
         <a-tab-pane tab="基本信息" key="2">
-          <a-card :bordered="false" v-if="selectedKeys.length > 0">
-            <a-form-model ref="form" :model="model" :rules="validatorRules">
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="departName" label="机构名称">
-                <a-input placeholder="请输入机构/部门名称" v-model="model.departName" />
+          <a-card :bordered='false' v-if='selectedKeys.length > 0'>
+            <a-form-model ref='form' :model='model' :rules='validatorRules'>
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' prop='departName' label='渠道商名称'>
+                <a-input placeholder='请输入渠道商名称' v-model='model.departName' />
               </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="departNameAbbr" label="机构简称">
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' prop='departNameAbbr' label='渠道商简称'>
                 <a-input
-                  placeholder="请输入机构简称"
+                  class='autoUppercase'
+                  placeholder='请输入渠道商简称'
                   disabled
-                  v-model="model.departNameAbbr"
-                  @change="checkAbbr(model.departNameAbbr, model)"
+                  v-model='model.departNameAbbr'
+                  @change='checkAbbr(model.departNameAbbr, model)'
                 />
               </a-form-model-item>
               <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="上级部门">
                 <a-tree-select
-                  style="width:100%"
+                  style='width:100%'
                   :dropdownStyle="{ maxHeight: '200px', overflow: 'auto' }"
-                  :treeData="treeData"
-                  :disabled="disable"
-                  v-model="model.parentId"
-                  placeholder="无"
+                  :treeData='treeData'
+                  :disabled='disable'
+                  v-model='model.parentId'
+                  placeholder='无'
                 >
                 </a-tree-select>
               </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" prop="orgCode" label="机构编码">
-                <a-input disabled placeholder="请输入机构编码" v-model="model.orgCode" />
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' prop='orgCode' label='渠道商编码'>
+                <a-input disabled placeholder='请输入渠道商编码' v-model='model.orgCode' />
               </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="手机号">
-                <a-input placeholder="请输入手机号" v-model="model.mobile" />
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='手机号'>
+                <a-input placeholder='请输入手机号' v-model='model.mobile' />
               </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="地区" prop="zone">
-                <region v-model="model.zone" :value="model.zone" />
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='地区' prop='zone'>
+                <region v-model='model.zone' :value='model.zone' />
               </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="详细地址">
-                <a-input placeholder="请输入地址" v-model="model.address" />
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='详细地址'>
+                <a-input placeholder='请输入地址' v-model='model.address' />
               </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="统一信用码">
-                <a-input placeholder="请输入统一信用码" v-model="model.socialCode" />
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='统一信用码'>
+                <a-input placeholder='请输入统一信用码' v-model='model.socialCode' />
               </a-form-model-item>
-              <a-form-model-item :labelCol="labelCol" :wrapperCol="wrapperCol" label="网址">
-                <a-input placeholder="请输入网址" v-model="model.website" />
+              <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' label='网址'>
+                <a-input placeholder='请输入网址' v-model='model.website' />
               </a-form-model-item>
             </a-form-model>
             <div class="anty-form-btn">
@@ -145,16 +146,16 @@ import { commonFunctionsMixin } from '@/mixins/commonFunctionsMixin'
 // 表头
 const columns = [
   {
-    title: '机构名称',
+    title: '渠道商名称',
     dataIndex: 'departName'
   },
   {
-    title: '机构类型',
+    title: '渠道商类型',
     align: 'center',
     dataIndex: 'orgType'
   },
   {
-    title: '机构编码',
+    title: '渠道商编码',
     dataIndex: 'orgCode'
   },
   {
@@ -218,17 +219,17 @@ export default {
         edges: []
       },
       validatorRules: {
-        departName: [{ required: true, message: '请输入机构/部门名称!', trigger: 'blur' }],
+        departName: [{ required: true, message: '请输入渠道商名称!', trigger: 'blur' }],
         departNameAbbr: [
           {
             required: true,
             message: '请输入渠道商简称(3-8位大写字母)',
             trigger: 'blur',
-            pattern: /^[A-Z]{3,8}$/
+            pattern: /^[a-zA-Z]{3,8}$/
           }
         ],
-        orgCode: [{ required: true, message: '请输入机构编码!' }],
-        // orgCategory:[{required: true, message: '请输入机构类型!'}],
+        orgCode: [{ required: true, message: '请输入渠道商编码!' }],
+        // orgCategory:[{required: true, message: '请输入渠道商类型!'}],
         mobile: [{ validator: this.validateMobile }],
         zone: [{ required: true, message: '请选择地区', trigger: 'change' }],
         address: [{ required: true, message: '请输入详细地址', trigger: 'blur' }]
@@ -277,7 +278,7 @@ export default {
       const orgType = { catalog: 3000 }
       queryDepartTreeListByOrgType(orgType).then(res => {
         if (res.success) {
-          //部门全选后，再添加部门，选中数量增多
+          //渠道商全选后，再添加渠道商，选中数量增多
           this.allTreeKeys = []
           for (let i = 0; i < res.result.length; i++) {
             let temp = res.result[i]

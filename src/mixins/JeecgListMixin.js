@@ -61,9 +61,9 @@ export const JeecgListMixin = {
     }
   },
   created() {
+    this.ipagination.current = this.getParams('pageNo') * 1 || 1
     if (!this.disableMixinCreated) {
       console.log(' -- mixin created -- ')
-      this.ipagination.current = this.getParams('pageNo') * 1 || 1
       this.loadData()
       //初始化字典配置 在自己页面定义
       this.initDictConfig()
@@ -101,7 +101,6 @@ export const JeecgListMixin = {
       if (arg === 1) {
         this.ipagination.current = 1
       }
-      console.log(this.ipagination.current)
       var params = this.getQueryParams() //查询条件
       this.loading = true
       getAction(this.url.list, params)
@@ -138,7 +137,8 @@ export const JeecgListMixin = {
       }
       this.loadData(1)
     },
-    getQueryParams() {
+    getQueryParams(notWithStar) {
+      // console.log(notWithStar)
       //获取查询条件
       let sqp = {}
       if (this.superQueryParams) {
@@ -153,7 +153,7 @@ export const JeecgListMixin = {
       }
       for (const key in queryParam) {
         if (Object.hasOwnProperty.call(queryParam, key)) {
-          if (
+          if (!notWithStar && (
             key === 'createBy' ||
             key === 'medicalCaseCode' ||
             key === 'caseName' ||
@@ -170,8 +170,10 @@ export const JeecgListMixin = {
             key === 'departName' ||
             key === 'mobile' ||
             key === 'phoneNumber' ||
-            key === 'phone'
-          ) {
+            key === 'phone' ||
+            key === 'materialName' ||
+            key === 'materialCode'
+          )) {
             queryParam[key] = '*' + queryParam[key] + '*'
           }
         }
@@ -187,7 +189,25 @@ export const JeecgListMixin = {
     // 查询记住页码参数
     changeUrl (pageNo) {
       if (!pageNo) pageNo = 1
-      window.history.replaceState({}, window.document.title, '?pageNo=' + pageNo )
+      let url = '?pageNo=' + pageNo
+      if (this.$route.name === 'ReportCheck'){
+        let checkType = ''
+        if ('checkType' in this.queryParam) {
+          checkType = this.queryParam.checkType
+        }
+        url += `&&checkType=${checkType}`
+        let reportType = ''
+        if ('reportType' in this.queryParam) {
+          reportType = this.queryParam.reportType
+        }
+        url += `&&reportType=${reportType}`
+        // let imageType = ''
+        // if ('imageType' in this.queryParam) {
+        //   imageType = this.queryParam.imageType
+        // }
+        url += `&&imageType=${imageType}`
+      }
+      window.history.replaceState({}, window.document.title, url)
     },
     getQueryField() {
       //TODO 字段权限控制

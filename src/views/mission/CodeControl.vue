@@ -15,14 +15,7 @@
           </a-col>
           <a-col class="group md">
             <a-form-item label="创建时间">
-              <j-date
-                v-model="queryParam.updateTime_begin"
-                :showTime="true"
-                date-format="YYYY-MM-DD"
-                placeholder="请选择开始时间"
-              ></j-date>
-              <span style="width: 10px;"> - </span>
-              <j-date v-model="queryParam.updateTime_end" :showTime="true" c placeholder="请选择结束时间"></j-date>
+              <a-range-picker @change='onTimeChange' allowClear v-model='queryParam.datePick' />
             </a-form-item>
           </a-col>
           <a-col class="group md">
@@ -369,6 +362,10 @@ export default {
     handleShowLog(record) {
       this.$refs.orderHistoryModal.show(record)
     },
+    onTimeChange(date, dateString) {
+      this.queryParam.updateTime_begin = dateString[0]
+      this.queryParam.updateTime_end = dateString[1]
+    }
   },
   mounted() {
     this.user = this.$store.getters.userRole

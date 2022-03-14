@@ -106,7 +106,7 @@
       conclusionText () {
         const { reportValue } = this.data
         const text =  reportValue >= 70 ? '高风险' : (reportValue >= 50 ? '中风险' : '低风险')
-        return `${text}(${ reportValue })`
+        return `${text}(${ reportValue.toFixed(1) })`
       },
       ananpanText () {
         const { ananpanReportValue } = this.data

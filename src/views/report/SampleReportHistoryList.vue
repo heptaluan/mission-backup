@@ -155,6 +155,9 @@
         <template slot="colorTextImage" slot-scope="text">
           <span v-html="text" :style="calcStyleImage(text)"></span>
         </template>
+        <template slot="geneColorText" slot-scope="text, record">
+          <span v-html="geneText(text, record)" :style="calcStyleImage(text)"></span>
+        </template>
         <template slot="imgSlot" slot-scope="text">
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
           <img v-else :src="getImgView(text)" height="25px" alt="" style="max-width:80px;font-size: 12px;font-style: italic;"/>
@@ -201,10 +204,11 @@
   import { JeecgListMixin } from '@/mixins/JeecgListMixin'
   import { putAction, postAction } from '@/api/manage'
   import { selectorFilterMixin } from '@/mixins/selectorFilterMixin'
+  import { reportMixin } from '@/mixins/reportMixin'
 
   export default {
     name: 'SampleReportHistoryList',
-    mixins:[JeecgListMixin, mixinDevice, selectorFilterMixin],
+    mixins: [JeecgListMixin, mixinDevice, selectorFilterMixin, reportMixin],
     data () {
       return {
         description: '报告历史管理页面',
@@ -279,7 +283,7 @@
             align: 'center',
             dataIndex: 'geneReportValue',
             key: 'geneReportValue',
-            scopedSlots: { customRender: 'colorTextImage' },
+            scopedSlots: { customRender: 'geneColorText' },
           },
           {
             title: '报告总结果',
@@ -401,30 +405,6 @@
         } catch (e) {
           this.$message.warning(e.message)
         }
-      },
-      calcStyle(text) {
-        let bgColor = '#fff'
-        let Color = '#000'
-        const sore = parseFloat(text)
-        if (sore >= 50 && sore < 70) {
-          Color = '#fff'
-          bgColor = '#faad14'
-        }
-        if (sore >= 70) {
-          Color = '#fff'
-          bgColor = '#f5222d'
-        }
-        return `background-color: ${bgColor}; color: ${Color}`
-      },
-      calcStyleImage(text) {
-        let bgColor = '#fff'
-        let Color = '#000'
-        const sore = parseFloat(text)
-        if (sore >= 60) {
-          Color = '#fff'
-          bgColor = '#f5222d'
-        }
-        return `background-color: ${bgColor}; color: ${Color}`
       }
     }
   }

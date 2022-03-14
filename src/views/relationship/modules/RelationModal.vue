@@ -31,10 +31,11 @@
           </a-form-model-item>
           <a-form-model-item label="渠道商简称" prop="departNameAbbr">
             <a-input
-              :disabled="formDisabled"
-              placeholder="请输入渠道商简称"
-              v-model="model.departNameAbbr"
-              @change="checkAbbr(model.departNameAbbr, model)"
+              class='autoUppercase'
+              :disabled='formDisabled'
+              placeholder='请输入渠道商简称'
+              v-model='model.departNameAbbr'
+              @change='checkAbbr(model.departNameAbbr, model)'
             />
           </a-form-model-item>
           <a-form-model-item prop="mobile" label="联系人电话" hasFeedback>
@@ -142,7 +143,7 @@ export default {
             required: true,
             message: '请输入渠道商简称(3-8位大写字母)',
             trigger: 'blur',
-            pattern: /^[A-Z]{3,8}$/
+            pattern: /^[a-zA-Z]{3,8}$/
           }
         ],
         // orgCode:[{ required: true, message: '请输入机构编码!' }],

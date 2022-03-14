@@ -44,14 +44,15 @@
     <a-descriptions-item label="影像结果">{{report.imageReportValue}}</a-descriptions-item>
   </a-descriptions>
   <div class="image-result">
-    <div class="edit-toolbar-save">
+    <div class="edit-toolbar-save" v-if="false">
       <a-button @click="handleComplete()">保存</a-button>
     </div>
     <div class="image-result-list">
       <div class="image-result-item" v-for="(item, index) in dicomResult.nodulesList" :key="index">
+        <span class="status-label" v-if="item.invisable === '1'"></span>
         <a-card :class="{'hight-risk': calcMaligant(item.scrynMaligant)}">
           <div class="image-result-item__content">
-            <div class="edit-toolbar">
+            <div class="edit-toolbar" v-if="false">
               <a-button-group>
                 <a-button @click="handleEditImage(item, index)">编辑</a-button>
                 <a-button @click="handleDeleteImage(item, index)">
@@ -88,10 +89,12 @@
           </div>
           <a-form-model ref="editFrom" :model="mForm" :rules="validatorRules" slot="detail">
             <a-form-model-item label="肺" prop="lung" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
-              <span v-html="mForm.lungLocation"></span>
+              <span v-html="mForm.lungLocation" v-if="false"></span>
+              <a-input v-model="mForm.lungLocation" placeholder="请输入肺"></a-input>
             </a-form-model-item>
             <a-form-model-item label="肺叶" prop="lungLobe" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
-              <span v-html="mForm.lobeLocation"></span>
+              <span v-html="mForm.lobeLocation" v-if="false"></span>
+              <a-input v-model="mForm.lobeLocation" placeholder="请输入肺叶"></a-input>
             </a-form-model-item>
             <a-form-model-item label="大小" prop="size" :labelCol="labelCol" :wrapperCol="wrapperCol" class="item-info-row">
               <div class="item-info-row">
@@ -219,8 +222,8 @@ export default {
         getPatient: '/multiomics/productOrder/orderStepInfo'
       },
       validatorRules: {
-        // lungLocation: [{ required: true, message: '请选择肺!' }],
-        // lobeLocation: [{ required: true, message: '请输入肺叶!' }],
+        lungLocation: [{ required: true, message: '请选择肺!' }],
+        lobeLocation: [{ required: true, message: '请输入肺叶!' }],
         // diameter: [{ required: true, message: '请输入大小!' }],
         // noduleSize: [
         //   { required: true, message: '请输入体积!' },
@@ -253,9 +256,12 @@ export default {
       confirmLoading: false,
       modelTitle: '',
       featureLabelOption: [
+        { label: '肺内实性', value: '肺内实性' },
+        { label: '部分实性', value: '部分实性' },
         { label: '磨玻璃', value: '磨玻璃' },
+        { label: '肺内钙化', value: '肺内钙化' },
         { label: '胸膜实性', value: '胸膜实性' },
-        { label: '肺内实性', value: '肺内实性' }
+        { label: '胸膜钙化', value: '胸膜钙化' }
       ]
     }
   },
@@ -309,6 +315,7 @@ export default {
       this.commitComplete()
     },
     async commitComplete () {
+      const id = this.$route.params.id
       const that = this
       that.confirmLoading = true
       let httpurl = that.url.edit

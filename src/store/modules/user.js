@@ -156,31 +156,31 @@ const user = {
                 }
               }
             })
-            const userName = Vue.ls.get(USER_NAME)
-            // 超级用户
-            if (userName === 'sz2012') {
-              const menu = menuData.slice(0);
-              menu.push({
-                component: 'report/SampleReportCheckList',
-                id: '1480422107625543681',
-                meta: {
-                  componentName: 'SampleReportCheckList',
-                  icon: 'team',
-                  internalOrExternal: false,
-                  keepAlive: false,
-                  title: '报告审核'
-                },
-                path: '/reportCheck',
-                name: 'ReportCheck',
-                redirect: null,
-                route: '1'
-              })
-              commit('SET_PERMISSIONLIST', menu)
-            } else {
+            // const userName = Vue.ls.get(USER_NAME)
+            // // 超级用户
+            // if (userName === 'sz2012') {
+            //   const menu = menuData.slice(0);
+            //   menu.push({
+            //     component: 'report/SampleReportCheckList',
+            //     id: '1480422107625543681',
+            //     meta: {
+            //       componentName: 'SampleReportCheckList',
+            //       icon: 'team',
+            //       internalOrExternal: false,
+            //       keepAlive: false,
+            //       title: '报告审核'
+            //     },
+            //     path: '/reportCheck',
+            //     name: 'ReportCheck',
+            //     redirect: null,
+            //     route: '1'
+            //   })
+            //   commit('SET_PERMISSIONLIST', menu)
+            // } else {
               //console.log(" menu show json ", menuData)
               //update--end--autor:qinfeng-----date:20200109------for：JEECG-63 一级菜单的子菜单全部是隐藏路由，则一级菜单不显示------
               commit('SET_PERMISSIONLIST', menuData)
-            }
+            // }
           } else {
             reject('getPermissionList: permissions must be a non-null array !')
           }

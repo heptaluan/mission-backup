@@ -1,5 +1,6 @@
 <template>
   <div class="dicom-item__content">
+    <div class="mask" v-if="item.invisable == '1'"></div>
     <div class="item-content-image">
       <div class="title" v-html="dicomTitle"></div>
       <div class="b-flex">
@@ -15,7 +16,8 @@
       </div>
       <div class="item-info-row">
         <label>肺:</label>
-        <span v-html="item.lungLocation"></span>
+        <span v-html="item.lungLocation" class="margin-right-sm"></span>
+<!--        <a-tag v-html="item.lungLocation_check" color="orange" v-if="item.lungLocation_check"></a-tag>-->
       </div>
       <div class="item-info-row">
         <label>肺叶:</label>
@@ -101,6 +103,14 @@
     width: 100%;
     display: flex;
     padding-top: 15px;
+    .mask {
+      background-color: #6969673b;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
     .item-content-image {
       flex: 2;
 
@@ -119,7 +129,7 @@
       display: flex;
       padding: 15px 0 15px 15px;
       flex-direction: column;
-      justify-content: space-evenly
+      justify-content: space-evenly;
     }
     .item-info-row {
       /*margin-bottom: 10px;*/

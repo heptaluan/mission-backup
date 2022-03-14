@@ -42,29 +42,17 @@
           <a-col class="group sm">
             <a-form-model-item label="出库仓库" prop="warehouseId" :labelCol="{ span: 6 }">
               <j-dict-select-tag
-                type="list"
-                v-model="queryParam.warehouseId"
-                dictCode="warehouse_manage, name, id"
-                placeholder="请选择出库仓库"
-                change="onChange"
+                type='list'
+                v-model='queryParam.warehouseId'
+                dictCode='mms_warehouse_manage, name, id'
+                placeholder='请选择出库仓库'
+                change='onChange'
               />
             </a-form-model-item>
           </a-col>
           <a-col class="group sm">
             <a-form-item label="订单时间" :labelCol="{ span: 5 }">
-              <j-date
-                v-model="queryParam.createTime_begin"
-                :showTime="true"
-                date-format="YYYY-MM-DD"
-                placeholder="请选择开始时间"
-              ></j-date>
-              <span style="margin: 0 10px;">~</span>
-              <j-date
-                v-model="queryParam.createTime_end"
-                :showTime="true"
-                date-format="YYYY-MM-DD"
-                placeholder="请选择结束时间"
-              ></j-date>
+              <a-range-picker @change='onTimeChange' allowClear v-model='queryParam.datePick' />
             </a-form-item>
           </a-col>
           <a-col class="group btn">
@@ -331,8 +319,12 @@ export default {
     },
     resetQuery() {
       this.queryParam = {}
-      this.sellUserId = null;
+      this.sellUserId = null
       this.loadData()
+    },
+    onTimeChange(date, dateString) {
+      this.queryParam.createTime_begin = dateString[0]
+      this.queryParam.createTime_end = dateString[1]
     }
   },
   mounted() {

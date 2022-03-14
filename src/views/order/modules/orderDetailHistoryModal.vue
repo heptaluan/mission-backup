@@ -8,47 +8,28 @@
     @ok='handleOk'
     @cancel='handleCancel'
   >
-    <!--    <div class="order-progress">-->
-    <!--      <div class="label-title b-flex">-->
-    <!--        订单进度-->
-    <!--        <div class='order-progress-panel'>-->
-    <!--          <a-progress :percent='orderProgressValue' :showInfo='false' status='active' />-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--      <div class="order-progress-table">-->
-    <!--        <div class="progress-row" v-for="(item, index) in orderProgressList" :key="index">-->
-    <!--          <div class="title">{{ item.title }}</div>-->
-    <!--          <div class="text">-->
-    <!--            <span :class="{ successStatus: item.status === 1 }">{{ item.text }}</span>-->
-    <!--            <a-button v-if="item.showButton && !item.buttonGroup" :disabled="item.disState" size="small"-->
-    <!--            >重新取样</a-button-->
-    <!--            >-->
-    <!--            <template v-if="item.showButton && item.buttonGroup">-->
-    <!--              <a-button :disabled="item.disState" size="small">报告审核</a-button>-->
-    <!--              <a-button :disabled="item.disState" size="small">签发</a-button>-->
-    <!--              <a-button :disabled="item.disState" size="small">预览</a-button>-->
-    <!--            </template>-->
-    <!--          </div>-->
-    <!--          <div class="time">-->
-    <!--            <span :class="{ successStatus: item.status === 1 }">{{ item.time }}</span>-->
-    <!--          </div>-->
-    <!--        </div>-->
-    <!--      </div>-->
-    <!--    </div>-->
     <a-form layout='inline' @keyup.enter.native='searchQuery'>
       <a-row :gutter='24' class='search-group order-list'>
         <a-col class='group md'>
-          <a-form-item label='历史记录:' :labelCol='{ span: 6 }'>
-            <a-select v-model='selectOption' placeholder='请选择记录' allowClear>
-              <a-select-option v-for='item in orderProgressList' :key='item.text' :value='item.title'>
-                {{ item.title }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
+          <div class='btnBox' v-if='historyList.length > 0'>
+            <div class='label'>历史记录:</div>
+            <a-radio-group :default-value='historyList.filter(ele => ele.activeStatus == 1)[0].id' button-style='solid'>
+              <a-radio-button :value='item.id' v-for='item in historyList' :key='item.id'
+                              @click='fetchInfoByHistoryBTN(item)'>
+                {{ item.activeStatus == 1 ? '最新' : null }} {{ item.instanceType_dictText }}: {{ item.createTime }}
+              </a-radio-button>
+            </a-radio-group>
+          </div>
         </a-col>
       </a-row>
     </a-form>
-    <div class='order-progress order-progress-child'>
+    <div class='info' v-if='selectOption'>
+      <div class='item'>
+        <div class='label'>实例类别:</div>
+        <div class='desc'>{{ selectOption['instanceType_dictText'] }}</div>
+      </div>
+    </div>
+    <div class='order-progress order-progress-child' v-if='childOrder.length > 0'>
       <div class='label-title'>子订单进度</div>
       <div class='progress-body'>
         <div class='progress-item' v-for='(list, index) in childOrder' :key='index'>
@@ -91,7 +72,7 @@
 </template>
 
 <script>
-import { getProductOrderInstance } from '../../../api/order'
+import { getProductOrderInstance, getProductOrderInstanceList } from '../../../api/order'
 
 export default {
   name: 'orderDetailHistoryModal',
@@ -103,9 +84,12 @@ export default {
       disableSubmit: false,
       labelCol: { span: 4 },
       wrapperCol: { span: 18 },
-      record: {},
-      orderProgressValue: 0,
-      orderProgressList: [],
+      // record: {},
+      baseInfo: {},
+      orderInfo: {},
+      // orderProgressValue: 0,
+      // orderProgressList: [],
+      historyList: [],
       childOrder: [],
       selectOption: undefined
     }
@@ -126,39 +110,36 @@ export default {
       this.visible = false
       this.cleanData()
     },
-    handleView(record) {
-      console.log(record)
-    },
+    // handleView(record) {
+    //   console.log(record)
+    // },
     fetchInfo() {
       const id = this.$route.params.id
-      getProductOrderInstance(id).then(res => {
+      getProductOrderInstanceList(id).then(res => {
+        console.log(res.result)
+        this.historyList = res.result
+      })
+    },
+    fetchInfoByHistory(id) {
+      this.selectOption = this.historyList.filter(item => item.id == id)[0]
+      console.log(this.selectOption)
+      getProductOrderInstance({ instanceId: id, orderId: this.baseInfo.orderId }).then(res => {
         if (res.code === 200) {
-          this.formatInstance(res)
           this.formatSubOrders(res)
         }
       })
     },
-    formatInstance(res) {
-      const instanceHistoryStates = res.result.instance.historyStates
-      instanceHistoryStates.forEach(ele => {
-        const oneStep = 25
-        if (ele.stateResult == 1) {
-          this.orderProgressValue += oneStep
+    fetchInfoByHistoryBTN(item) {
+      this.selectOption = item
+      console.log(this.selectOption)
+      getProductOrderInstance({ instanceId: item.id, orderId: this.baseInfo.orderId }).then(res => {
+        if (res.code === 200) {
+          this.formatSubOrders(res)
         }
       })
-      for (let i = 0; i < instanceHistoryStates.length; i++) {
-        this.orderProgressList.push({
-          status: instanceHistoryStates[i].stateResult,
-          title: instanceHistoryStates[i].productMilestone_dictText,
-          text: instanceHistoryStates[i].stateResult_dictText,
-          time:
-            instanceHistoryStates[i].stateResult === -1
-              ? instanceHistoryStates[i].stateResult_dictText
-              : instanceHistoryStates[i].updateTime
-        })
-      }
     },
     formatSubOrders(res) {
+      this.childOrder = []
       const subOrders = res.result.subOrders
       for (let i = 0; i < subOrders.length; i++) {
         const historyStates = subOrders[i].historyStates.sort(this.compare('omicsMilestone'))
@@ -225,7 +206,7 @@ export default {
         case 3100:
           if (item.stateResult === 1) {
             this.$router.push({
-              path: `/viewport/viewportDetail?resource=${item.omicsOrderId}&type=1`
+              path: `/viewport/viewportDetail?resource=${item.omicsOrderId}&type=0`
             })
           } else {
             console.log(`重新归档`)
@@ -238,10 +219,10 @@ export default {
       }
     },
     cleanData() {
-      this.record = {},
-        this.orderProgressValue = 0,
-        this.orderProgressList = [],
-        this.childOrder = [],
+      // this.record = {},
+      //   this.orderProgressValue = 0,
+      // this.orderProgressList = [],
+      this.childOrder = [],
         this.selectOption = undefined
     }
   }
@@ -256,6 +237,45 @@ export default {
 
   .ant-btn:nth-child(2) {
     margin: 0 15px;
+  }
+}
+
+.info {
+  margin-top: 12px;
+  margin-bottom: 20px;
+
+  .item {
+    display: flex;
+
+    .label {
+      font-size: 14px;
+      margin-right: 4px;
+    }
+
+    .desc {
+      font-size: 14px;
+    }
+  }
+}
+
+.btnBox {
+  .label {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+
+  .ant-radio-button-wrapper {
+    margin: 8px 6px 8px 0;
+    border-radius: 4px !important;
+    border-left: 1px solid #d9d9d9;
+
+    &::before {
+      display: none !important;
+    }
+  }
+
+  .ant-btn {
+    margin: 6px 12px 6px 0;
   }
 }
 

@@ -1,5 +1,4 @@
 import { getDistributorAllList } from '@api/product/index'
-import { getHospitalList } from '../api/product'
 
 
 export const selectorFilterMixin = {

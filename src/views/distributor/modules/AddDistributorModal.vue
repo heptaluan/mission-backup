@@ -20,7 +20,8 @@
           <a-input :disabled='formDisabled' id='departName' placeholder='请输入渠道商名称' v-model='form.departName' />
         </a-form-model-item>
         <a-form-model-item label='渠道商简称' prop='departNameAbbr'>
-          <a-input :disabled='formDisabled || specialDisabled' placeholder='请输入渠道商简称' v-model='form.departNameAbbr'
+          <a-input class='autoUppercase' :disabled='formDisabled || specialDisabled' placeholder='请输入渠道商简称'
+                   v-model='form.departNameAbbr'
                    @change='checkAbbr(form.departNameAbbr, form)' />
         </a-form-model-item>
         <a-form-model-item
@@ -201,7 +202,7 @@ export default {
             required: true,
             message: '请输入渠道商缩写（仅限三到八位大写字母）',
             trigger: 'blur',
-            pattern: /^[A-Z]{3,8}$/
+            pattern: /^[a-zA-Z]{3,8}$/
           }
         ],
         // contactName: [{ required: true, message: '请输入联系人名称', trigger: 'blur' }],

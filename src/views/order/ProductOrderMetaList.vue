@@ -4,151 +4,126 @@
     <div class="table-page-search-wrapper">
       <a-form layout="inline" @keyup.enter.native="searchQuery">
         <a-row :gutter="24" class="search-group order-list">
-          <a-col class='group sm'>
-            <a-form-item label='病例编号:' :labelCol='{ span: 6 }'>
-              <a-input allowClear v-model='queryParam.medicalCaseCode' placeholder='请输入病例编号'></a-input>
+          <a-col class="group sm">
+            <a-form-item label="病例编号:" :labelCol="{ span: 6 }">
+              <a-input allowClear v-model="queryParam.medicalCaseCode" placeholder="请输入病例编号"></a-input>
             </a-form-item>
           </a-col>
-          <a-col class='group sm'>
-            <a-form-item label='姓名:' :labelCol='{ span: 6 }'>
-              <a-input allowClear v-model='queryParam.caseName' placeholder='请输入姓名'></a-input>
+          <a-col class="group sm">
+            <a-form-item label="姓名:" :labelCol="{ span: 6 }">
+              <a-input allowClear v-model="queryParam.caseName" placeholder="请输入姓名"></a-input>
             </a-form-item>
           </a-col>
-          <template v-if='toggleSearchStatus'>
-            <a-col class='group tiny'>
-              <a-form-item label='性别:' :labelCol='{ span: 6 }'>
-                <a-select v-model='queryParam.gender' placeholder='请选择性别' allowClear>
-                  <a-select-option v-for='item in genderOption' :key='item.value' :value='item.value'>
+          <template v-if="toggleSearchStatus">
+            <a-col class="group tiny">
+              <a-form-item label="性别:" :labelCol="{ span: 6 }">
+                <a-select v-model="queryParam.gender" placeholder="请选择性别" allowClear>
+                  <a-select-option v-for="item in genderOption" :key="item.value" :value="item.value">
                     {{ item.label }}
                   </a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col class='group md'>
-              <a-form-item label='证件号码:' :labelCol='{ span: 6 }'>
-                <a-input allowClear v-model='queryParam.identityNumber' placeholder='请输入证件号码'></a-input>
+            <a-col class="group md">
+              <a-form-item label="证件号码:" :labelCol="{ span: 6 }">
+                <a-input allowClear v-model="queryParam.identityNumber" placeholder="请输入证件号码"></a-input>
               </a-form-item>
             </a-col>
-            <a-col class='group md'>
-              <a-form-item label='电话:' :labelCol='{ span: 6 }'>
-                <a-input allowClear v-model='queryParam.phoneNumber' placeholder='请输入电话'></a-input>
+            <a-col class="group md">
+              <a-form-item label="电话:" :labelCol="{ span: 6 }">
+                <a-input allowClear v-model="queryParam.phoneNumber" placeholder="请输入电话"></a-input>
               </a-form-item>
             </a-col>
-            <a-col class='group md'>
-              <a-form-item label='渠道商:' :labelCol='{ span: 6 }'>
+            <a-col class="group md">
+              <a-form-item label="渠道商:" :labelCol="{ span: 6 }">
                 <a-select
-                  v-model='queryParam.sendAccess'
-                  placeholder='请选择渠道商'
+                  v-model="queryParam.sendAccess"
+                  placeholder="请选择渠道商"
                   allowClear
                   show-search
-                  :value='channelValue'
-                  :default-active-first-option='false'
-                  :filter-option='false'
-                  :not-found-content='null'
-                  @search='handleChannelSearch'
-                  @change='handleChannelChange'
+                  :value="channelValue"
+                  :default-active-first-option="false"
+                  :filter-option="false"
+                  :not-found-content="null"
+                  @search="handleChannelSearch"
+                  @change="handleChannelChange"
                 >
-                  <a-select-option v-for='item in distributorList' :key='item.id' :value='item.departNameAbbr'>
+                  <a-select-option v-for="item in distributorList" :key="item.id" :value="item.departNameAbbr">
                     {{ item.departName }}
                   </a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col class='group md'>
-              <a-form-item label='医院:' :labelCol='{ span: 6 }'>
-                <a-select v-model='queryParam.sendHospital' placeholder='请选择医院'>
-                  <a-select-option v-for='item in hospitalList' :key='item.id' :value='item.departNameAbbr'>
+            <a-col class="group md">
+              <a-form-item label="医院:" :labelCol="{ span: 6 }">
+                <a-select v-model="queryParam.sendHospital" placeholder="请选择医院">
+                  <a-select-option v-for="item in hospitalList" :key="item.id" :value="item.departNameAbbr">
                     {{ item.departName }}
                   </a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col class='group md'>
-              <a-form-item label='销售:' :labelCol='{ span: 6 }'>
+            <a-col class="group md">
+              <a-form-item label="销售:" :labelCol="{ span: 6 }">
                 <a-select
                   show-search
                   allowClear
-                  :value='sellValue'
-                  placeholder='输入关联销售进行检索'
-                  :default-active-first-option='false'
-                  :show-arrow='false'
-                  :filter-option='false'
+                  :value="sellValue"
+                  placeholder="输入关联销售进行检索"
+                  :default-active-first-option="false"
+                  :filter-option="false"
                   :not-found-content='null'
+                  @focus='handleSellSearch'
                   @search='handleSellSearch'
-                  @change='handleSellChange'
+                  @change="handleSellChange"
                 >
-                  <a-select-option v-for='item in sellData' :key='item.id' :value='item.username'>
+                  <a-select-option v-for="item in sellData" :key="item.id" :value="item.username">
                     {{ item.realname }}
                   </a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
-            <a-col class='group sm'>
-              <a-form-item label='产品:' :labelCol='{ span: 6 }'>
-                <a-select v-model='queryParam.choseProduct' placeholder='请选择产品' allowClear>
-                  <a-select-option v-for='item in productInfoList' :key='item.id' :value='item.productRecognition'>
+            <a-col class="group sm">
+              <a-form-item label="产品:" :labelCol="{ span: 6 }">
+                <a-select v-model="queryParam.choseProduct" placeholder="请选择产品" allowClear>
+                  <a-select-option v-for="item in productInfoList" :key="item.id" :value="item.productRecognition">
                     {{ item.productName }}
                   </a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
 
-            <!-- <a-col class="group md">
-              <a-form-item label="报告状态:" :labelCol="{ span: 6 }">
-                <a-select v-model="queryParam.sourceType" placeholder="请选择报告状态">
-                  <a-select-option v-for="item in orderStateList" :key="item.id" :value="item.key">
-                    {{ item.value }}
-                  </a-select-option>
-                </a-select>
-              </a-form-item>
-            </a-col> -->
-
-            <a-col class='group sm'>
-              <a-form-item label='状态:' :labelCol='{ span: 6 }'>
-                <a-select v-model='queryParam.orderState' placeholder='请选择状态'>
-                  <a-select-option v-for='item in orderStateList' :key='item.id' :value='item.productMilestone'>
+            <a-col class="group sm">
+              <a-form-item label="状态:" :labelCol="{ span: 6 }">
+                <a-select v-model="queryParam.orderState" placeholder="请选择状态">
+                  <a-select-option v-for="item in orderStateList" :key="item.id" :value="item.productMilestone">
                     {{ item.productMilestone_dictText }}
                   </a-select-option>
                 </a-select>
               </a-form-item>
             </a-col>
 
-            <a-col class='group sm'>
+            <a-col class="group sm">
               <a-form-item label='订单来源:' :labelCol='{ span: 6 }'>
-                <a-select v-model='queryParam.sourceType' placeholder='请选择来源'>
-                  <a-select-option v-for='item in orderResource' :key='item.id' :value='item.key'>
-                    {{ item.value }}
-                  </a-select-option>
-                </a-select>
+                <j-dict-select-tag
+                  type='list'
+                  v-model='queryParam.sourceType'
+                  dictCode='order_source_type'
+                  placeholder='请选择来源'
+                />
               </a-form-item>
             </a-col>
-            <a-col class='group sm'>
-              <a-form-item label='订单创建时间' :labelCol='{ span: 5 }'>
-                <!--              <j-date-->
-                <!--                v-model="queryParam.createTime_begin"-->
-                <!--                :showTime="true"-->
-                <!--                allowClear-->
-                <!--                date-format="YYYY-MM-DD"-->
-                <!--                placeholder="请选择开始时间"-->
-                <!--              ></j-date>-->
-                <!--              <span style="width: 20px;"> - </span>-->
-                <!--              <j-date-->
-                <!--                v-model="queryParam.createTime_end"-->
-                <!--                :showTime="true"-->
-                <!--                allowClear-->
-                <!--                date-format="YYYY-MM-DD"-->
-                <!--                placeholder="请选择结束时间"-->
-                <!--              ></j-date>-->
-                <a-range-picker @change='onTimeChange' allowClear v-model='queryParam.datePick' />
-
+            <a-col class="group sm">
+              <a-form-item label="订单创建时间" :labelCol="{ span: 5 }">
+                <a-range-picker @change="onTimeChange" allowClear v-model="queryParam.datePick" />
               </a-form-item>
             </a-col>
           </template>
 
-          <a-col class='group btn'>
-            <a-button @click='searchQuery' type='primary'>搜索</a-button>
-            <a-button @click='resetQuery'>重置</a-button>
-            <a @click='handleToggleSearch' style='margin-left: 8px'>
+          <a-col class="group btn">
+            <a-button @click="searchQuery" type="primary">搜索</a-button>
+            <a-button @click="resetQuery">重置</a-button>
+            <a @click="handleToggleSearch" style="margin-left: 8px">
               {{ toggleSearchStatus ? '收起' : '展开' }}
               <a-icon :type="toggleSearchStatus ? 'up' : 'down'" />
             </a>
@@ -161,44 +136,12 @@
     <!-- 操作按钮区域 -->
     <div class="table-operator">
       <a-button @click="addNewOrder" type="primary" icon="plus">创建订单</a-button>
-      <a-button type="primary" icon="download" @click="handleExportXls(`导出订单列表${currentTime}`)"
-        >导出Excel</a-button
-      >
+      <a-button type="primary" icon="download" @click="handleExport(`导出订单列表${currentTime}`)">导出Excel</a-button>
       <a-button type="primary" @click="batchImport">批量导入订单</a-button>
-
-      <!-- <a-button type="primary" icon="download" @click="handleExportXls(`导出基因订单列表${currentTime}`)">导出基因Excel</a-button> -->
-      <!-- <a-upload
-        name="file"
-        :showUploadList="false"
-        :multiple="false"
-        :headers="tokenHeader"
-        :action="importExcelUrl"
-        @change="handleImportExcel"
-      >
-        <a-button type="primary" icon="import">导入</a-button>
-      </a-upload>
-      <j-super-query
-        :fieldList="superFieldList"
-        ref="superQueryModal"
-        @handleSuperQuery="handleSuperQuery"
-      ></j-super-query>
-      <a-dropdown v-if="selectedRowKeys.length > 0">
-        <a-menu slot="overlay">
-          <a-menu-item key="1" @click="batchDel"><a-icon type="delete" />删除</a-menu-item>
-        </a-menu>
-        <a-button style="margin-left: 8px"> 批量操作 <a-icon type="down"/></a-button>
-      </a-dropdown> -->
     </div>
 
     <!-- table区域-begin -->
     <div>
-      <!-- <div class="ant-alert ant-alert-info" style="margin-bottom: 16px;">
-        <i class="anticon anticon-info-circle ant-alert-icon"></i> 已选择
-        <a style="font-weight: 600">{{ selectedRowKeys.length }}</a
-        >项
-        <a style="margin-left: 24px" @click="onClearSelected">清空</a>
-      </div> -->
-
       <a-table
         ref="table"
         size="middle"
@@ -237,7 +180,7 @@
         <span slot="action" slot-scope="text, record" style="display: flex;justify-content: space-evenly;">
           <a v-if="record.orderState === 1000" @click="editOrder(record)">编辑</a>
           <a v-if="record.orderState !== 1000" @click="handleDetail(record)">详情</a>
-          <!--          <a v-if="record.orderState !== 1000" @click="reinspection(record)">重检</a>-->
+          <a v-if="record.orderState !== 1000" @click="reinspection(record)">重检</a>
           <a-popconfirm
             v-if="record.orderState === 1000 || !record['isAnyStatus']"
             title="确定删除吗?"
@@ -264,7 +207,7 @@
       </a-table>
     </div>
     <order-batch-import-modal ref="orderBatchImportModal" @ok="modalFormOk" />
-    <reinspectionModal ref='reinspectionModal' />
+    <reinspectionModal ref="reinspectionModal" @ok="modalFormOk" />
   </a-card>
 </template>
 
@@ -283,6 +226,7 @@ import { CommonSingleUpload, startOrderImportTask } from 'src/api/order/index'
 import OrderBatchImportModal from './modules/orderBatchImportModal'
 import reinspectionModal from './modules/reinspectionModal'
 import { selectorFilterMixin } from '@/mixins/selectorFilterMixin'
+import { downFile } from '@/api/manage'
 
 function sellFetch(value, callback) {
   let timeout
@@ -394,16 +338,6 @@ export default {
           align: 'center',
           dataIndex: 'choseProduct_dictText'
         },
-        // {
-        //   title: '身份份证号',
-        //   align: 'center',
-        //   dataIndex: 'identityNumber'
-        // },
-        // {
-        //   title: '销售人员',
-        //   align: 'center',
-        //   dataIndex: 'seller_dictText'
-        // },
         {
           title: '渠道商',
           align: 'center',
@@ -413,6 +347,11 @@ export default {
           title: '医院',
           align: 'center',
           dataIndex: 'sendHospital_dictText'
+        },
+        {
+          title: '销售人员',
+          align: 'center',
+          dataIndex: 'seller_dictText'
         },
         // {
         //   title: '送检科室',
@@ -449,9 +388,9 @@ export default {
                   for (let i = 0; i < r.mainOrderStates.length; i++) {
                     if (r.mainOrderStates[i].productMilestone === 8000) {
                       if (r.mainOrderStates[i].stateResult === 1) {
-                        return <a-icon type='check-circle' class='green' />
+                        return <a-icon type="check-circle" class="green" />
                       } else if (r.mainOrderStates[i].stateResult == 0) {
-                        return <a-icon type='close-circle' class='red' />
+                        return <a-icon type="close-circle" class="red" />
                       } else if (r.mainOrderStates[i].stateResult == -1) {
                         return ' '
                       }
@@ -470,9 +409,9 @@ export default {
                   for (let i = 0; i < r.mainOrderStates.length; i++) {
                     if (r.mainOrderStates[i].productMilestone === 9000) {
                       if (r.mainOrderStates[i].stateResult === 1) {
-                        return <a-icon type='check-circle' class='green' />
+                        return <a-icon type="check-circle" class="green" />
                       } else if (r.mainOrderStates[i].stateResult == 0) {
-                        return <a-icon type='close-circle' class='red' />
+                        return <a-icon type="close-circle" class="red" />
                       } else if (r.mainOrderStates[i].stateResult == -1) {
                         return ' '
                       }
@@ -554,6 +493,8 @@ export default {
               return '商检'
             } else if (text === 2) {
               return '科研'
+            } else if (text === 3) {
+              return '测试'
             } else {
               return ''
             }
@@ -583,15 +524,15 @@ export default {
       orderStateList: [
         { productMilestone_dictText: '临时订单', productMilestone: 1000 },
         { productMilestone_dictText: '正式订单', productMilestone: 3000 },
-        { productMilestone_dictText: '报告制作', productMilestone: 7000 },
+        { productMilestone_dictText: '报告生成', productMilestone: 8000 },
         { productMilestone_dictText: '报告审核', productMilestone: 9000 }
       ],
-      currentTime: '',
-      orderResource: [
-        { key: 0, value: '门诊' },
-        { key: 1, value: '商检' },
-        { key: 2, value: '科研' }
-      ]
+      currentTime: ''
+      // orderResource: [
+      //   { key: 0, value: '门诊' },
+      //   { key: 1, value: '商检' },
+      //   { key: 2, value: '科研' }
+      // ]
       // orderStateList: [
       //   { key: 0, value: '已生成' },
       //   { key: 1, value: '待审核' }
@@ -607,14 +548,11 @@ export default {
     }
   },
   methods: {
-    initDictConfig() {
-    },
-    getData() {
-    },
+    initDictConfig() {},
+    getData() {},
     onTimeChange(date, dateString) {
-      // this.queryParam.date = null
-      this.queryParam.createTime_begin = dateString [0]
-      this.queryParam.createTime_end = dateString [1]
+      this.queryParam.createTime_begin = dateString[0]
+      this.queryParam.createTime_end = dateString[1]
     },
     getSuperFieldList() {
       let fieldList = []
@@ -647,13 +585,13 @@ export default {
     },
     addNewOrder() {
       this.$router.push({
-        path: '/orderList/addNewOrder'
+        path: '/orderList/singleNewOrder'
       })
     },
     editOrder(record) {
       const step = record.lastEditStep ? record.lastEditStep : 0
       this.$router.push({
-        path: `/orderList/editNewOrder?orderId=${record.id}&currentTab=${step}`
+        path: `/orderList/singleNewOrder?orderId=${record.id}`
       })
     },
     handleDeleteOrder(id) {
@@ -709,8 +647,8 @@ export default {
       if (!(this.user.includes('sales_omics') && !this.user.includes('sales_super_omics'))) {
         sellFetch(value, data => (this.sellData = data))
       }
-      this.$set(this.queryParam, 'sendAccess', undefined) // clean the previous data if the sellUser or sellUserId changed
-      this.$set(this.queryParam, 'sendHospital', undefined) // clean the previous data if the sellUser or sellUserId changed
+      // this.$set(this.queryParam, 'sendAccess', undefined) // clean the previous data if the sellUser or sellUserId changed
+      // this.$set(this.queryParam, 'sendHospital', undefined) // clean the previous data if the sellUser or sellUserId changed
       // this.loadHospitalList()
       if (value) {
         this.queryParam.seller = value
@@ -829,6 +767,55 @@ export default {
         .catch(e => {
           console.log(e)
         })
+    },
+    handleExport(fileName) {
+      const that = this
+      if (!fileName || typeof fileName != 'string') {
+        fileName = '导出文件'
+      }
+      let param = this.getQueryParams()
+
+      if (this.selectedRowKeys.length === 0) {
+        this.$confirm({
+          title: '导出订单',
+          content: h => <div>是否导出全部订单？</div>,
+          onOk() {
+            that.downLoadFile(param, fileName)
+          },
+          onCancel() {
+            console.log('Cancel')
+          },
+          class: 'test'
+        })
+      } else {
+        const ids = []
+        this.selectionRows.forEach(item => ids.push(item.id))
+        if (this.selectedRowKeys && this.selectedRowKeys.length > 0) {
+          param['selections'] = ids.join(',')
+        }
+        this.downLoadFile(param, fileName)
+      }
+    },
+    downLoadFile(param, fileName) {
+      downFile(this.url.exportXlsUrl, param).then(data => {
+        if (!data) {
+          this.$message.warning('文件下载失败')
+          return
+        }
+        if (typeof window.navigator.msSaveBlob !== 'undefined') {
+          window.navigator.msSaveBlob(new Blob([data], { type: 'application/vnd.ms-excel' }), fileName + '.xls')
+        } else {
+          let url = window.URL.createObjectURL(new Blob([data], { type: 'application/vnd.ms-excel' }))
+          let link = document.createElement('a')
+          link.style.display = 'none'
+          link.href = url
+          link.setAttribute('download', fileName + '.xls')
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link) //下载完成移除元素
+          window.URL.revokeObjectURL(url) //释放掉blob对象
+        }
+      })
     }
   },
   mounted() {

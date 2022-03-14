@@ -155,6 +155,9 @@
         <template slot="colorTextImage" slot-scope="text">
           <span v-html="text" :style="calcStyleImage(text)"></span>
         </template>
+        <template slot="geneColorText" slot-scope="text, record">
+          <span v-html="geneText(text, record)" :style="calcStyleImage(text)"></span>
+        </template>
         <template slot="imgSlot" slot-scope="text">
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
           <img
@@ -171,7 +174,6 @@
             下载
           </a-button>
         </template>
-
         <span slot="action" slot-scope="text, record">
           <a @click="handleDetail(record)">详情</a>
 <!--           <a-divider type="vertical" />-->
@@ -203,11 +205,11 @@ import '@/assets/less/TableExpand.less'
 import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { selectorFilterMixin } from '@/mixins/selectorFilterMixin'
-
+import { reportMixin } from '@/mixins/reportMixin'
 
 export default {
   name: 'SampleReportSourceList',
-  mixins: [JeecgListMixin, mixinDevice, selectorFilterMixin],
+  mixins: [JeecgListMixin, mixinDevice, selectorFilterMixin, reportMixin],
   data() {
     return {
       description: '初始报告结果管理页面',
@@ -282,7 +284,7 @@ export default {
           align: 'center',
           dataIndex: 'geneReportValue',
           key: 'geneReportValue',
-          scopedSlots: { customRender: 'colorTextImage' },
+          scopedSlots: { customRender: 'geneColorText' },
         },
         {
           title: '报告总结果',
@@ -379,33 +381,17 @@ export default {
     },
     handleDetail (record) {
       // /reportDetail
-      this.$router.push({name: 'reportSourceDetail-@id', params: {
+      // this.$router.push({name: 'reportSourceDetail-@id', params: {
+      //     id: record.id
+      //   }})
+
+      const router = this.$router.resolve({
+        name: 'reportSourceDetail-@id',
+        params:{
           id: record.id
-        }})
-    },
-    calcStyle(text) {
-      let bgColor = '#fff'
-      let Color = '#000'
-      const sore = parseFloat(text)
-      if (sore >= 50 && sore < 70) {
-        Color = '#fff'
-        bgColor = '#faad14'
-      }
-      if (sore >= 70) {
-        Color = '#fff'
-        bgColor = '#f5222d'
-      }
-      return `background-color: ${bgColor}; color: ${Color}`
-    },
-    calcStyleImage(text) {
-      let bgColor = '#fff'
-      let Color = '#000'
-      const sore = parseFloat(text)
-      if (sore >= 60) {
-        Color = '#fff'
-        bgColor = '#f5222d'
-      }
-      return `background-color: ${bgColor}; color: ${Color}`
+        }
+      })
+      window.open(router.href, '_blank')
     }
   }
 }

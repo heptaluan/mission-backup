@@ -264,18 +264,18 @@ export default {
         //   dataIndex: 'hospitalShortName_dictText'
         // },
         {
-          title: '影像号',
+          title: 'patientId',
           align: 'center',
-          dataIndex: 'patientUid',
-          customRender: function(t, r, index) {
-            if (r.patientUid) {
-              return (
-                <a-tooltip placement="top" title={r.patientUid}>
-                  {r.patientUid.substring(0, 15) + '..'}
-                </a-tooltip>
-              )
-            }
-          }
+          dataIndex: 'patientId',
+          // customRender: function(t, r, index) {
+          //   if (r.patientUid) {
+          //     return (
+          //       <a-tooltip placement="top" title={r.patientUid}>
+          //         {r.patientUid.substring(0, 15) + '..'}
+          //       </a-tooltip>
+          //     )
+          //   }
+          // }
         },
         {
           title: 'ossKey 地址',
@@ -370,7 +370,7 @@ export default {
     },
     handleShowDetail(record) {
       this.$router.push({
-        path: `/viewport/viewportDetail?resource=${record.patientId}&type=0`
+        path: `/viewport/viewportDetail?resource=${record.id}`
       })
     },
     handleShowViewportUploadModal() {

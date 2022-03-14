@@ -22,7 +22,7 @@
           <a-input id='departName' placeholder='请输入机构名称' v-model='model.departName' />
         </a-form-model-item>
         <a-form-model-item label='机构简称' prop='departNameAbbr' :labelCol='labelCol' :wrapperCol='wrapperCol'>
-          <a-input placeholder='请输入机构简称' v-model='model.departNameAbbr'
+          <a-input class='autoUppercase' placeholder='请输入机构简称' v-model='model.departNameAbbr'
                    @change='checkAbbr(model.departNameAbbr, model)' />
         </a-form-model-item>
         <a-form-model-item :labelCol='labelCol' :wrapperCol='wrapperCol' :hidden='seen' label='上级机构' hasFeedback>
@@ -141,7 +141,7 @@ export default {
               required: true,
               message: '请输入机构简称(3-8位大写字母)',
               trigger: 'blur',
-              pattern: /^[A-Z]{3,8}$/
+              pattern: /^[a-zA-Z]{3,8}$/
             }
           ],
           orgCode: [{ required: true, message: '请输入机构编码!' }],

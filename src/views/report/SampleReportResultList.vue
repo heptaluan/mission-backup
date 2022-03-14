@@ -162,6 +162,9 @@
         <template slot="colorTextImage" slot-scope="text">
           <span v-html="text" :style="calcStyleImage(text)"></span>
         </template>
+        <template slot="geneColorText" slot-scope="text, record">
+          <span v-html="geneText(text, record)" :style="calcStyleImage(text)"></span>
+        </template>
         <template slot="imgSlot" slot-scope="text">
           <span v-if="!text" style="font-size: 12px;font-style: italic;">无图片</span>
           <img
@@ -196,7 +199,7 @@
                 <a @click="handleDetailSD(record)">预览(山东)</a>
               </a-menu-item>
               <a-menu-item>
-                <a @click="handleDetailT800(record)" v-if="false">预览(T800)</a>
+                <a @click="handleDetailT800(record)">预览(T800)</a>
               </a-menu-item>
               <!-- <a-menu-item>
                 <a-popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
@@ -217,10 +220,11 @@ import { mixinDevice } from '@/utils/mixin'
 import { JeecgListMixin } from '@/mixins/JeecgListMixin'
 import { getAction } from '@/api/manage'
 import { selectorFilterMixin } from '@/mixins/selectorFilterMixin'
+import { reportMixin } from '@/mixins/reportMixin'
 
 export default {
   name: 'SampleReportResultList',
-  mixins: [JeecgListMixin, mixinDevice, selectorFilterMixin],
+  mixins: [JeecgListMixin, mixinDevice, selectorFilterMixin, reportMixin],
   components: {},
   data() {
     return {
@@ -296,7 +300,14 @@ export default {
           align: 'center',
           dataIndex: 'geneReportValue',
           key: 'geneReportValue',
-          scopedSlots: { customRender: 'colorTextImage' },
+          scopedSlots: { customRender: 'geneColorText' }, // choseProduct
+          // customRender: function(t, r, index) {
+          //   let text = t
+          //   if (r.choseProduct === 'FA') {
+          //     text ='-'
+          //   }
+          //   return text
+          // }
         },
         {
           title: '报告总结果',
@@ -395,7 +406,7 @@ export default {
       const router = this.$router.resolve({
         name: 'PagePreview',
         params:{
-          reportId: record.id,
+          reportId: record.orderId,
           template: 'com'
         }
       })
@@ -405,7 +416,7 @@ export default {
       const router = this.$router.resolve({
         name: 'PagePrintT800',
         params:{
-          reportId: record.id
+          reportId: record.orderId
         }
       })
       window.open(router.href, '_blank')
@@ -432,30 +443,6 @@ export default {
     },
     batchDownLoadExport () {
       console.log(this.selectedRowKeys)
-    },
-    calcStyle(text) {
-      let bgColor = '#fff'
-      let Color = '#000'
-      const sore = parseFloat(text)
-      if (sore >= 50 && sore < 70) {
-        Color = '#fff'
-        bgColor = '#faad14'
-      }
-      if (sore >= 70) {
-        Color = '#fff'
-        bgColor = '#f5222d'
-      }
-      return `background-color: ${bgColor}; color: ${Color}`
-    },
-    calcStyleImage(text) {
-      let bgColor = '#fff'
-      let Color = '#000'
-      const sore = parseFloat(text)
-      if (sore >= 60) {
-        Color = '#fff'
-        bgColor = '#f5222d'
-      }
-      return `background-color: ${bgColor}; color: ${Color}`
     }
   }
 }

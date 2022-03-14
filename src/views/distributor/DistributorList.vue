@@ -399,6 +399,12 @@ export default {
 
       .ant-radio-button-wrapper {
         margin: 0 8px 8px 0;
+        border-radius: 4px !important;
+        border-left: 1px solid #d9d9d9;
+
+        &::before {
+          display: none !important;
+        }
       }
     }
   }

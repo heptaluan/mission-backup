@@ -397,6 +397,9 @@
   &.printBtn3 {
     top: 80px;
   }
+  &.printBtn2 {
+    top: 40px;
+  }
   &.icon1 {
     width: 20px;
     top: 86px;
@@ -404,6 +407,44 @@
     font-size: 20px;
     cursor: pointer;
     color: #999;
+  }
+}
+.preview-container-t800 {
+  .pic-tips {
+    font-size: 12px;
+    line-height: 25px;
+  }
+  .top-pic {
+    margin-bottom: 25px;
+    >img {
+      max-width: 100%;
+    }
+  }
+  .page-about-content {
+    p {
+      font-size: 14px;
+      line-height: 0.75cm;
+    }
+    .content-item {
+      .title {
+        font-weight: bold;
+        padding-left: 20px;
+        position: relative;
+        &::after {
+          content: '';
+          position: absolute;
+          top: 7px;
+          left: 0;
+          width: 15px;
+          height: 15px;
+          border-radius: 50%;
+          background-color: #000000;
+        }
+      }
+    }
+  }
+  .page-title {
+    font-weight: bold;
   }
 }
 

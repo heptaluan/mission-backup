@@ -30,6 +30,7 @@
         <page-explain class="page-content"></page-explain>
       </page-common>
     </div>
+    <a-button @click="reportReview" class="printBtn printBtn2 noprint" v-has="'report:review'">报告确认</a-button>
     <a-button @click="handleOnePrint" class="printBtn printBtn3 noprint">下载报告</a-button>
   </div>
 </template>
@@ -46,7 +47,7 @@
   import PageExplain from '../template/components/page-explain-t'
   import PageCommon from './components/page-common'
   import PageGen from '../template/components/page-genValue'
-  import { getAction } from '@/api/manage'
+  import { getAction, postAction } from '@/api/manage'
   import { preHeight, preHeightImage, tipHeight } from '../template/resource/constant'
   import * as dayjs from 'dayjs'
 
@@ -72,7 +73,9 @@
         pageLast: 3,
         url: {
           queryById: '/report/sampleReportResult/queryById',
-          getPatient: '/multiomics/productOrder/orderStepInfo'
+          getPatient: '/multiomics/productOrder/orderStepInfo',
+          reportReview: '/report/sampleReportResult/review',
+          downloadCount: '/report/sampleReportResult/downloadCount'
         },
         defaultImage: require('/src/views/report/template/resource/result.jpg'),
         testResult: {
@@ -131,11 +134,24 @@
         if (!dicomResult || !dicomResult.nodulesList || dicomResult.total === 0) {
           return false
         }
+        // 删除 invisable === '1'
+        for (let i = dicomResult.nodulesList.length - 1 ; i >= 0; i--) {
+          // 兼容 1， '1'
+          if(dicomResult.nodulesList[i].invisable == '1') {
+            dicomResult.nodulesList.splice(i, 1)
+          }
+        }
+        dicomResult.total = dicomResult.nodulesList.length
+        // 重置index
+        for (let i = 0 ; i< dicomResult.nodulesList.length; i++) {
+          dicomResult.nodulesList[i].index = i + 1
+        }
         let pulmonaryNodules = dicomResult.nodulesList.filter(o => {
           let scrynMaligant = o.scrynMaligant.replace('%', '')
           return scrynMaligant * 1 > 59.999
         })
         this.testResult.pulmonaryNodules = pulmonaryNodules
+        this.testResult.total = dicomResult.total
         this.pulmonaryNodules = pulmonaryNodules.slice(0)
         let beginIndex = 0
         const nodulesCount = this.pulmonaryNodules.length
@@ -205,6 +221,7 @@
       },
       handleOnePrint () {
         window.print()
+        this.handleDownload()
       },
       getDate (time) {
         const pattern = 'YYYYMMDD'
@@ -248,6 +265,42 @@
           this.$message.warning(e.message)
         }
       },
+      async reportReview () {
+        const id = this.$route.params.reportId
+        const url = this.url.reportReview
+        try {
+          const postData = {
+            orderId: id
+          }
+          const res = await postAction(url, postData)
+          if (res.code === 200) {
+            this.$message.success('报告确认成功！')
+          } else {
+            this.$message.error(res.message)
+          }
+        }
+        catch (e) {
+          this.$message.warning(e.message)
+        }
+      },
+      async handleDownload () {
+        const id = this.$route.params.reportId
+        const url = this.url.downloadCount
+        try {
+          const postData = {
+            orderId: id
+          }
+          const res = await postAction(url, postData)
+          if (res.code === 200) {
+
+          } else {
+            this.$message.error(res.message)
+          }
+        }
+        catch (e) {
+          this.$message.warning(e.message)
+        }
+      }
     }
   }
 </script>

@@ -1,14 +1,27 @@
 <template>
   <div class="bg-gray">
-    <div class="preview-container">
+    <div class="preview-container preview-container-t800">
       <page-common :pageConfig="pageConfig" pageIndex="1">
         <div class="page-overview">
           <h3 class="report-title text-center text-weight">肺结节良恶性检测报告</h3>
           <patient-info :data="patientInfo" v-if="loadData"></patient-info>
           <conclusion :data="report"></conclusion>
           <conclusion-result :data="report"></conclusion-result>
-<!--          <signature :data="singature"></signature>-->
+          <test-result class="page-content" :data="testResult" v-if="report.id"></test-result>
         </div>
+      </page-common>
+      <page-common :pageConfig="pageConfig" pageIndex="2">
+        <div class="page-overview">
+          <p v-html="interpretation" class="pic-tips"></p>
+          <signature :data="singature"></signature>
+          <explain class="page-content"></explain>
+        </div>
+      </page-common>
+      <page-common :pageConfig="pageConfig" :pageIndex="3">
+        <page-explain class="page-content"></page-explain>
+      </page-common>
+      <page-common :pageConfig="pageConfig" :pageIndex="4">
+        <page-about class="page-content"></page-about>
       </page-common>
     </div>
     <a-button @click="handleOnePrint" class="printBtn printBtn3 noprint">下载报告</a-button>
@@ -16,18 +29,20 @@
 </template>
 
 <script>
-import PatientInfo from '../template/components/patientInfo'
-import Conclusion from '../template/components/conclusion'
-import ConclusionResult from '../template/components/conclusion-result'
+import PatientInfo from './components/T800/patientInfo'
+import Conclusion from './components/T800/conclusion'
+import ConclusionResult from './components/T800/conclusion-result'
 import Signature from '../template/components/signature'
-import Explain from '../template/components/explain'
-import PageExplain from '../template/components/page-explain-t'
-import PageCommon from './components/page-common'
+import PageCommon from './components/T800/page-common'
+import TestResult from './components/T800/TestResult'
+import Explain from './components/T800/explain'
+import PageExplain from './components/T800/page-explain-t'
+import PageAbout from './components/T800/page-about'
 import { getAction } from '@/api/manage'
 import * as dayjs from 'dayjs'
 export default {
   name: 'report-T800',
-  components: { PageCommon, Explain, Signature, ConclusionResult, Conclusion, PatientInfo, PageExplain },
+  components: { PageCommon, Explain, Signature, ConclusionResult, Conclusion, PatientInfo, PageExplain, TestResult, PageAbout },
   data() {
     return {
       patientInfo: {},
@@ -55,7 +70,10 @@ export default {
       },
       pulmonaryNodules: undefined,
       patient: {},
-      loadData:  false
+      loadData:  false,
+      interpretation: '其中浅色部分表示肿瘤生化分子含量低，深色部分表示肿瘤生化分子含量高。总体生化分子的含量指示了患肿瘤的\n' +
+    '风险。生化分子组学检测结果通过人工智能分析算法对总体检出的生化分子组分及含量进行综合健康评分，检测得\n' +
+    '分在 0-100 之间，分值越大，表示您肺结节恶变的风险越大。'
     }
   },
   mounted () {

@@ -25,6 +25,9 @@ export default {
     value: {
       type: Array
     },
+    // regionData: {
+    //   type: Array
+    // },
     disabled: {
       type: Boolean
     }
@@ -113,12 +116,14 @@ export default {
     // },
   },
   mounted() {
-    this.initRegion()
+    if (this.originalRegion.length <= 0) {
+      this.initRegion()
+    }
     // this.loadRegion(1).then(res => {
     //   // console.log('start: ',res);
     //   this.region = res
     // })
-    console.log(this.value)
+    // console.log(this.value)
     if (this.value) {
       this.form = this.value
       // this.form= ['北京市','市辖区','东城区']
