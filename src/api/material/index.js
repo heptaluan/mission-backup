@@ -32,3 +32,4 @@ export const queryCaseCode = (params) => getAction('/tailai-system/mission/caseC
 //   postAction('/multiomics/productOrder/orderMedicalCase/' + orderId, params)
 // export const addProductOrder = params => postAction('/multiomics/productOrder/add', params)
 // export const putProductOrder = params => putAction('/multiomics/productOrder/edit', params)
+

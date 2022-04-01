@@ -149,3 +149,4 @@ export const getAuthForQc = () => getAction('/sys/sysDepart/isQCHead')
 export const getAuthForTest = () => getAction('/sys/sysDepart/isTestingHead')
 
 export default api
+

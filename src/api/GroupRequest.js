@@ -26,3 +26,4 @@ export function httpGroupRequest(getPromise, groupId, expire = 1000 * 30) {
     return Promise.resolve(res)
   })
 }
+

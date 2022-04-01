@@ -85,3 +85,4 @@ export function forceLogout(parameter) {
     data: parameter,
   })
 }
+

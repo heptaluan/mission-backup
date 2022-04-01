@@ -43,3 +43,4 @@ export const fitProduct = (params) => postAction('mission/materialManagement/fit
 // 产品和组学分析流程
 export const productAnalysisStepRelation = (params) =>
   getAction('multiomics/productOrder/productAnalysisStepRelation', params)
+

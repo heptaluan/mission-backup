@@ -124,3 +124,4 @@ export const getOrderSingleInfo = (params) => getAction('/multiomics/productOrde
 export const editSingleOrder = (orderId, params) =>
   putAction(`/multiomics/productOrder/editOrderBookingInfo/${orderId}`, params)
 export const auditOrder = (params) => postAction('/multiomics/productOrder/auditOrder', params)
+

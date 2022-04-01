@@ -67,3 +67,4 @@ export function delBatchHospital(parameter) {
     params: parameter,
   })
 }
+
